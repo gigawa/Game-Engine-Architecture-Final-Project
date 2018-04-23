@@ -30,7 +30,6 @@ public:
   Ogre::Vector3 position;
   Ogre::Vector3 velocity;
   bool isSelected;
-  float heading;
   float desiredHeading, desiredSpeed;
   float heading, speed;
 

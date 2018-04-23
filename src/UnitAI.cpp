@@ -7,6 +7,7 @@
 
 #include "UnitAI.h"
 #include "EntityMgr.h"
+#include "Command.h"
 
 UnitAI::UnitAI(Entity381* ent):Aspect(ent){
 
@@ -21,8 +22,10 @@ void UnitAI::Tick(float dt) {
 	int followSqrDistance = 1000;
 	Entity381 * player = entity->engine->entityMgr->player;
 	if(entity->position.squaredDistance(player->position) < followSqrDistance) {
-		Command
+		Follow * f = new Follow(entity, player);
+		AddCommand(f);
 	}
+
 	if(commands.size() > 0) {
 		commands.front()->tick(dt);
 		if(commands.front()->done()) {

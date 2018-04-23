@@ -86,15 +86,15 @@ Follow::Follow(Entity381* ent, Entity381 * targetEnt) : Command(ent, FollowComma
 	entity = ent;
 }
 
-MoveTo::~MoveTo() {
+Follow::~Follow() {
 
 }
 
-void MoveTo::init(){
+void Follow::init(){
 
 }
 
-void MoveTo::tick(float dt){
+void Follow::tick(float dt){
 	Ogre::Vector3 diff = targetEntity->position - entity->position;
 
 	entity->heading = atan2(diff.z,diff.x) * 180/3.1415;
@@ -108,8 +108,8 @@ void MoveTo::tick(float dt){
 	}
 }
 
-bool MoveTo::done(){
-	Ogre::Vector3 diff = targetLocation - entity->position;
+bool Follow::done(){
+	Ogre::Vector3 diff = targetEntity->position - entity->position;
 
 	if(diff.length() < MOVE_DISTANCE_THRESHOLD) {
 		return true;
