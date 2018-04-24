@@ -252,72 +252,25 @@ bool InputMgr::mouseMoved(const OIS::MouseEvent& me){
 }
 
 bool InputMgr::mousePressed(const OIS::MouseEvent& me, OIS::MouseButtonID mid){
-	OIS::MouseState ms = mMouse->getMouseState();
 
-	Ogre::Viewport * viewport = engine->gfxMgr->mCamera->getViewport();
+	std::cout << "Mouse pressed" << std::endl;
+    if (engine->uiMgr->mTrayMgr->injectMouseDown(me, mid)) return true;
 
-	ms.width = viewport->getActualWidth();
-	ms.height = viewport->getActualHeight();
+    /*
+	if(OIS::MB_Left == mid){
+		std::cout << "Left mouse press" << std::endl;
 
-	float msX = ms.X.abs;
-	float msY = ms.Y.abs;
+		//NOTE : In the assignment 6 solution, raycasting was handled with a separate function
+		//		 here. We did it inside the mousePressed function here. In case we need to add
+		//		 it back, we should do what the solution did.
+		//HandleMouseSelection(me);
+	}*/
 
-	Ogre::Vector2 mousePos = Ogre::Vector2(msX/ms.width, msY/ms.height);
-	//std::cout << "Mouse Position: (" << mousePos.x << " ," << mousePos.y << ")" << std::endl;
-
-	Ogre::Ray mouseRay = engine->gfxMgr->mCamera->getCameraToViewportRay(mousePos.x, mousePos.y);
-
-	std::pair<bool, Ogre::Real> result = mouseRay.intersects(engine->gameMgr->groundPlane);
-
-	if(result.first) {
-		Ogre::Vector3 point = mouseRay.getPoint(result.second);
-		//std::cout << "Selected Point: (" << point.x << ", " << point.y << ", " << point.z << ")" << std::endl;
-
-		int entityIndex = -1;
-		float closestDistance = 25000;
-
-		for(int i = 0; i < (int) engine->entityMgr->entities.size(); i++) {
-			float currentDistance = point.squaredDistance(engine->entityMgr->entities[i]->position);
-
-			/*std::cout << "Index: " << i << std::endl;
-			std::cout << "ClosestDistance: " << closestDistance << std::endl;
-			std::cout << "CurrentDistance: " << currentDistance << std::endl;*/
-
-			if(currentDistance < closestDistance) {
-				//std::cout << "New Closest" << std::endl;
-				closestDistance = currentDistance;
-				entityIndex = i;
-			}
-		}
-
-		/*if(entityIndex != -1){
-			if(mid == OIS::MB_Left) {
-				engine->entityMgr->SelectEntity(entityIndex);
-			}else if(mid == OIS::MB_Right){
-				Intercept * c = new Intercept(engine->entityMgr->selectedEntity, engine->entityMgr->entities[entityIndex]);
-				UnitAI * ai = (UnitAI*) engine->entityMgr->selectedEntity->aspects[2];
-
-				if(mKeyboard->isKeyDown(OIS::KC_LSHIFT)) {
-					ai->AddCommand(c);
-				}else {
-					ai->SetCommand(c);
-				}
-			}
-		}else if(mid == OIS::MB_Right) {
-			MoveTo * c = new MoveTo(engine->entityMgr->selectedEntity, point);
-			UnitAI * ai = (UnitAI*) engine->entityMgr->selectedEntity->aspects[2];
-
-			if(mKeyboard->isKeyDown(OIS::KC_LSHIFT)) {
-				ai->AddCommand(c);
-			}else {
-				ai->SetCommand(c);
-			}
-		}*/
-	}
 
 	return true;
 }
 
 bool InputMgr::mouseReleased(const OIS::MouseEvent& me, OIS::MouseButtonID mid){
+	if (engine->uiMgr->mTrayMgr->injectMouseUp(me, mid)) return true;
 	return true;
 }
