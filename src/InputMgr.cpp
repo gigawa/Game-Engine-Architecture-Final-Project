@@ -11,7 +11,8 @@
 #include <EntityMgr.h>
 #include <GameMgr.h>
 #include <Command.h>
-#include<UnitAI.h>
+#include <UnitAI.h>
+#include <UIMgr.h>
 
 #include <Utils.h>
 
@@ -245,6 +246,8 @@ bool InputMgr::keyReleased(const OIS::KeyEvent& ke){
 }
 
 bool InputMgr::mouseMoved(const OIS::MouseEvent& me){
+
+    if (engine->uiMgr->mTrayMgr->injectMouseMove(me)) return true;
 	return true;
 }
 

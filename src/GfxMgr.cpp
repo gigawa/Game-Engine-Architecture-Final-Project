@@ -27,16 +27,9 @@ GfxMgr::GfxMgr(Engine *engine): Mgr(engine) {
 	mWindow = 0;
 	mSceneMgr = 0;
 	mCamera = 0;
-}
 
-GfxMgr::~GfxMgr() {
 
-	Ogre::WindowEventUtilities::removeWindowEventListener(mWindow, this);
-	windowClosed(mWindow);
-	delete mRoot;
-}
-
-void GfxMgr::Init(){
+//NOTE COPIED from Init() as per Chad's instructions on how to get UI working
 #ifdef _DEBUG
   mResourcesCfg = "resources_d.cfg";
   mPluginsCfg = "plugins_d.cfg";
@@ -72,8 +65,9 @@ void GfxMgr::Init(){
 
   mWindow = mRoot->initialise(true, "CS381 Game Engine Version 1.0");
 
-  Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(5);
-  Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
+  //NOTE : Left in Init() per Chad's instructions
+  //Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(5);
+  //Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
 
   mSceneMgr = mRoot->createSceneManager(Ogre::ST_GENERIC);
 
@@ -93,6 +87,21 @@ void GfxMgr::Init(){
   Ogre::WindowEventUtilities::addWindowEventListener(mWindow, this);
   //mRoot->addFrameListener(this);
   //mRoot->startRendering();
+
+}
+
+GfxMgr::~GfxMgr() {
+
+	Ogre::WindowEventUtilities::removeWindowEventListener(mWindow, this);
+	windowClosed(mWindow);
+	delete mRoot;
+}
+
+void GfxMgr::Init(){
+
+  //Omitted in the constructor
+  Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(5);
+  Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
 
 
 }
