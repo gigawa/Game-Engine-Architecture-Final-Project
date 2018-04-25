@@ -34,6 +34,7 @@ Entity381::Entity381(Engine *engine, std::string meshfname, Ogre::Vector3 pos, i
 	ogreEntity = engine->gfxMgr->mSceneMgr->createEntity(meshfilename);
 	sceneNode = engine->gfxMgr->mSceneMgr->getRootSceneNode()->createChildSceneNode(pos);
 	sceneNode->attachObject(ogreEntity);
+	sceneNode->showBoundingBox(true);
 
 	Physics2D* phx = new Physics2D(this);
 	aspects.push_back((Aspect*) phx);
