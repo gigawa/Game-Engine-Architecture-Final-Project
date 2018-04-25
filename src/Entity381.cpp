@@ -74,9 +74,9 @@ Tank::~Tank(){
 EnemyTank::EnemyTank(Engine *engine, std::string meshfname, Ogre::Vector3 pos, int ident):
 						Entity381(engine, meshfname, pos, ident){
 	this->minSpeed = 0;
-	this->maxSpeed = 16.0f;//meters per second...
-	this->acceleration = 5.0f; // fast
-	this->turnRate = 20.0f; //4 degrees per second
+	this->maxSpeed = 100.0f;//meters per second...
+	this->acceleration = 50.0f; // fast
+	this->turnRate = 40.0f; //4 degrees per second
 	std::cout << "Created: " << this->name << std::endl;
 	UnitAI* unitAI = new UnitAI(this);
 	aspects.push_back((Aspect*)unitAI);

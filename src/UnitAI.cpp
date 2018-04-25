@@ -19,7 +19,7 @@ UnitAI::~UnitAI() {
 
 
 void UnitAI::Tick(float dt) {
-	int followSqrDistance = 1000;
+	int followSqrDistance = 10000;
 	Entity381 * player = entity->engine->entityMgr->player;
 	if(entity->position.squaredDistance(player->position) < followSqrDistance) {
 		Follow * f = new Follow(entity, player);

@@ -62,7 +62,8 @@ void GameMgr::MakePlayer() {
 }
 
 void GameMgr::MakeEntities(){
-
+	Ogre::Vector3 pos = Ogre::Vector3(0, 0, 500);
+	engine->entityMgr->CreateEntityOfTypeAtPosition(EnemyTankType, pos);
 }
 
 void GameMgr::MakeGround(){
