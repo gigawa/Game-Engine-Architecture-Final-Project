@@ -21,7 +21,7 @@ Physics2D::~Physics2D(){
 
 void Physics2D::Tick(float dt){
 	//first, get new speed from desired speed
-		if(entity->desiredSpeed > entity->speed){
+		/*if(entity->desiredSpeed > entity->speed){
 			entity->speed += entity->acceleration * dt;
 		} else if (entity->desiredSpeed < entity->speed){
 			entity->speed -= entity->acceleration * dt;
@@ -43,10 +43,14 @@ void Physics2D::Tick(float dt){
 			if(entity->desiredHeading - entity->heading < -180)
 				entity->heading += entity->turnRate * dt;
 			else
-				entity->heading -= entity->turnRate * dt;;
+				entity->heading -= entity->turnRate * dt;
 		}
 
-		entity->heading = FixAngle(entity->heading);
+		entity->heading = FixAngle(entity->heading);*/
+
+		entity->heading = Ogre::Math::lerp(entity->heading, entity->desiredHeading, dt * entity->turnRate);
+		entity->speed = Ogre::Math::Clamp(Ogre::Math::lerp(entity->speed, entity->desiredSpeed, dt * entity->acceleration), entity->maxSpeed*-1, entity->maxSpeed);
+		//entity->heading = FixAngle(entity->heading);
 
 		//Now do the trig
 		entity->velocity.y = 0.0f; // just to be safe, we do not want ships in the air.

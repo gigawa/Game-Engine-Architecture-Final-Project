@@ -64,7 +64,7 @@ Tank::Tank(Engine *engine, std::string meshfname, Ogre::Vector3 pos, int ident):
 	this->minSpeed = 0;
 	this->maxSpeed = 100.0f;//meters per second...
 	this->acceleration = 50.0f; // fast
-	this->turnRate = 40.0f; //4 degrees per second
+	this->turnRate = 2.0f; //4 degrees per second
 	std::cout << "Created: " << this->name << std::endl;
 }
 
@@ -77,7 +77,7 @@ EnemyTank::EnemyTank(Engine *engine, std::string meshfname, Ogre::Vector3 pos, i
 	this->minSpeed = 0;
 	this->maxSpeed = 100.0f;//meters per second...
 	this->acceleration = 50.0f; // fast
-	this->turnRate = 40.0f; //4 degrees per second
+	this->turnRate = 2.0f; //4 degrees per second
 	following = false;
 	followDistance = 500;
 	std::cout << "Created: " << this->name << std::endl;

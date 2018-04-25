@@ -82,7 +82,7 @@ bool MoveTo::done(){
 
 Follow::Follow(Entity381* ent, Entity381 * targetEnt) : Command(ent, FollowCommand){
 	targetEntity = targetEnt;
-	MOVE_DISTANCE_THRESHOLD = 2;
+	MOVE_DISTANCE_THRESHOLD = 200;
 	entity = ent;
 }
 
@@ -101,7 +101,7 @@ void Follow::tick(float dt){
 
 	entity->desiredHeading = FixAngle(atan2(diff.z,diff.x) * 180/3.1415);
 
-	float stopDistance = (entity->speed * entity->speed)/(2 * entity->acceleration) + 1;
+	float stopDistance = (entity->speed * entity->speed)/(2 * entity->acceleration) + MOVE_DISTANCE_THRESHOLD-5;
 
 	if(diff.length() <= stopDistance) {
 		entity->desiredSpeed = entity->minSpeed;
