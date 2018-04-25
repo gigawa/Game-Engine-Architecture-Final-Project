@@ -11,6 +11,7 @@
 #include <InputMgr.h>
 #include <EntityMgr.h>
 #include <Types381.h>
+#include <SoundMgr.h>
 
 UIMgr::UIMgr(Engine* eng): Mgr(eng){
 	// Initialize the OverlaySystem (changed for Ogre 1.9)
@@ -33,7 +34,7 @@ void UIMgr::Init(){
     mInputContext.mKeyboard = engine->inputMgr->mKeyboard;
     mInputContext.mMouse = engine->inputMgr->mMouse;
     mTrayMgr = new OgreBites::SdkTrayManager("InterfaceName", engine->gfxMgr->mWindow, mInputContext, this);
-    //mTrayMgr->showFrameStats(OgreBites::TL_BOTTOMLEFT);
+    //mTrayMgr->showFrameStats(OgreBites::TL_TOPRIGHT);
     //mTrayMgr->showLogo(OgreBites::TL_BOTTOMRIGHT);
     //mTrayMgr->hideCursor();
 }
@@ -43,21 +44,23 @@ void UIMgr::stop(){
 }
 
 void UIMgr::LoadLevel(){
-	mTrayMgr->createButton(OgreBites::TL_TOPLEFT, "MyButton", "Click this!");
+	mTrayMgr->createButton(OgreBites::TL_BOTTOMLEFT, "WeaponButton", "Weapon");
+	mTrayMgr->createButton(OgreBites::TL_BOTTOMLEFT, "BoostButton", "Boost");
 
 	Ogre::StringVector options;
-	options.push_back("Selection 1");
-	options.push_back("Selection 2");
+	options.push_back("Menu");
+	options.push_back("Create Enemy Tank");
+	options.push_back("Play Sound");
 	options.push_back("Selection 3");
-	options.push_back("Selection 4");
 	mTrayMgr->createLongSelectMenu(OgreBites::TL_TOPRIGHT, "MyMenu", "Menu", 300, 4,options);
 
-	mTrayMgr->showBackdrop("ECSLENT/UI");
+	//mTrayMgr->showBackdrop("ECSLENT/UI");
 
-	mLabel = mTrayMgr->createLabel(OgreBites::TL_LEFT,"MyLabel","LABEL!!!",250);
+	mLabel = mTrayMgr->createLabel(OgreBites::TL_TOPRIGHT,"MyLabel","LABEL!!!",250);
+	mLabel->setCaption("MENU!!!");
 
 	OgreBites::ProgressBar * pbar;
-	pbar = mTrayMgr->createProgressBar(OgreBites::TL_TOP,"HealthBar", "Health", 300, 200);
+	pbar = mTrayMgr->createProgressBar(OgreBites::TL_TOPLEFT,"HealthBar", "Health", 300, 100);
 	pbar->setProgress(100);
 }
 
@@ -103,8 +106,11 @@ bool UIMgr::mouseReleased(const OIS::MouseEvent &arg, OIS::MouseButtonID id){
 
 void UIMgr::buttonHit(OgreBites::Button *b){
 
-    if(b->getName()=="MyButton") {
-        std::cout <<"Pressed button!" << std::endl;
+    if(b->getName()=="WeaponButton") {
+        std::cout <<"Pressed weapon button!" << std::endl;
+    }
+    else if(b->getName()=="BoostButton") {
+        std::cout <<"Pressed boost button!" << std::endl;
     }
 
 }
@@ -112,30 +118,36 @@ void UIMgr::buttonHit(OgreBites::Button *b){
 void UIMgr::itemSelected(OgreBites::SelectMenu *m){
 
 
-    Ogre::Vector3 pos;
-    pos.x = 0;
-    pos.y = 0;
-    pos.z = 100;
+    Ogre::Vector3 spawnPos = engine->entityMgr->player->position;
+    spawnPos.x += 500;
+
     switch(m->getSelectionIndex()){
     case 0:
-    	std::cout <<"Pressed selection 1!" << std::endl;
-    	mLabel->setCaption("SELECTION 1!!!");
+    	std::cout <<"Pressed menu!" << std::endl;
+    	//mLabel->setCaption("MENU!!!");
     	break;
     case 1:
     	//engine->entityMgr->CreateEntityOfTypeAtPosition(SpeedBoatType,pos);
-    	std::cout <<"Pressed selection 2!" << std::endl;
-    	mLabel->setCaption("SELECTION 2!!!");
+    	std::cout <<"Pressed create enemy tank!" << std::endl;
+    	mLabel->setCaption("MADE AN ENEMY!!!");
+    	engine->entityMgr->CreateEntityOfTypeAtPosition(EnemyTankType,spawnPos);
+    	m->selectItem(0,true);
     	break;
     case 2:
     	//engine->entityMgr->CreateEntityOfTypeAtPosition(DDG51Type,pos);
-    	std::cout <<"Pressed selection 3!" << std::endl;
-    	mLabel->setCaption("SELECTION 3!!!");
+    	std::cout <<"Played sound!" << std::endl;
+    	//playAudio(audioId, true );
+    	engine->soundMgr->playAudio(engine->soundMgr->audioId, false);
+    	//engine->soundMgr->resumeAllAudio( );
+    	mLabel->setCaption("You played sound");
+    	m->selectItem(0,true);
     	break;
     case 3:
     	//engine->entityMgr->CreateEntityOfTypeAtPosition(CarrierType,pos);
     	//mLabel->setCaption("Carrier has Arrived!");
-    	std::cout <<"Pressed selection 4!" << std::endl;
-    	mLabel->setCaption("SELECTION 4!!!");
+    	std::cout <<"Pressed selection 3!" << std::endl;
+    	mLabel->setCaption("SELECTION 3!!!");
+    	m->selectItem(0,true);
     	break;
     default:
     	break;
