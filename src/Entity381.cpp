@@ -10,6 +10,7 @@
 #include<Entity381.h>
 #include<Physics2D.h>
 #include<UnitAI.h>
+#include<EntityMgr.h>
 
 std::string IntToString(int x){
 	char tmp[10000];
@@ -59,7 +60,7 @@ void Entity381::Tick(float dt){
 
 //-------------------------------------------------------------------------------------------------------------------------------
 Tank::Tank(Engine *engine, std::string meshfname, Ogre::Vector3 pos, int ident):
-						Entity381(engine, meshfname, pos, ident){
+								Entity381(engine, meshfname, pos, ident){
 	this->minSpeed = 0;
 	this->maxSpeed = 100.0f;//meters per second...
 	this->acceleration = 50.0f; // fast
@@ -72,14 +73,32 @@ Tank::~Tank(){
 }
 
 EnemyTank::EnemyTank(Engine *engine, std::string meshfname, Ogre::Vector3 pos, int ident):
-						Entity381(engine, meshfname, pos, ident){
+								Entity381(engine, meshfname, pos, ident){
 	this->minSpeed = 0;
 	this->maxSpeed = 100.0f;//meters per second...
 	this->acceleration = 50.0f; // fast
 	this->turnRate = 40.0f; //4 degrees per second
+	following = false;
+	followDistance = 500;
 	std::cout << "Created: " << this->name << std::endl;
-	UnitAI* unitAI = new UnitAI(this);
+	unitAI = new UnitAI(this);
 	aspects.push_back((Aspect*)unitAI);
+}
+
+void EnemyTank::Tick(float dt) {
+	for(unsigned int i = 0; i < aspects.size(); i++){
+		aspects[i]->Tick(dt);
+	}
+
+	int followSqrDistance = followDistance*followDistance;
+	Entity381 * player = engine->entityMgr->player;
+
+	if(!following && position.squaredDistance(player->position) < followSqrDistance) {
+		Follow * f = new Follow(this, player);
+		following = true;
+
+		unitAI->AddCommand(f);
+	}
 }
 
 EnemyTank::~EnemyTank(){

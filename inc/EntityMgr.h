@@ -29,6 +29,7 @@ protected:
 private:
   void CreateEntity(std::string meshfilename, Ogre::Vector3 pos);
   void CreatePlayer(Ogre::Vector3 pos);
+  void CreateEnemy(Ogre::Vector3 pos);
   int count;
 
 };

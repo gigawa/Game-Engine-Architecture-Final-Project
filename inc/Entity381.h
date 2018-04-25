@@ -9,6 +9,8 @@
 
 #include <Engine.h>
 
+class UnitAI;
+
 class Entity381
 {
 public:
@@ -35,7 +37,7 @@ public:
 
   std::vector<Aspect*> aspects;
 
-  void Tick(float dt);
+  virtual void Tick(float dt);
 
 protected:
 
@@ -52,6 +54,12 @@ class EnemyTank: Entity381 {
 public:
 	EnemyTank(Engine *engine, std::string meshfilename, Ogre::Vector3 pos, int identity);
 	virtual ~EnemyTank();
+
+	void Tick(float dt);
+
+	UnitAI * unitAI;
+	bool following;
+	float followDistance;
 };
 
 

@@ -23,6 +23,12 @@ void EntityMgr::CreateEntity(std::string meshfilename, Ogre::Vector3 pos){
 	entities.push_back(ent);
 }
 
+void EntityMgr::CreateEnemy(Ogre::Vector3 pos) {
+	EnemyTank *ent = new EnemyTank(this->engine, "cube.mesh", pos, count);
+	count++;
+	entities.push_back((Entity381 *) ent);
+}
+
 void EntityMgr::CreatePlayer(Ogre::Vector3 pos){
 	Tank *ent = new Tank(this->engine, "cube.mesh", pos, count);
 	player = (Entity381*)ent;
@@ -38,7 +44,7 @@ void EntityMgr::CreateEntityOfTypeAtPosition(EntityTypes entType, Ogre::Vector3 
 		CreatePlayer(pos);
 		break;
 	case EnemyTankType:
-		CreateEntity("cube.mesh", pos);
+		CreateEnemy(pos);
 		break;
 	default:
 		CreateEntity("robot.mesh", pos);

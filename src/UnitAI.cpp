@@ -10,7 +10,7 @@
 #include "Command.h"
 
 UnitAI::UnitAI(Entity381* ent):Aspect(ent){
-
+	std::cout << "Created" << std::endl;
 }
 
 UnitAI::~UnitAI() {
@@ -19,12 +19,6 @@ UnitAI::~UnitAI() {
 
 
 void UnitAI::Tick(float dt) {
-	int followSqrDistance = 10000;
-	Entity381 * player = entity->engine->entityMgr->player;
-	if(entity->position.squaredDistance(player->position) < followSqrDistance) {
-		Follow * f = new Follow(entity, player);
-		AddCommand(f);
-	}
 
 	if(commands.size() > 0) {
 		commands.front()->tick(dt);
@@ -35,10 +29,12 @@ void UnitAI::Tick(float dt) {
 }
 
 void UnitAI::SetCommand(Command *c) {
+	std::cout << "Command Added" << std::endl;
 	commands.clear();
 	commands.push_back(c);
 }
 
 void UnitAI::AddCommand(Command *c) {
 	commands.push_back(c);
+	std::cout << "Command Added" << std::endl;
 }

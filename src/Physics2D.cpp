@@ -46,6 +46,8 @@ void Physics2D::Tick(float dt){
 				entity->heading -= entity->turnRate * dt;;
 		}
 
+		entity->heading = FixAngle(entity->heading);
+
 		//Now do the trig
 		entity->velocity.y = 0.0f; // just to be safe, we do not want ships in the air.
 		entity->velocity.x = Ogre::Math::Cos(Ogre::Degree(entity->heading)) * entity->speed; //adjacent/hyp

@@ -97,7 +97,9 @@ void Follow::init(){
 void Follow::tick(float dt){
 	Ogre::Vector3 diff = targetEntity->position - entity->position;
 
-	entity->heading = atan2(diff.z,diff.x) * 180/3.1415;
+	PrintVector(diff);
+
+	entity->desiredHeading = FixAngle(atan2(diff.z,diff.x) * 180/3.1415);
 
 	float stopDistance = (entity->speed * entity->speed)/(2 * entity->acceleration) + 1;
 
@@ -110,8 +112,10 @@ void Follow::tick(float dt){
 
 bool Follow::done(){
 	Ogre::Vector3 diff = targetEntity->position - entity->position;
+	EnemyTank * enemy = (EnemyTank*)entity;
 
-	if(diff.length() < MOVE_DISTANCE_THRESHOLD) {
+	if(diff.length() < MOVE_DISTANCE_THRESHOLD || diff.squaredLength() > enemy->followDistance*enemy->followDistance) {
+		enemy->following = false;
 		return true;
 	}else {
 		return false;
@@ -138,7 +142,7 @@ void Intercept::init(){
 }
 
 void Intercept::tick(float dt){
-	/*entity->desiredSpeed = entity->maxSpeed;
+	entity->desiredSpeed = entity->maxSpeed;
 
 	Ogre::Vector3 diff = targetEntity->position - entity->position;
 	Ogre::Vector3 relVel = targetEntity->velocity - entity->velocity;
@@ -149,7 +153,7 @@ void Intercept::tick(float dt){
 
 	Ogre::Vector3 predictedDiff = predictedPosition - entity->position;
 
-	entity->desiredHeading = FixAngle(atan2(predictedDiff.z,predictedDiff.x) * 180/3.1415);*/
+	entity->desiredHeading = FixAngle(atan2(predictedDiff.z,predictedDiff.x) * 180/3.1415);
 
 }
 

@@ -8,8 +8,11 @@
 #ifndef UTILS_H_
 #define UTILS_H_
 
+#include <OgreVector3.h>
+
 float FixAngle(float angle);
 float Clamp(float min, float max, float val);
+void PrintVector(Ogre::Vector3 vector);
 
 
 

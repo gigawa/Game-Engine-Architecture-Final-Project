@@ -25,4 +25,8 @@ float Clamp(float min, float max, float val){
 	return val;
 }
 
+void PrintVector(Ogre::Vector3 vector) {
+	std::cout << "(" << vector.x << ", " << vector.y << ", " << vector.z << ")" << std::endl;
+}
+
 
