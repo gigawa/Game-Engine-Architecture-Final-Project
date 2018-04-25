@@ -212,22 +212,22 @@ void InputMgr::UpdateCamera(float dt){
 void InputMgr::UpdateVelocityAndSelection(float dt){
 	keyboardTimer -= dt;
 
-	if((mKeyboard->isKeyDown(OIS::KC_UP) || mKeyboard->isKeyDown(OIS::KC_I))){
+	if((mKeyboard->isKeyDown(OIS::KC_UP) || mKeyboard->isKeyDown(OIS::KC_W))){
 		keyboardTimer = keyTime;
 		engine->entityMgr->player->desiredSpeed = engine->entityMgr->player->maxSpeed;
-	}else if((mKeyboard->isKeyDown(OIS::KC_DOWN) || mKeyboard->isKeyDown(OIS::KC_K))){
+	}else if((mKeyboard->isKeyDown(OIS::KC_DOWN) || mKeyboard->isKeyDown(OIS::KC_S))){
 		keyboardTimer = keyTime;
 		engine->entityMgr->player->desiredSpeed = -1 * engine->entityMgr->player->maxSpeed;
 	}else {
 		engine->entityMgr->player->desiredSpeed = 0;
 	}
 
-	if(( mKeyboard->isKeyDown(OIS::KC_LEFT) || mKeyboard->isKeyDown(OIS::KC_J))){
+	if(( mKeyboard->isKeyDown(OIS::KC_LEFT) || mKeyboard->isKeyDown(OIS::KC_A))){
 		keyboardTimer = keyTime;
 		engine->entityMgr->player->desiredHeading -= deltaHeading;
 		//turn left is decreasing degrees, turn right is increasing degrees because increasing degrees gives us the +ive Z axis
 	}
-	if((mKeyboard->isKeyDown(OIS::KC_RIGHT) || mKeyboard->isKeyDown(OIS::KC_L))){
+	if((mKeyboard->isKeyDown(OIS::KC_RIGHT) || mKeyboard->isKeyDown(OIS::KC_D))){
 		keyboardTimer = keyTime;
 		engine->entityMgr->player->desiredHeading += deltaHeading;
 	}

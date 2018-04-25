@@ -136,12 +136,14 @@ void UIMgr::itemSelected(OgreBites::SelectMenu *m){
     	//engine->entityMgr->CreateEntityOfTypeAtPosition(DDG51Type,pos);
     	std::cout <<"Pressed selection 2!" << std::endl;
     	mLabel->setCaption("SELECTION 2!!!");
+    	m->selectItem(0,true);
     	break;
     case 3:
     	//engine->entityMgr->CreateEntityOfTypeAtPosition(CarrierType,pos);
     	//mLabel->setCaption("Carrier has Arrived!");
     	std::cout <<"Pressed selection 3!" << std::endl;
     	mLabel->setCaption("SELECTION 3!!!");
+    	m->selectItem(0,true);
     	break;
     default:
     	break;
