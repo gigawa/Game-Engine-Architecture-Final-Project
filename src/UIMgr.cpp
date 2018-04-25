@@ -59,13 +59,13 @@ void UIMgr::LoadLevel(){
 	mLabel = mTrayMgr->createLabel(OgreBites::TL_TOPRIGHT,"MyLabel","LABEL!!!",250);
 	mLabel->setCaption("MENU!!!");
 
-	OgreBites::ProgressBar * pbar;
 	pbar = mTrayMgr->createProgressBar(OgreBites::TL_TOPLEFT,"HealthBar", "Health", 300, 100);
-	pbar->setProgress(100);
+	pbar->setProgress(engine->entityMgr->player->health/100);
 }
 
 void UIMgr::Tick(float dt){
 	mTrayMgr->refreshCursor();
+	pbar->setProgress(engine->entityMgr->player->health/100);
 }
 
 void UIMgr::windowResized(Ogre::RenderWindow* rw){

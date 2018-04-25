@@ -35,6 +35,8 @@ public:
   float desiredHeading, desiredSpeed;
   float heading, speed;
 
+  float health;
+
   std::vector<Aspect*> aspects;
 
   virtual void Tick(float dt);

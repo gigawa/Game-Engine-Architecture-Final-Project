@@ -100,23 +100,47 @@ void InputMgr::UpdateVelocityAndSelection(float dt){
 	keyboardTimer -= dt;
 
 	if((mKeyboard->isKeyDown(OIS::KC_UP) || mKeyboard->isKeyDown(OIS::KC_W))){
-		keyboardTimer = keyTime;
 		engine->entityMgr->player->desiredSpeed = engine->entityMgr->player->maxSpeed;
 	}else if((mKeyboard->isKeyDown(OIS::KC_DOWN) || mKeyboard->isKeyDown(OIS::KC_S))){
-		keyboardTimer = keyTime;
 		engine->entityMgr->player->desiredSpeed = -1 * engine->entityMgr->player->maxSpeed;
 	}else {
 		engine->entityMgr->player->desiredSpeed = 0;
 	}
 
 	if(( mKeyboard->isKeyDown(OIS::KC_LEFT) || mKeyboard->isKeyDown(OIS::KC_A))){
-		keyboardTimer = keyTime;
 		engine->entityMgr->player->desiredHeading -= deltaHeading;
 		//turn left is decreasing degrees, turn right is increasing degrees because increasing degrees gives us the +ive Z axis
 	}
 	if((mKeyboard->isKeyDown(OIS::KC_RIGHT) || mKeyboard->isKeyDown(OIS::KC_D))){
-		keyboardTimer = keyTime;
 		engine->entityMgr->player->desiredHeading += deltaHeading;
+	}
+
+	if((keyboardTimer < 0) && (mKeyboard->isKeyDown(OIS::KC_SPACE))) {
+
+		keyboardTimer = keyTime;
+
+		Entity381 * player = engine->entityMgr->player;
+		Ogre::Vector3 playerDirection = Ogre::Vector3(Ogre::Math::Cos(Ogre::Degree(player->heading)), 0, Ogre::Math::Sin(Ogre::Degree(player->heading)));
+
+		bool hit = false;
+		Ogre::Ray bulletRay = Ogre::Ray(player->position, playerDirection);
+		for (int i = 0; i < engine->entityMgr->entities.size() && !hit; i++) {
+			if (engine->entityMgr->entities[i] != engine->entityMgr->player) {
+				std::pair<bool, Ogre::Real> result = bulletRay.intersects(engine->entityMgr->entities[i]->ogreEntity->getBoundingBox());
+
+				if (result.first) {
+					std::cout << "Hit: " << result.second << std::endl;
+					PrintVector(playerDirection);
+					PrintVector(engine->entityMgr->entities[i]->position);
+					engine->entityMgr->entities[i]->sceneNode->showBoundingBox(true);
+					player->health -= 10;
+					hit = true;
+				} else {
+					std::cout << "Not Hit" << std::endl;
+					engine->entityMgr->entities[i]->sceneNode->showBoundingBox(true);
+				}
+			}
+		}
 	}
 }
 
@@ -142,17 +166,6 @@ bool InputMgr::mousePressed(const OIS::MouseEvent& me, OIS::MouseButtonID mid){
 
 	std::cout << "Mouse pressed" << std::endl;
     if (engine->uiMgr->mTrayMgr->injectMouseDown(me, mid)) return true;
-
-    /*
-	if(OIS::MB_Left == mid){
-		std::cout << "Left mouse press" << std::endl;
-
-		//NOTE : In the assignment 6 solution, raycasting was handled with a separate function
-		//		 here. We did it inside the mousePressed function here. In case we need to add
-		//		 it back, we should do what the solution did.
-		//HandleMouseSelection(me);
-	}*/
-
 
 	return true;
 }

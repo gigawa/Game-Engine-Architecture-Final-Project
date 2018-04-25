@@ -97,9 +97,7 @@ void Follow::init(){
 void Follow::tick(float dt){
 	Ogre::Vector3 diff = targetEntity->position - entity->position;
 
-	PrintVector(diff);
-
-	entity->desiredHeading = FixAngle(atan2(diff.z,diff.x) * 180/3.1415);
+	entity->desiredHeading = atan2(diff.z,diff.x) * 180/3.1415;
 
 	float stopDistance = (entity->speed * entity->speed)/(2 * entity->acceleration) + MOVE_DISTANCE_THRESHOLD-5;
 

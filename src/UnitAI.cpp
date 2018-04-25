@@ -29,12 +29,12 @@ void UnitAI::Tick(float dt) {
 }
 
 void UnitAI::SetCommand(Command *c) {
-	std::cout << "Command Added" << std::endl;
+
 	commands.clear();
 	commands.push_back(c);
 }
 
 void UnitAI::AddCommand(Command *c) {
 	commands.push_back(c);
-	std::cout << "Command Added" << std::endl;
+
 }

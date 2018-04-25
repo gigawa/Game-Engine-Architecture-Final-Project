@@ -45,7 +45,7 @@ public:
 	void LoadLevel();
 
 	float keyboardTimer;
-	const static float keyTime = 0.1f;
+	const static float keyTime = 0.5f;
 	float deltaSpeed, deltaHeading;
 	void UpdateCamera(float dt);
 	void UpdateVelocityAndSelection(float dt);
