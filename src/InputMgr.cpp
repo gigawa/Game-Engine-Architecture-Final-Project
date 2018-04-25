@@ -124,15 +124,22 @@ void InputMgr::UpdateVelocityAndSelection(float dt){
 
 		bool hit = false;
 		Ogre::Ray bulletRay = Ogre::Ray(player->position, playerDirection);
+
 		for (int i = 0; i < engine->entityMgr->entities.size() && !hit; i++) {
+
 			if (engine->entityMgr->entities[i] != engine->entityMgr->player) {
 				std::pair<bool, Ogre::Real> result = bulletRay.intersects(engine->entityMgr->entities[i]->ogreEntity->getBoundingBox());
 
+				std::cout << "Player Direction: ";
+				PrintVector(playerDirection);
+				std::cout << "Ray Origin: ";
+				PrintVector(bulletRay.getOrigin());
+				std::cout << "Ray Direction: ";
+				PrintVector(bulletRay.getDirection());
+
 				if (result.first) {
-					std::cout << "Hit: " << result.second << std::endl;
-					PrintVector(playerDirection);
-					PrintVector(engine->entityMgr->entities[i]->position);
-					engine->entityMgr->entities[i]->sceneNode->showBoundingBox(true);
+					std::cout << "Hit Position: ";
+					PrintVector(bulletRay.getPoint(result.second));
 					player->health -= 10;
 					hit = true;
 				} else {
