@@ -11,6 +11,7 @@
 #include <InputMgr.h>
 #include <EntityMgr.h>
 #include <Types381.h>
+#include <SoundMgr.h>
 
 UIMgr::UIMgr(Engine* eng): Mgr(eng){
 	// Initialize the OverlaySystem (changed for Ogre 1.9)
@@ -49,7 +50,7 @@ void UIMgr::LoadLevel(){
 	Ogre::StringVector options;
 	options.push_back("Menu");
 	options.push_back("Create Enemy Tank");
-	options.push_back("Selection 2");
+	options.push_back("Play Sound");
 	options.push_back("Selection 3");
 	mTrayMgr->createLongSelectMenu(OgreBites::TL_TOPRIGHT, "MyMenu", "Menu", 300, 4,options);
 
@@ -134,8 +135,11 @@ void UIMgr::itemSelected(OgreBites::SelectMenu *m){
     	break;
     case 2:
     	//engine->entityMgr->CreateEntityOfTypeAtPosition(DDG51Type,pos);
-    	std::cout <<"Pressed selection 2!" << std::endl;
-    	mLabel->setCaption("SELECTION 2!!!");
+    	std::cout <<"Played sound!" << std::endl;
+    	//playAudio(audioId, true );
+    	engine->soundMgr->playAudio(engine->soundMgr->audioId, false);
+    	//engine->soundMgr->resumeAllAudio( );
+    	mLabel->setCaption("You played sound");
     	m->selectItem(0,true);
     	break;
     case 3:
