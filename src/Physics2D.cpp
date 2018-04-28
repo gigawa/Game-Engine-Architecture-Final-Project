@@ -21,7 +21,7 @@ Physics2D::~Physics2D(){
 
 void Physics2D::Tick(float dt){
 	//first, get new speed from desired speed
-		/*if(entity->desiredSpeed > entity->speed){
+	/*if(entity->desiredSpeed > entity->speed){
 			entity->speed += entity->acceleration * dt;
 		} else if (entity->desiredSpeed < entity->speed){
 			entity->speed -= entity->acceleration * dt;
@@ -48,15 +48,29 @@ void Physics2D::Tick(float dt){
 
 		entity->heading = FixAngle(entity->heading);*/
 
-		entity->heading = Ogre::Math::lerp(entity->heading, entity->desiredHeading, dt * entity->turnRate);
-		entity->speed = Ogre::Math::Clamp(Ogre::Math::lerp(entity->speed, entity->desiredSpeed, dt * entity->acceleration), entity->maxSpeed*-1, entity->maxSpeed);
-		//entity->heading = FixAngle(entity->heading);
+	if(entity->desiredHeading > entity->heading){
+		if(entity->desiredHeading - entity->heading > 180) {
+			entity->desiredHeading -= 360;
+			entity->heading = Ogre::Math::lerp(entity->heading, entity->desiredHeading, dt * entity->turnRate);
+		} else
+			entity->heading = Ogre::Math::lerp(entity->heading, entity->desiredHeading, dt * entity->turnRate);
+	} else if (entity->desiredHeading < entity->heading){
+		if(entity->desiredHeading - entity->heading < -180) {
+			entity->desiredHeading += 360;
+			entity->heading = Ogre::Math::lerp(entity->heading, entity->desiredHeading, dt * entity->turnRate);
+		} else
+			entity->heading = Ogre::Math::lerp(entity->heading, entity->desiredHeading, dt * entity->turnRate);
+	}
 
-		//Now do the trig
-		entity->velocity.y = 0.0f; // just to be safe, we do not want ships in the air.
-		entity->velocity.x = Ogre::Math::Cos(Ogre::Degree(entity->heading)) * entity->speed; //adjacent/hyp
-		entity->velocity.z = Ogre::Math::Sin(Ogre::Degree(entity->heading)) * entity->speed; //opposite/hyp
+	//entity->heading = Ogre::Math::lerp(entity->heading, entity->desiredHeading, dt * entity->turnRate);
+	entity->speed = Ogre::Math::Clamp(Ogre::Math::lerp(entity->speed, entity->desiredSpeed, dt * entity->acceleration), entity->maxSpeed*-1, entity->maxSpeed);
+	entity->heading = FixAngle(entity->heading);
 
-		//This does not change!
-		entity->position = entity->position + entity->velocity * dt;
+	//Now do the trig
+	entity->velocity.y = 0.0f; // just to be safe, we do not want ships in the air.
+	entity->velocity.x = Ogre::Math::Cos(Ogre::Degree(entity->heading)) * entity->speed; //adjacent/hyp
+	entity->velocity.z = Ogre::Math::Sin(Ogre::Degree(entity->heading)) * entity->speed; //opposite/hyp
+
+	//This does not change!
+	entity->position = entity->position + entity->velocity * dt;
 }

@@ -38,8 +38,11 @@ public:
   float health;
 
   std::vector<Aspect*> aspects;
+  UnitAI * unitAI;
 
   virtual void Tick(float dt);
+
+  void DestroyEntity();
 
 protected:
 
@@ -59,9 +62,10 @@ public:
 
 	void Tick(float dt);
 
-	UnitAI * unitAI;
 	bool following;
-	float followDistance;
+	int followDistance;
+	int range;
+	Ogre::Vector3 startPosition;
 };
 
 

@@ -21,6 +21,7 @@ public:
   //Ogre::SceneManager *sceneMgr;
 
   void CreateEntityOfTypeAtPosition(EntityTypes type, Ogre::Vector3 pos);
+  void DestroyEnemy(int index);
 
   void Tick(float dt);
 

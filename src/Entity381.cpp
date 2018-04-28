@@ -34,19 +34,28 @@ Entity381::Entity381(Engine *engine, std::string meshfname, Ogre::Vector3 pos, i
 	ogreEntity = engine->gfxMgr->mSceneMgr->createEntity(meshfilename);
 	sceneNode = engine->gfxMgr->mSceneMgr->getRootSceneNode()->createChildSceneNode(pos);
 	sceneNode->attachObject(ogreEntity);
-	sceneNode->showBoundingBox(true);
+	//sceneNode->showBoundingBox(true);
 
 	Physics2D* phx = new Physics2D(this);
 	aspects.push_back((Aspect*) phx);
 	Renderable * renderable = new Renderable(this);
 	aspects.push_back((Aspect*)renderable);
+	unitAI = new UnitAI(this);
+	aspects.push_back((Aspect*)unitAI);
 
 	this->acceleration = 0;
 	this->desiredHeading = this->heading = 0;
 	this->turnRate = 0;
 	this->desiredSpeed = this->speed = 0;
 	this->minSpeed = this->maxSpeed = 0;
+	this->health = 0;
 
+}
+
+void Entity381::DestroyEntity() {
+	sceneNode->detachAllObjects();
+	engine->gfxMgr->mSceneMgr->destroySceneNode(sceneNode);
+	engine->gfxMgr->mSceneMgr->destroyEntity(ogreEntity);
 }
 
 Entity381::~Entity381(){
@@ -80,11 +89,12 @@ EnemyTank::EnemyTank(Engine *engine, std::string meshfname, Ogre::Vector3 pos, i
 	this->maxSpeed = 100.0f;//meters per second...
 	this->acceleration = 50.0f; // fast
 	this->turnRate = 2.0f; //4 degrees per second
+	this->health = 30;
+	this->startPosition = pos;
 	following = false;
 	followDistance = 500;
+	range = 500;
 	std::cout << "Created: " << this->name << std::endl;
-	unitAI = new UnitAI(this);
-	aspects.push_back((Aspect*)unitAI);
 }
 
 void EnemyTank::Tick(float dt) {
@@ -95,11 +105,11 @@ void EnemyTank::Tick(float dt) {
 	int followSqrDistance = followDistance*followDistance;
 	Entity381 * player = engine->entityMgr->player;
 
-	if(!following && position.squaredDistance(player->position) < followSqrDistance) {
+	if(!following && position.squaredDistance(player->position) < followSqrDistance && position.squaredDistance(startPosition) < range*(range*0.75)) {
 		Follow * f = new Follow(this, player);
 		following = true;
 
-		unitAI->AddCommand(f);
+		unitAI->SetCommand(f);
 	}
 }
 

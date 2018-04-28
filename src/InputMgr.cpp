@@ -126,23 +126,25 @@ void InputMgr::UpdateVelocityAndSelection(float dt){
 		Ogre::Ray bulletRay = Ogre::Ray(player->position, playerDirection);
 
 		for (int i = 0; i < (int)engine->entityMgr->entities.size() && !hit; i++) {
+			Entity381 * testEntity = engine->entityMgr->entities[i];
 
-			if (engine->entityMgr->entities[i] != engine->entityMgr->player) {
-				std::pair<bool, Ogre::Real> result = bulletRay.intersects(engine->entityMgr->entities[i]->sceneNode->_getWorldAABB());
+			if (testEntity != engine->entityMgr->player) {
+				std::pair<bool, Ogre::Real> result = bulletRay.intersects(testEntity->sceneNode->_getWorldAABB());
 
-				std::cout << "Player Direction: ";
+				/*std::cout << "Player Direction: ";
 				PrintVector(playerDirection);
 				std::cout << "Ray Origin: ";
 				PrintVector(bulletRay.getOrigin());
 				std::cout << "Ray Direction: ";
 				PrintVector(bulletRay.getDirection());
 				std::cout << "Entity Scene Node Position: ";
-				PrintVector(engine->entityMgr->entities[i]->sceneNode->_getWorldAABB().getCenter());
+				PrintVector(engine->entityMgr->entities[i]->sceneNode->_getWorldAABB().getCenter());*/
 
 				if (result.first) {
-					std::cout << "Hit Position: ";
-					PrintVector(bulletRay.getPoint(result.second));
-					player->health -= 10;
+					//std::cout << "Hit Position: ";
+					//PrintVector(bulletRay.getPoint(result.second));
+					testEntity->health -= 10;
+					std::cout << "Hit Health: " << testEntity->health << std::endl;
 					hit = true;
 				} else {
 					std::cout << "Not Hit" << std::endl;

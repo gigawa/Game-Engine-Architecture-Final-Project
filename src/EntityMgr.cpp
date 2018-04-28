@@ -36,6 +36,13 @@ void EntityMgr::CreatePlayer(Ogre::Vector3 pos){
 	entities.push_back((Entity381 *) ent);
 }
 
+void EntityMgr::DestroyEnemy(int index) {
+	Entity381 * enemy = entities[index];
+	entities.erase(entities.begin() + index);
+	count--;
+	enemy->DestroyEntity();
+
+}
 
 void EntityMgr::CreateEntityOfTypeAtPosition(EntityTypes entType, Ogre::Vector3 pos){
 

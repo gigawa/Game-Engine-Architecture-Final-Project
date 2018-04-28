@@ -41,8 +41,9 @@ bool Command::done(){
 
 MoveTo::MoveTo(Entity381* ent, Ogre::Vector3 location) : Command(ent, MoveToCommand){
 	targetLocation = location;
-	MOVE_DISTANCE_THRESHOLD = 2;
+	MOVE_DISTANCE_THRESHOLD = 5;
 	entity = ent;
+	std::cout << "Move To Created" << std::endl;
 }
 
 MoveTo::~MoveTo() {
@@ -54,7 +55,9 @@ void MoveTo::init(){
 }
 
 void MoveTo::tick(float dt){
-	/*Ogre::Vector3 diff = targetLocation - entity->position;
+	std::cout << "Move To Tick";// << std::endl;
+	PrintVector(targetLocation);
+	Ogre::Vector3 diff = targetLocation - entity->position;
 
 	entity->desiredHeading = FixAngle(atan2(diff.z,diff.x) * 180/3.1415);
 
@@ -64,10 +67,11 @@ void MoveTo::tick(float dt){
 		entity->desiredSpeed = entity->minSpeed;
 	}else {
 		entity->desiredSpeed = entity->maxSpeed;
-	}*/
+	}
 }
 
 bool MoveTo::done(){
+	std::cout << "Move To Done" << std::endl;
 	Ogre::Vector3 diff = targetLocation - entity->position;
 
 	if(diff.length() < MOVE_DISTANCE_THRESHOLD) {
@@ -97,7 +101,7 @@ void Follow::init(){
 void Follow::tick(float dt){
 	Ogre::Vector3 diff = targetEntity->position - entity->position;
 
-	entity->desiredHeading = atan2(diff.z,diff.x) * 180/3.1415;
+	entity->desiredHeading = FixAngle(atan2(diff.z,diff.x) * 180/3.1415);
 
 	float stopDistance = (entity->speed * entity->speed)/(2 * entity->acceleration) + MOVE_DISTANCE_THRESHOLD-5;
 
@@ -112,8 +116,14 @@ bool Follow::done(){
 	Ogre::Vector3 diff = targetEntity->position - entity->position;
 	EnemyTank * enemy = (EnemyTank*)entity;
 
-	if(diff.length() < MOVE_DISTANCE_THRESHOLD || diff.squaredLength() > enemy->followDistance*enemy->followDistance) {
+	//std::cout << "Distance from Start: " << entity->position.squaredDistance(enemy->startPosition) << std::endl;
+
+	if(diff.length() < MOVE_DISTANCE_THRESHOLD || diff.squaredLength() > enemy->followDistance*enemy->followDistance || entity->position.squaredDistance(enemy->startPosition) > enemy->range*enemy->range) {
+		std::cout << "Done Following" << std::endl;
 		enemy->following = false;
+		entity->desiredSpeed = 0;
+		MoveTo * move = new MoveTo(entity, enemy->startPosition);
+		entity->unitAI->AddCommand(move);
 		return true;
 	}else {
 		return false;
