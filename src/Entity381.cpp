@@ -94,6 +94,8 @@ EnemyTank::EnemyTank(Engine *engine, std::string meshfname, Ogre::Vector3 pos, i
 	following = false;
 	followDistance = 500;
 	range = 500;
+	shootTime = 1;
+	shotTimer = 1;
 	std::cout << "Created: " << this->name << std::endl;
 }
 
@@ -105,11 +107,40 @@ void EnemyTank::Tick(float dt) {
 	int followSqrDistance = followDistance*followDistance;
 	Entity381 * player = engine->entityMgr->player;
 
-	if(!following && position.squaredDistance(player->position) < followSqrDistance && position.squaredDistance(startPosition) < range*(range*0.75)) {
-		Follow * f = new Follow(this, player);
-		following = true;
+	if(position.squaredDistance(player->position) < followSqrDistance && position.squaredDistance(startPosition) < range*(range*0.75)) {
+		shotTimer -= dt;
 
-		unitAI->SetCommand(f);
+		if(shotTimer <= 0) {
+			Shoot();
+			shotTimer = shootTime;
+		}
+
+		if(!following) {
+
+			Follow * f = new Follow(this, player);
+			following = true;
+
+			unitAI->SetCommand(f);
+		}
+	}
+}
+
+void EnemyTank::Shoot() {
+	Ogre::Vector3 tankDirection = Ogre::Vector3(Ogre::Math::Cos(Ogre::Degree(heading)), 0, Ogre::Math::Sin(Ogre::Degree(heading)));
+
+	Ogre::Ray bulletRay = Ogre::Ray(position, tankDirection);
+
+	Entity381 * player = engine->entityMgr->player;
+
+	std::pair<bool, Ogre::Real> result = bulletRay.intersects(player->sceneNode->_getWorldAABB());
+
+	if (result.first) {
+		//std::cout << "Hit Position: ";
+		//PrintVector(bulletRay.getPoint(result.second));
+		player->health -= 10;
+		std::cout << "Hit Health: " << player->health << std::endl;
+	} else {
+		std::cout << "Not Hit" << std::endl;
 	}
 }
 

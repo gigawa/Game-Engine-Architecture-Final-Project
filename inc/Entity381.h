@@ -61,6 +61,10 @@ public:
 	virtual ~EnemyTank();
 
 	void Tick(float dt);
+	void Shoot();
+
+	float shootTime;
+	float shotTimer;
 
 	bool following;
 	int followDistance;
