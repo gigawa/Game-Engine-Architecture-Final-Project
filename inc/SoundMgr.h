@@ -85,7 +85,7 @@ namespace OgreSND {
 		//default methods
 		void initialize();
 		void crosslink();
-		void init();
+		void Init();
 		void loadLevel();
 		void tick(double dtime);
 		void releaseLevel();

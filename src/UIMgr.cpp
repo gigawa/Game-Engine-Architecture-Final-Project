@@ -136,6 +136,7 @@ void UIMgr::itemSelected(OgreBites::SelectMenu *m){
     case 2:
     	//engine->entityMgr->CreateEntityOfTypeAtPosition(DDG51Type,pos);
     	std::cout <<"Played sound! (Not really)" << std::endl;
+    	engine->soundMgr->playAudio((engine->entityMgr->player->auioId),true);
     	mLabel->setCaption("You played sound (Not really)");
     	m->selectItem(0,true);
     	break;

@@ -55,8 +55,13 @@ SoundMgr::~SoundMgr(){
 	std::cout << "Bye audio. ....   Sounds good, bye" << std::endl;
 }
 
-void SoundMgr::init(){
+void SoundMgr::Init(){
+
+	std::cout << "INITIALIZING SOUND" << std::endl;
+
 	initialize();
+
+	std::cout << "DONE INITIALIZING SOUND" << std::endl;
 }
 
 void SoundMgr::initialize(void){
