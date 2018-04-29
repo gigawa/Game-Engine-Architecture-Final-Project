@@ -1,799 +1,1007 @@
 /*
  * SoundMgr.cpp
  *
- *  Created on: Apr 24, 2018
- *      Author: gary
+ *  Created on: Oct 30, 2013
+ *      Author: sushil
  */
 
-/**
- *  SoundMgr.cpp
- *
- *  Original Code : Van Stokes, Jr. (http://www.EvilMasterMindsInc.com) - Aug 05
- *  Modified Code : Steven Gay - mec3@bluewin.ch - Septembre 2005
- *                  Deniz Sarikaya - daimler3@gmail.com - August 2010
- *
- */
- #include "SoundMgr.h"
+#include <SoundMgr.h>
+#include <stdlib.h>
+#include <Engine.h>
 
- SoundMgr* SoundMgr::mSoundMgr = NULL;
+#include <EntityMgr.h>
+#include <GfxMgr.h>
+#include <GameMgr.h>
+//#include <Entity381.h>
 
- /****************************************************************************/
- SoundMgr::SoundMgr(Engine* engine) : Mgr(engine)
- {
-    mSoundMgr = this;
-
-    isInitialised = false;
-    isSoundOn = false;
-    mSoundDevice = 0;
-    mSoundContext = 0;
-
-    mAudioPath = "";
-
-    // EAX related
-    isEAXPresent = false;
-
-    // Initial position of the listener
-    position[0] = 0.0;
-    position[1] = 0.0;
-    position[2] = 0.0;
-
-    // Initial velocity of the listener
-    velocity[0] = 0.0;
-    velocity[1] = 0.0;
-    velocity[2] = 0.0;
-
-    // Initial orientation of the listener = direction + direction up
-    orientation[0] = 0.0;
-    orientation[1] = 0.0;
-    orientation[2] = -1.0;
-    orientation[3] = 0.0;
-    orientation[4] = 1.0;
-    orientation[5] = 0.0;
-
-    // Needed because of hardware limitation
-    mAudioBuffersInUseCount = 0;
-    mAudioSourcesInUseCount = 0;
-
-    for ( int i=0; i < MAX_AUDIO_SOURCES; i++ )
-    {
-       mAudioSources[i] = 0;
-       mAudioSourceInUse[i] = false;
-    }
-
-    for ( int i=0; i < MAX_AUDIO_BUFFERS; i++ )
-    {
-       mAudioBuffers[i] = 0;
-       strcpy( mAudioBufferFileName[i], "--" );
-       mAudioBufferInUse[i] = false;
-    }
-
-   printf("SoundManager Created.\n");
- }
-
- /****************************************************************************/
- SoundMgr::~SoundMgr( void )
- {
-   // Delete the sources and buffers
-   alDeleteSources( MAX_AUDIO_SOURCES, mAudioSources );
-   alDeleteBuffers( MAX_AUDIO_BUFFERS, mAudioBuffers );
-
-    // Destroy the sound context and device
-    mSoundContext = alcGetCurrentContext();
-    mSoundDevice = alcGetContextsDevice( mSoundContext );
-    alcMakeContextCurrent( NULL );
-    alcDestroyContext( mSoundContext );
-    if ( mSoundDevice)
-        alcCloseDevice( mSoundDevice );
-
-   printf("SoudManager Destroyed.\n");
- }
+using namespace OgreSND;
 
 
-void SoundMgr::Init(){
-	init();
-	//loadAudio("cheer.ogg",0,false);
-
-	setAudioPath((char*) ".\\" );
-
-	std::cout << listAvailableDevices();
-
-	// We loop to be able to test the pause function
-	loadAudio( "cheer.ogg", &audioId, true);
-
-	//playAudio(audioId, true );
+SoundMgr::SoundMgr(Engine *eng): Mgr(eng){
+	this->engine = eng;
 
 }
 
-void SoundMgr::Stop(){
+SoundMgr::~SoundMgr(){
 
-}
-
-void SoundMgr::Tick(float dt){
-
-}
-
-void SoundMgr::LoadLevel(){
-
-}
-
- /****************************************************************************/
- bool SoundMgr::init( void )
- {
-   // It's an error to initialise twice OpenAl
-   if ( isInitialised ) return true;
-
-   // Open an audio device
-   mSoundDevice = alcOpenDevice( NULL ); // TODO ((ALubyte*) "DirectSound3D");
-   // mSoundDevice = alcOpenDevice( "DirectSound3D" );
-
-   // Check for errors
-   if ( !mSoundDevice )
-   {
-      printf( "SoundMgr::init error : No sound device.\n");
-      return false;
-   }
-
-   mSoundContext = alcCreateContext( mSoundDevice, NULL );
-  //   if ( checkAlError() || !mSoundContext ) // TODO seems not to work! why ?
-   if ( !mSoundContext )
-   {
-      printf( "SoundMgr::init error : No sound context.\n");
-      return false;
-   }
-
-   // Make the context current and active
-   alcMakeContextCurrent( mSoundContext );
-   if ( checkALError( "Init()" ) )
-   {
-      printf( "SoundMgr::init error : could not make sound context current and active.\n");
-      return false;
-   }
-
-   // Check for EAX 2.0 support and
-   // Retrieves function entry addresses to API ARB extensions, in this case,
-   // for the EAX extension. See Appendix 1 (Extensions) of
-   // http://www.openal.org/openal_webstf/specs/OpenAL1-1Spec_html/al11spec7.html
-   //
-   // TODO EAX fct not used anywhere in the code ... !!!
-   isEAXPresent = alIsExtensionPresent( "EAX2.0" );
-   if ( isEAXPresent )
-   {
-      printf( "EAX 2.0 Extension available\n" );
-
- #ifdef _USEEAX
-        eaxSet = (EAXSet) alGetProcAddress( "EAXSet" );
-        if ( eaxSet == NULL )
-            isEAXPresent = false;
-
-        eaxGet = (EAXGet) alGetProcAddress( "EAXGet" );
-        if ( eaxGet == NULL )
-            isEAXPresent = false;
-
-        if ( !isEAXPresent )
-            checkALError( "Failed to get the EAX extension functions adresses.\n" );
- #else
-        isEAXPresent = false;
-        printf( "... but not used.\n" );
- #endif // _USEEAX
-
-   }
-
-   // Create the Audio Buffers
-   alGenBuffers( MAX_AUDIO_BUFFERS, mAudioBuffers );
-   if (checkALError("init::alGenBuffers:") )
-        return false;
-
-   // Generate Sources
-   alGenSources( MAX_AUDIO_SOURCES, mAudioSources );
-   if (checkALError( "init::alGenSources :") )
-        return false;
+	std::cout << "Deleting Sound Manager" << std::endl;
 
 
-   // Setup the initial listener parameters
-   // -> location
-   alListenerfv( AL_POSITION, position );
-
-   // -> velocity
-   alListenerfv( AL_VELOCITY, velocity );
-
-   // -> orientation
-   alListenerfv( AL_ORIENTATION, orientation );
-
-   // Gain
-   alListenerf( AL_GAIN, 1.0 );
-
-   // Initialise Doppler
-   alDopplerFactor( 1.0 ); // 1.2 = exaggerate the pitch shift by 20%
-   alDopplerVelocity( 343.0f ); // m/s this may need to be scaled at some point
-
-   // Ok
-   isInitialised = true;
-   isSoundOn = true;
-
-   printf( "SoundMgr initialised.\n\n");
-
-   return true;
- }
-
- /****************************************************************************/
- bool SoundMgr::checkALError( void )
- {
-   ALenum errCode;
-   if ( ( errCode = alGetError() ) != AL_NO_ERROR )
-   {
-      std::string err = "ERROR SoundMgr:: ";
-      err += (char*) alGetString( errCode );
-
-      printf( "%s\n", err.c_str());
-      return true;
-   }
-   return false;
- }
-
- /****************************************************************************/
- std::string SoundMgr::listAvailableDevices( void )
- {
-   std::string str = "Sound Devices available : ";
-
-   if ( alcIsExtensionPresent( NULL, "ALC_ENUMERATION_EXT" ) == AL_TRUE )
-   {
-        str = "List of Devices : ";
-        str += (char*) alcGetString( NULL, ALC_DEVICE_SPECIFIER );
-        str += "\n";
-   }
-   else
-        str += " ... eunmeration error.\n";
-
-    return str;
- }
-
- /****************************************************************************/
- bool SoundMgr::checkALError( std::string pMsg )
- {
-   ALenum error = 0;
-
-    if ( (error = alGetError()) == AL_NO_ERROR )
-    return false;
-
-   char mStr[256];
-   switch ( error )
-   {
-        case AL_INVALID_NAME:
-            sprintf(mStr,"ERROR SoundMgr::%s Invalid Name", pMsg.c_str());
-            break;
-        case AL_INVALID_ENUM:
-            sprintf(mStr,"ERROR SoundMgr::%s Invalid Enum", pMsg.c_str());
-            break;
-        case AL_INVALID_VALUE:
-            sprintf(mStr,"ERROR SoundMgr::%s Invalid Value", pMsg.c_str());
-            break;
-        case AL_INVALID_OPERATION:
-            sprintf(mStr,"ERROR SoundMgr::%s Invalid Operation", pMsg.c_str());
-            break;
-        case AL_OUT_OF_MEMORY:
-            sprintf(mStr,"ERROR SoundMgr::%s Out Of Memory", pMsg.c_str());
-            break;
-        default:
-            sprintf(mStr,"ERROR SoundMgr::%s Unknown error (%i) case in testALError()", pMsg.c_str(), error);
-            break;
-   };
-
-   printf( "%s\n", mStr );
-
-   return true;
- }
-
- // Attempts to aquire an empty audio source and assign it back to the caller
- // via AudioSourceID. This will lock the source
- /*****************************************************************************/
- bool SoundMgr::loadAudio( std::string filename, unsigned int *audioId,
-    bool loop )
- {
-
-	 std::cout << "Sound load starting..." << std::endl;
-
-	if ( filename.empty() || filename.length() > MAX_FILENAME_LENGTH ){
-		std::cout << "Sound not work 1" << std::endl;
-		return false;
-	}
-
-	std::cout << "Sound tester 0" << std::endl;
-
-	if ( mAudioSourcesInUseCount == MAX_AUDIO_SOURCES ){
-		std::cout << "Sound not work 2" << std::endl;
-		return false;   // out of Audio Source slots!
-	}
-
-	int bufferID = -1;   // Identity of the Sound Buffer to use
-	int sourceID = -1;   // Identity of the Source Buffer to use
-
-	alGetError();    // Clear Error Code
-
-	std::cout << "Sound tester 1" << std::endl;
-
-	// Check and see if the pSoundFile is already loaded into a buffer
-	bufferID = locateAudioBuffer( filename );
-	if ( bufferID < 0 )
-	{
-		// The sound file isn't loaded in a buffer, lets attempt to load it on the fly
-		std::cout << "Executing 'loadAudioInToSystem' " << std::endl;
-		bufferID = loadAudioInToSystem( filename );
-		std::cout << "Finished 'loadAudioInToSystem' " << std::endl;
-
-
-		if ( bufferID < 0 ){
-			std::cout << "Sound not work 3" << std::endl;
-			return false;   // failed!
+	//Destroy sounds
+	for(int i = 0; i < OgreSND::maxAudioSources; i++){
+		if(alIsSource(this->sourceInfo[i].source)){
+			alDeleteSources(1, &this->sourceInfo[i].source);
 		}
 	}
 
-	// If you are here, the sound the requester wants to reference is in a buffer.
-	// Now, we need to find a free Audio Source slot in the sound system
-	sourceID = 0;
-
-	while ( mAudioSourceInUse[ sourceID ] == true ) sourceID++;
-
-	// When you are here, 'mSourceID' now represents a free Audio Source slot
-	// The free slot may not be at the end of the array but in the middle of it.
-	*audioId = sourceID;  // return the Audio Source ID to the caller
-	mAudioSourceInUse[ sourceID ] = true; // mark this Source slot as in use
-	mAudioSourcesInUseCount++;    // bump the 'in use' counter
-
-	// Now inform OpenAL of the sound assignment and attach the audio buffer
-	// to the audio source
-	alSourcei( mAudioSources[sourceID], AL_BUFFER, mAudioBuffers[bufferID] );
-
-	// Steven : Not in the original code !!!!!
-	alSourcei( mAudioSources[sourceID], AL_LOOPING, loop );
-
-	if ( checkALError( "loadSource()::alSourcei" ) ){
-		std::cout << "Sound not work 4" << std::endl;
-		//return false;
+	//Destroy buffers
+	for(int i = 0; i < OgreSND::maxAudioBuffers; i++){
+		if(alIsBuffer(this->bufferInfo[i].buffer)){
+			alDeleteBuffers(1, &this->bufferInfo[i].buffer);
+		}
 	}
 
-	std::cout << "Sound work!!!!!!!!!!!!!!!!!!!!!" << std::endl;
+	int ret;
+	ret = alcMakeContextCurrent(NULL);
+	if (!ret) {
+		std::cerr << "Null current context" << std::endl;
+	}
+	alcDestroyContext(context);
+	//printError("Destroy Context");
+
+	//close device
+	alcCloseDevice(device);
+	//printError("Device close");
+	std::cout << "Bye audio. ....   Sounds good, bye" << std::endl;
+}
+
+void SoundMgr::init(){
+	initialize();
+}
+
+void SoundMgr::initialize(void){
+	this->device = alcOpenDevice(NULL);
+	if(!device){
+		std::cerr << "Sound ERROR: Bye, could not open default sound device" << std::endl;
+	}
+	alGetError();
+	this->context = alcCreateContext(this->device, NULL);
+	if (!alcMakeContextCurrent(this->context)) {
+		std::cerr << "Sound ERROR: Cannot make default context" << std::endl;
+	}
+	//this->buffersInfo.buffersInUseCount = 0;
+	for(int i = 0; i < OgreSND::maxAudioBuffers; i++){
+		this->bufferInfo[i].buffer = i+1; // this is because openAl returns true for alIsBuffer(0) no matter what!
+		//I'm also using bufferFilename == "" to check if the buffer is in use.
+		this->bufferInfo[i].bufferFilename = "";
+	}
+
+	//this->sourcesInfo.sourcesInUseCount = 0;
+	for(int i = 0; i < OgreSND::maxAudioSources; i++){
+		this->sourceInfo[i].source = 0;
+		this->sourceInfo[i].inUse = false;
+                this->sourceDictionary.push_back("");
+	}
+
+	//alGenBuffers(OgreSND::maxAudioBuffers, this->buffersInfo.buffers);
+	//printError("Generating buffers");
+
+	//alGenSources(OgreSND::maxAudioSources, this->sourcesInfo.sources);
+	//printError("Generating sources");
+
+	//syncListenerToCamera(); //setup listener
+
+        isEnabled = true;
+
+        //initialize vectors
+        for (int i = 0; i < 6; i++){
+            for (int j = 0; j < soundPerEnt; j++){
+                //this->battleSoundsDictionary[i][j] = -1;
+                //this->creationSoundsDictionary[i][j] = -1;
+                this->selectionSoundsDictionary[i][j] = -1;
+            }
+        }
+
+
+	unsigned int sid;
+        //background music
+	std::string filename = "data/watercraft/sounds/backgroundMusic.wav";
+	if (this->reserveAudio(filename, true, sid)){
+		std::cout << "background music loaded" << std::endl;
+                backgroundMusicSource = sourceInfo[sid].source;
+                this->loadStartBackground();
+        }
+	std::cout << "background music loaded" << std::endl;
+
+        initWatercraftSounds();
+
+        //filename = "data/watercraft/sounds/explosion.wav";
+        //default explosion sound for all entities
+        if (this->reserveAudio(filename, false, sid)){
+            battleSoundSource = sourceInfo[sid].source;
+            alSourcei(this->battleSoundSource, AL_REFERENCE_DISTANCE, 2000.0f);
+            alSourcei(this->battleSoundSource, AL_MAX_DISTANCE, 8000.0f);
+        }
+
+	return;
+
+}
+
+bool SoundMgr::initWatercraftSounds(){
+        //registering all sounds
+		std::string selectionFilename = "data/watercraft/sounds/takeYourOrder.wav";
+        std::string selection2Filename = "data/watercraft/sounds/GoodDay.wav";
+        //std::string createShipFilename = "data/watercraft/sounds/boatMoving.wav";
+        //std::string createBuildingFilename = "data/watercraft/sounds/clong.wav";
+
+		// changed std::list<... to std::vector<... unsure if works
+        //for(std::list<Entity381 *>::const_iterator et = engine->entityMgr->entities.begin(); et != engine->entityMgr->entities.end(); ++et)
+        for(std::vector<Entity381 *>::const_iterator et = engine->entityMgr->entities.begin(); et != engine->entityMgr->entities.end(); ++et)
+        	{
+            //this->registerBattleSound(et, battleFilename);
+            if (true){
+                if ((*et)->auioId == 1){
+                        this->registerSelection(**et, selection2Filename);
+                }
+                else{
+                        this->registerSelection(**et, selectionFilename);
+                }
+                //this->registerCreate(et, createShipFilename);
+            }
+            else{
+                //no selection sound for buildings right now
+                //this->registerCreate(et, createBuildingFilename);
+            }
+        }
+        return true;
+}
+
+/*bool SoundMgr::isEntityShip(FastEcslent::EntityType et){
+    if (et < 7)
+        return true;
+    else
+        return false;
+}*/
+
+void SoundMgr::enable(){
+    isEnabled = true;
+    resumeBackground();
+}
+
+void SoundMgr::disable(){
+    isEnabled = false;
+    stopAllAudio();
+    stopBackground();
+}
+
+void SoundMgr::syncListenerToCamera(){
+	//position from camera scene node
+	//Ogre::Vector3 cameraPosition = engine->gfxMgr->cameraNode->getPosition();
+	Ogre::Vector3 cameraPosition = engine->gameMgr->cameraPitchNode->getPosition();
+
+	this->position[0] = cameraPosition.x;
+	this->position[1] = cameraPosition.y;
+	this->position[2] = cameraPosition.z;
+	alListener3f(AL_POSITION, cameraPosition.x, cameraPosition.y, cameraPosition.z);
+	printError("Cannot set listener position");
+
+	//Ogre::Vector3 cameraVelocity = engine->gfxMgr->cameraNode->velocity; // not set by graphics
+	this->velocity[0] = 0;
+	this->velocity[1] = 0;
+	this->velocity[2] = 0;
+	alListener3f(AL_VELOCITY, 0, 0, 0); // or we will use
+	//alListener3f(AL_VELOCITY, cameraVelocity.x, cameraVelocity.y, cameraVelocity.z);// Don't use both:-)
+	printError("Cannot set listener velocity");
+
+	//need to set orientation from camera scene node
+	//Ogre::Quaternion q = engine->gfxMgr->cameraNode->getOrientation();
+	Ogre::Quaternion q = engine->gameMgr->cameraPitchNode->getOrientation();
+
+	Ogre::Vector3 vDirection = q.zAxis();
+	Ogre::Vector3 vUp = q.yAxis();
+
+	this->orientation[0] = -vDirection.x;
+	this->orientation[1] = -vDirection.y;
+	this->orientation[2] = -vDirection.z;
+	this->orientation[3] = vUp.x;
+	this->orientation[4] = vUp.y;
+	this->orientation[5] = vUp.z;
+
+	alListenerfv(AL_ORIENTATION, this->orientation);
+	printError("Cannot set listener orientation!");
+
+
+}
+
+
+bool SoundMgr::frameRenderingQueued(const Ogre::FrameEvent& evt)
+{
+	tick(evt.timeSinceLastFrame);
+	return true;
+}
+bool SoundMgr::frameStarted(const Ogre::FrameEvent& evt){
+	return true;
+}
+bool SoundMgr::frameEnded(const Ogre::FrameEvent& evt){
 	return true;
 }
 
- // Function to check and see if the pSoundFile is already loaded into a buffer
- /*****************************************************************************/
- int SoundMgr::locateAudioBuffer( std::string filename )
- {
-   for ( unsigned int b = 0; b < MAX_AUDIO_BUFFERS; b++ )
-   {
-      if ( filename == mAudioBufferFileName[b] ) return (int) b; // TODO Careful : converts unsigned to int!
-   }
-   return -1;      // not found
- }
 
- // Function to load a sound file into an AudioBuffer
- /*****************************************************************************/
- int SoundMgr::loadAudioInToSystem( std::string filename )
- {
 
-	 std::cout << "loadAudioInToSystem test 1" << std::endl;
+void SoundMgr::crosslink(void){
+	syncListenerToCamera();
+	return;
+}
 
-   if ( filename.empty() )
-        return -1;
+void SoundMgr::loadLevel(void){
+	syncListenerToCamera();
+	//load sounds, bind buffers, start background music
+	//read sound files
 
-   // Make sure we have audio buffers available
-   if ( mAudioBuffersInUseCount == MAX_AUDIO_BUFFERS ) return -1;
+	//load background, start, loop
+	//loadStartBackground();
 
-   // Find a free Audio Buffer slot
-   int bufferID = 0;      // Identity of the Sound Buffer to use
 
-   while ( mAudioBufferInUse[ bufferID ] == true ) bufferID++;
+	return;
+}
+double static tmpT = 0.0;
+bool static paused = false;
 
-   if ( filename.find( ".ogg", 0 ) != std::string::npos )
-   {
-       printf(" ---> found ogg\n");
-       if ( !loadOGG( filename, mAudioBuffers[bufferID]) ) return -1;
-   }
 
-   std::cout << "loadAudioInToSystem test 2" << std::endl;
+void SoundMgr::attachSelectedNodeToSoundIndex(Entity381 *ent, unsigned int index){
+        if (index == -1) //if there is no defined sound for the specified type, don't do anything
+                return;
 
-   // Successful load of the file into the Audio Buffer.
-   mAudioBufferInUse[ bufferID ] = true;      // Buffer now in use
+        this->playAudio(this->sourceInfo[index].source, true);  //second argument is added as true since it was causing nonresponsiveness when method is called again before the sound ends
+	Ogre::Vector3 pos = ent->position;
+	setSoundPosition(this->sourceInfo[index].source, pos);
+}
 
-   strcpy( mAudioBufferFileName[ bufferID ], filename.c_str() ); // save the file descriptor
+void SoundMgr::tick(double dtime){
 
-   mAudioBuffersInUseCount++;               // bump the 'in use' counter
+	syncListenerToCamera();
 
-   std::cout << "loadAudioInToSystem test 3" << std::endl;
+        //selection sound
+		// changed std::list<... to std::vector<... unsure if works
+		//for(std::list<Entity381 *>::const_iterator it = engine->entityMgr->entities.begin(); it != engine->entityMgr->entities.end(); ++it){
+		for(std::vector<Entity381 *>::const_iterator it = engine->entityMgr->entities.begin(); it != engine->entityMgr->entities.end(); ++it){
+           if ((*it)->isSelected && !(*it)->didSelectSoundPlay){
+        	   playSelectionSound(*(*it));
+        	   (*it)->didSelectSoundPlay = true;
+           }
+           else if (!(*it)->isSelected && (*it)->didSelectSoundPlay){
+        	   (*it)->didSelectSoundPlay = false;
+           }
+        }
+}
 
-   return bufferID;
- }
+        //this was for moving sound but playing sound for all moving objects does not seem to be a good idea
+        //copySoundState();
 
- /****************************************************************************/
- bool SoundMgr::playAudio( unsigned int audioID, bool forceRestart )
- {
 
-	 std::cout << "playAudio test 1" << std::endl;
+//	tmpT += dtime;
+//	if(tmpT > 5.0 && !paused && tmpT < 6.0){
+//		this->pauseBackground();
+//		paused = true;
+//	}
+//	if(tmpT > 10.0 && paused){
+//		paused = false;
+//		this->resumeBackground();
+//	}
+//	return;
+//}
 
-   // Make sure the audio source ident is valid and usable
-   if ( audioID >= MAX_AUDIO_SOURCES || !mAudioSourceInUse[audioID]){
-	   std::cout << "audio ID is invalid" << std::endl;
+bool SoundMgr::playSelectionSound(Entity381 et){
+        Ogre::Vector3 pos = et.position;
+
+        if (et.soundFile == ""){
+            std::cout << "There is no registered selection sounds for this entity type" << std::endl;
+            return false; //there is no sound to play
+        }
+        this->playAudioSourceIndex(et.auioId);
+        setSoundPosition(sourceInfo[et.auioId].source, pos);
+
+        return true;
+}
+
+/*bool SoundMgr::playEntityBornSound(FastEcslent::EntityType et, OgreGFX::GFXNode *gfxNode){
+        Ogre::Vector3 pos = gfxNode->node->getPosition();
+
+        int sounds = 0;
+        int arrayIndex = 0;
+        for (int i = 0; i < soundPerEnt; i++){
+            if (creationSoundsDictionary[et][i] != -1)
+                sounds++;
+            else
+                break;
+        }
+        if (sounds == 0){
+            std::cout << "There is no registered new born sounds for this entity type" << std::endl;
+            return false; //there is no sound to play
+        }
+        else if (sounds == 1)
+            arrayIndex = 0;
+        else{
+            arrayIndex = rand() % sounds; //randomly choose
+        }
+        int sourceIndex = creationSoundsDictionary[et][arrayIndex];
+        this->playAudioSourceIndex(sourceIndex, true);
+        setSoundPosition(sourceInfo[sourceIndex].source, pos);
+
+        return true;
+}
+
+bool SoundMgr::playExplosionSound(FastEcslent::EntityType et, OgreGFX::GFXNode *gfxNode){
+        Ogre::Vector3 pos = gfxNode->node->getPosition();
+        int sounds = 0;
+        int arrayIndex = 0;
+        for (int i = 0; i < soundPerEnt; i++){
+            if (battleSoundsDictionary[et][i] != -1)
+                sounds++;
+            else
+                break;
+        }
+        if (sounds == 0){
+            std::cout << "There is no registered battle sounds for this entity type" << std::endl;
+            return false; //there is no sound to play
+        }
+        else if (sounds == 1)
+            arrayIndex = 0;
+        else{
+            arrayIndex = rand() % sounds; //randomly choose
+        }
+        int sourceIndex = battleSoundsDictionary[et][arrayIndex];
+        this->playAudioSourceIndex(sourceIndex, true);
+        setSoundPosition(sourceInfo[sourceIndex].source, pos);
+
+        return true;
+}
+
+bool SoundMgr::playExplosionSound(OgreGFX::GFXNode *gfxNode){
+        Ogre::Vector3 pos = gfxNode->node->getPosition();
+
         return false;
-   }
 
-   std::cout << "playAudio test 2" << std::endl;
-
-   int sourceAudioState = 0;
-
-   alGetError();
-
-   // Are we currently playing the audio source?
-   alGetSourcei( mAudioSources[audioID], AL_SOURCE_STATE, &sourceAudioState );
-
-   std::cout << "playAudio test 3" << std::endl;
-
-   if ( sourceAudioState == AL_PLAYING )
-   {
-      if ( forceRestart )
-           stopAudio( audioID );
+        if (this->playAudio(battleSoundSource, true)){
+                return setSoundPosition(battleSoundSource, pos);
+        }
         else
-            return false; // Not forced, so we don't do anything
-   }
+            return false;
+}*/
 
-   std::cout << "playAudio test 4" << std::endl;
+void SoundMgr::releaseLevel(void){
+	// release stuff loaded for this level
+	return;
+}
 
-   alSourcePlay( mAudioSources[ audioID ] );
-   if ( checkALError( "playAudio::alSourcePlay: ") )
+void SoundMgr::cleanup(void){
+	return;
+}
+
+void SoundMgr::printAudioDevices(const ALCchar *devices){
+
+	const ALCchar *device = devices;
+	const ALCchar *next   = devices+1;
+	size_t len = 0;
+
+	std::cout << "Devices list:" << std::endl;
+	while(device && *device != '\0' && next && *next != '\0') {
+		std::cout << device << std::endl;
+		len = strlen(device);
+		device += len + 1;
+		next   += len + 2;
+	}
+	std::cout << "------------------" << std::endl;
+}
+
+int SoundMgr::printError(const char *ermsg){
+	ALCenum error = alGetError();
+	if (error != AL_NO_ERROR){
+		std::cerr << "SoundManager: ERROR: "<< ermsg << std::endl;
+		return -1;
+	}
+	return 0;
+}
+
+inline ALenum SoundMgr::toALFormat(short channels, short samples) {
+	bool stereo = (channels > 1);
+	switch (samples){
+	case 16:
+		if (stereo) {
+			return AL_FORMAT_STEREO16;
+		} else {
+			return AL_FORMAT_MONO16;
+		}
+
+	case 8:
+		if (stereo) {
+			return AL_FORMAT_STEREO8;
+		} else {
+			return AL_FORMAT_MONO8;
+		}
+
+	default:
+		return -1;
+
+	}
+}
+
+
+int SoundMgr::getBufferId(std::string filename){
+	// two cases
+	//1. sound is already in a buffer, then return the buffer's index
+	//2. sound is not already in a buffer, then load it into an unused buffer index and return it
+	//Case 1:
+	for (int i = 0; i < OgreSND::maxAudioBuffers; i++){
+		if (this->bufferInfo[i].bufferFilename == filename){
+			return i;
+		}
+	}
+	std::cout << "Cannot find buffer, attempting to load file: " << filename << std::endl;
+	//Case 2
+	for (int i = 0; i < OgreSND::maxAudioBuffers; i++){
+		if (this->bufferInfo[i].bufferFilename == ""){
+			if (loadAudio(filename, i)){
+				return i;
+			} else {
+				std::cerr << "getBufferId::cannot load audio from file: " << filename << std::endl;
+				return -1;
+			}
+		}
+	}
+
+	return -1;
+}
+
+int SoundMgr::getEmptySourceIndex(){
+	for (int i = 0; i < OgreSND::maxAudioSources; i++){
+		if (!this->sourceInfo[i].inUse){
+			return i;
+		}
+	}
+	return -1;
+}
+
+/*bool SoundMgr::registerCreate(FastEcslent::EntityType et, std::string filename){
+    unsigned int sid;
+    //check if that file is already assigned to a source
+    for (int j = 0; j < maxAudioSources; j++){
+        if (std::strcmp(sourceDictionary[j].c_str(), filename.c_str()) == 0){
+                int lastIndex = -1;
+                for (int i = 0; i < soundPerEnt; i++){
+                    if (this->creationSoundsDictionary[et][i] == -1){
+                        lastIndex = i;
+                        break;
+                    }
+                }
+                if (lastIndex == -1){ //all permitted number of sounds for this type are already assigned
+                    std::cout << "Could not register new sound, max allowed number per entity reached" << std::endl;
+                    return false;
+                }
+                this->creationSoundsDictionary[et][lastIndex] = j;
+                return true;
+        }
+    }
+    if (this->reserveAudio(filename, false, sid)){
+                int lastIndex = -1;
+                for (int i = 0; i < soundPerEnt; i++){
+                    if (this->creationSoundsDictionary[et][i] == -1){
+                        lastIndex = i;
+                        break;
+                    }
+                }
+                if (lastIndex == -1){ //all permitted number of sounds for this type are already assigned
+                    std::cout << "Could not register new sound, max allowed number per entity reached" << std::endl;
+                    return false;
+                }
+                this->creationSoundsDictionary[et][lastIndex] = sid;
+                alSourcei(this->sourceInfo[sid].source, AL_REFERENCE_DISTANCE, 2000.0f);
+                alSourcei(this->sourceInfo[sid].source, AL_MAX_DISTANCE, 8000.0f);
+
+                sourceDictionary[sid] = filename;
+                return true;
+    }
+    else
         return false;
+}
 
-   std::cout << "playAudio test 5" << std::endl;
+*/
+bool SoundMgr::registerSelection(Entity381 et, std::string filename){
+    unsigned int sid;
+    if (this->reserveAudio(filename, false, sid)){
+                int lastIndex = -1;
+                for (int i = 0; i < soundPerEnt; i++){
+                    if (this->selectionSoundsDictionary[et.auioId][i] == -1){
+                        lastIndex = i;
+                        break;
+                    }
+                }
+                if (lastIndex == -1){ //all permitted number of sounds for this type are already assigned
+                    std::cout << "Could not register new sound, max allowed number per entity reached" << std::endl;
+                    return false;
+                }
+                this->selectionSoundsDictionary[et.auioId][lastIndex] = sid;
+                alSourcei(this->sourceInfo[sid].source, AL_REFERENCE_DISTANCE, 2000.0f);
+                alSourcei(this->sourceInfo[sid].source, AL_MAX_DISTANCE, 8000.0f);
 
-    return true;
- }
-
- /****************************************************************************/
- bool SoundMgr::pauseAudio( unsigned int audioID )
- {
-   // Make sure the audio source ident is valid and usable
-   if ( audioID >= MAX_AUDIO_SOURCES || !mAudioSourceInUse[audioID] )
+                sourceDictionary[sid] = filename;
+                et.soundFile = filename;
+                return true;
+    }
+    else
         return false;
+}
 
-   alGetError();
+/*bool SoundMgr::registerBattleSound(FastEcslent::EntityType et, std::string filename){
+    unsigned int sid;
+    //check if that file is already assigned to a source
+    for (int j = 0; j < maxAudioSources; j++){
+        if (std::strcmp(sourceDictionary[j].c_str(), filename.c_str()) == 0){
+                int lastIndex = -1;
+                for (int i = 0; i < soundPerEnt; i++){
+                    if (this->battleSoundsDictionary[et][i] == -1){
+                        lastIndex = i;
+                        break;
+                    }
+                }
+                if (lastIndex == -1){ //all permitted number of sounds for this type are already assigned
+                    std::cout << "Could not register new sound, max allowed number per entity reached" << std::endl;
+                    return false;
+                }
+                this->battleSoundsDictionary[et][lastIndex] = j;
+                return true;
+        }
+    }
+    if (this->reserveAudio(filename, false, sid)){
+                int lastIndex = -1;
+                for (int i = 0; i < soundPerEnt; i++){
+                    if (this->battleSoundsDictionary[et][i] == -1){
+                        lastIndex = i;
+                        break;
+                    }
+                }
+                if (lastIndex == -1){ //all permitted number of sounds for this type are already assigned
+                    std::cout << "Could not register new sound, max allowed number per entity reached" << std::endl;
+                    return false;
+                }
 
-   alSourcePause( mAudioSources[audioID] );
+                this->battleSoundsDictionary[et][lastIndex] = sid;
+                alSourcei(this->sourceInfo[sid].source, AL_REFERENCE_DISTANCE, 2000.0f);
+                alSourcei(this->sourceInfo[sid].source, AL_MAX_DISTANCE, 8000.0f);
 
-   if ( checkALError( "pauseAudio::alSourceStop ") )
+                sourceDictionary[sid] = filename;
+                return true;
+    }
+    else
         return false;
+}
 
-    return true;
- }
+//specific for sound managers everywhere
+/**
+ * Reserves a source name and binds it to a buffer. It returns status AND the index in sourcesInfo of this
+ * sound's audioId
+  */
+bool SoundMgr::reserveAudio(std::string filename, bool loop, unsigned int &sourceInfoIndex){
+//bool SoundMgr::reserveAudio(std::string filename, bool loop){ //
 
- /****************************************************************************/
- bool SoundMgr::pauseAllAudio( void )
- {
-   if ( mAudioSourcesInUseCount >= MAX_AUDIO_SOURCES )
-        return false;
+	alGetError();
+	int bufferId = this->getBufferId(filename); // if buffer not generated - it is generated in loadAudio
+	if(bufferId < 0) {
+		std::cout << "GetBufferId: Error loading: " << filename << std::endl;
+		std::cout << "All buffers in use, you will need to release buffers before you can get this sound to play: " << filename << std::endl;
+		return false;
+	}
 
-   alGetError();
+	int index = getEmptySourceIndex();
+	if (index < 0) {
+		std::cout << "All sources in use, you will need to release sources before you can get this sound to play: " << filename << std::endl;
+		return false;
+	}
+	if (!alIsSource(this->sourceInfo[index].source)){
+		alGenSources(1, &this->sourceInfo[index].source);
+		if(printError("ReserveAudio::Cannot Generate source") < 0){
+			return false;
+		}
+		std::cout << "Generated Source " << std::endl;
+	}
 
-   alSourcePausev( mAudioSourcesInUseCount, mAudioSources );
+	resetSource(this->sourceInfo[index].source);
 
-   if ( checkALError( "pauseAllAudio::alSourceStop ") )
-        return false;
+	if(loop){
+		alSourcei(this->sourceInfo[index].source, AL_LOOPING, AL_TRUE);
+		if(printError("Source looping") < 0){
+			return false;
+		}
+	}
+	/*******************************************************************************************/
+	sourceInfoIndex = index; // to be returned**************************************
+	/*******************************************************************************************/
+	this->sourceInfo[index].inUse = true;
+	alSourcei(this->sourceInfo[sourceInfoIndex].source, AL_BUFFER, this->bufferInfo[bufferId].buffer);
+	if (printError("Error in binding source to buffer for ") < 0){
+		return false;
+	}
+	return true; //return error code
+}
 
-    return true;
- }
+bool SoundMgr::resetSource(ALuint sourceId){
 
- // We could use playAudio instead !
- /****************************************************************************/
- bool SoundMgr::resumeAudio( unsigned int audioID )
- {
-   // Make sure the audio source ident is valid and usable
-   if ( audioID >= MAX_AUDIO_SOURCES || !mAudioSourceInUse[audioID] )
-        return false;
+	alSourcef(sourceId, AL_PITCH, 1);
+	if (printError("Source pitch") < 0)
+		return false;
 
-   alGetError();
+	alSourcef(sourceId, AL_GAIN, 1);
+	if(printError("Source Gain") < 0)
+		return false;
 
-   // If the sound was paused the sound will resume, else it will play from
-   // the beginning !
-   // TODO No check for forced restart. Verify if it is what you want ?
-   alSourcePlay( mAudioSources[ audioID ] );
+	alSource3f(sourceId, AL_POSITION, 0, 0, 0);
+	if(printError("Source position") < 0)
+		return false;
 
-   if ( checkALError( "resumeAudio::alSourceStop ") )
-        return false;
+	alSource3f(sourceId, AL_VELOCITY, 0, 0, 0);
+	if (printError("Source velocity") < 0)
+		return false;
 
-    return true;
- }
+	return true;
+}
 
- /****************************************************************************/
- bool SoundMgr::resumeAllAudio( void )
- {
-   if ( mAudioSourcesInUseCount >= MAX_AUDIO_SOURCES )
-        return false;
+/**
+ * Releases a source name. First finds it souceInfo, stopsAudio playing if any, then deletes the source
+ *
+ *
+ */
+bool SoundMgr::releaseSourceIndex(int sid){
 
-   alGetError();
+	ALuint source = this->sourceInfo[sid].source;
+	if (! alIsSource(source)){
+		std::cerr << "ReleaseSource:: is not a source!" << source << std::endl;
+		return false;
+	}
+	if(!stopAudio(source)){
+		std::cerr << "ReleaseSource:: Could not stop audio before release" << source << std::endl;
+		return false;
+	}
+	alDeleteSources(1, &this->sourceInfo[sid].source);
+	if (printError("ReleaseAudio::Cannot delete source") < 0){
+		return false;
+	}
+	this->sourceInfo[sid].inUse = false;
+	return true;
+}
 
-   int sourceAudioState = 0;
+bool SoundMgr::releaseSource(ALuint audioId){
+	for(int i = 0; i < OgreSND::maxAudioSources; i++){
+		if (this->sourceInfo[i].source == audioId){
+			return releaseSourceIndex(i);
+		}
+	}
+	return false;
+}
 
-   for ( int i=0; i<mAudioSourcesInUseCount; i++ )
-   {
-       // Are we currently playing the audio source?
-       alGetSourcei( mAudioSources[i], AL_SOURCE_STATE, &sourceAudioState );
 
-       if ( sourceAudioState == AL_PAUSED )
-       {
-           resumeAudio( i );
-       }
-   }
 
-   if ( checkALError( "resumeAllAudio::alSourceStop ") )
-        return false;
+std::string SoundMgr::getFQFNFromFilename(std::string filename){
+//	Ogre::FileInfoListPtr files = Ogre::ResourceGroupManager::getSingletonPtr()->findResourceFileInfo("Essential", filename, true);
+//	Ogre::ConstVectorIterator<Ogre::FileInfoList> fileInfoIter(files.get()->begin(), files.get()->end());
+//	std::string pathname, fname;
+//	while(fileInfoIter.hasMoreElements()) {
+//		pathname = fileInfoIter.peekNext().archive->getName();
+//		fname = fileInfoIter.peekNext().filename;
+//	}
+//	return pathname+fname;
+	return filename;
+}
 
-    return true;
- }
+//specific to FastEcslsent------------------------------------------------------------------------------------
 
- /****************************************************************************/
- bool SoundMgr::stopAudio( unsigned int audioID )
- {
-   // Make sure the audio source ident is valid and usable
-   if ( audioID >= MAX_AUDIO_SOURCES || !mAudioSourceInUse[audioID] )
-        return false;
+bool SoundMgr::stopBackground(){
 
-   alGetError();
+	alSourceStop(this->backgroundMusicSource);
+	if (printError("Stop background music") < 0){
+		return false;
+	} else {
+		return true;
+	}
 
-   alSourceStop( mAudioSources[audioID] );
 
-   if ( checkALError( "stopAudio::alSourceStop ") )
-        return false;
+}
 
-    return true;
- }
+bool SoundMgr::pauseBackground(){
+	alSourcePause(this->backgroundMusicSource);
+	if(printError("PauseBackground Source") < 0){
+		return false;
+	} else {
+		return true;
+	}
+}
 
- /****************************************************************************/
- bool SoundMgr::stopAllAudio( void )
- {
-   if ( mAudioSourcesInUseCount >= MAX_AUDIO_SOURCES )
-        return false;
+bool SoundMgr::resumeBackground(){
+	alSourcePlay(this->backgroundMusicSource);
+	if(printError("Resume background Source") < 0){
+		return false;
+	} else {
+		return true;
+	}
+}
 
-   alGetError();
+bool SoundMgr::loadAudio(std::string filename, int index){
+	alGetError();//init errors
+	std::string fqfn = getFQFNFromFilename(filename);
+	std::cout << "SoundManager Music file: " << fqfn << " is being readied" << std::endl;
+	if(fqfn == "")
+		return false;
 
-   for ( int i=0; i<mAudioSourcesInUseCount; i++ )
-   {
-       stopAudio( i );
-   }
+	this->bufferInfo[index].wave = WaveOpenFileForReading(filename.c_str());
 
-   if ( checkALError( "stopAllAudio::alSourceStop ") )
-        return false;
+	if(!this->bufferInfo[index].wave){
+		std::cerr << "SoundMgr::loadAudio::ERROR: Cannot open wave file for reading" << std::endl;
+		return false;
+	}
+	int ret = WaveSeekFile(0, this->bufferInfo[index].wave);
+	if (ret) {
+		std::cerr << "SoundMgr::loadAudio::ERROR: Cannot seek" << std::endl;
+		return false;
+	}
+	char *tmpBuf = (char *) malloc(this->bufferInfo[index].wave->dataSize);
+	//this->backgroundBufferData = (char *) malloc(this->backgroundWaveInfo->dataSize);
+	if(!tmpBuf){
+		std::cerr << "SoundMgr::loadAudio::ERROR: in malloc" << std::endl;
+		return false;
+	}
+	ret = WaveReadFile(tmpBuf, this->bufferInfo[index].wave->dataSize, this->bufferInfo[index].wave);
+	if(ret != (int) this->bufferInfo[index].wave->dataSize){
+		std::cerr << "ERROR: SoundMgr::loadAudio: short read " << ret << " wanted: " << this->bufferInfo[index].wave->dataSize << std::endl;
+		return false;
+	}
 
-    return true;
- }
+	if(!alIsBuffer(this->bufferInfo[index].buffer) || this->bufferInfo[index].bufferFilename == ""){
+		//bufferFilename == "" means not a buffer
+		alGenBuffers(1, &this->bufferInfo[index].buffer);
+		if (printError("Cannot generate buffers") < 0) {
+			return false;
+		}
+		std::cout << "Generated Buffer " << std::endl;
+	}
 
- /****************************************************************************/
- bool SoundMgr::releaseAudio( unsigned int audioID )
- {
-   if ( audioID >= MAX_AUDIO_SOURCES )
-        return false;
-   alSourceStop( mAudioSources[audioID] );
-   mAudioSourceInUse[ audioID ] = false;
-   mAudioSourcesInUseCount--;
-    return true;
- }
+	alBufferData(this->bufferInfo[index].buffer,
+			toALFormat(this->bufferInfo[index].wave->channels, this->bufferInfo[index].wave->bitsPerSample),
+			tmpBuf, this->bufferInfo[index].wave->dataSize, this->bufferInfo[index].wave->sampleRate);
+	free(tmpBuf);
+	if(printError("Failed to load bufferData") < 0){
+		return false;
+	}
 
- /****************************************************************************/
- bool SoundMgr::setSound( unsigned int audioID, Ogre::Vector3 position,
+	this->bufferInfo[index].bufferFilename = filename;
+
+	return true;
+}
+
+bool SoundMgr::loadStartBackground(){
+	//WaveInfo *wave;
+
+
+	alGenSources((ALuint)1, &this->backgroundMusicSource);
+	printError("Cannot generate source with id 1");
+
+	alSourcef(this->backgroundMusicSource, AL_PITCH, 1);
+	printError("Source pitch");
+
+	alSourcef(this->backgroundMusicSource, AL_GAIN, 1);
+	printError("Source Gain");
+
+	alSource3f(this->backgroundMusicSource, AL_POSITION, 0, 0, 0);
+	printError("Source position");
+
+	alSource3f(this->backgroundMusicSource, AL_VELOCITY, 0, 0, 0);
+	printError("Source velocity");
+
+	alSourcei(this->backgroundMusicSource, AL_LOOPING, AL_TRUE);
+	printError("Source looping");
+
+	alGenBuffers(1, &this->backgroundMusicBuffer);
+	printError("Buffer generation");
+
+	std::string fqfn = getFQFNFromFilename(OgreSND::backgroundMusicFilename);
+	std::cout << "SoundManager backgroundMusic file: " << fqfn << " is being readied" << std::endl;
+	if(fqfn == "")
+		return false;
+
+	this->backgroundWaveInfo = WaveOpenFileForReading(fqfn.c_str());
+	if(!this->backgroundWaveInfo){
+		std::cerr << "ERROR: Cannot open wave file for reading" << std::endl;
+		return false;
+	}
+	int ret = WaveSeekFile(0, this->backgroundWaveInfo);
+	if (ret) {
+		std::cerr << "ERROR: Cannot seek" << std::endl;
+		return false;
+	}
+	char *tmpBuf = (char *) malloc(this->backgroundWaveInfo->dataSize);
+	//this->backgroundBufferData = (char *) malloc(this->backgroundWaveInfo->dataSize);
+	if(!tmpBuf){
+		std::cerr << "ERROR: in malloc" << std::endl;
+		return false;
+	}
+	ret = WaveReadFile(tmpBuf, this->backgroundWaveInfo->dataSize, this->backgroundWaveInfo);
+	if(ret != (int) this->backgroundWaveInfo->dataSize){
+		std::cerr << "ERROR: short read " << ret << " wanted: " << this->backgroundWaveInfo->dataSize << std::endl;
+		return false;
+	}
+	alBufferData(this->backgroundMusicBuffer,
+			toALFormat(this->backgroundWaveInfo->channels, this->backgroundWaveInfo->bitsPerSample),
+			tmpBuf, this->backgroundWaveInfo->dataSize, this->backgroundWaveInfo->sampleRate);
+	if(printError("Failed to load bufferData") < 0){
+		return false;
+	}
+
+	free(tmpBuf);
+
+	alSourcei(this->backgroundMusicSource, AL_BUFFER, this->backgroundMusicBuffer);
+	printError("Source binding");
+
+	alSourcePlay(this->backgroundMusicSource);
+	printError("Playing");
+
+
+	return true;
+}
+
+
+// Returns true if we can play the sound. Rewinds sound if already playing and forceRestart is true,
+// false if error
+bool SoundMgr::playAudio(ALuint audioId, bool forceRestart ){
+        if (!this->isEnabled)
+                return false;
+	if (!alIsSource(audioId))
+		return false;
+
+	ALint source_state;
+	alGetSourcei(audioId, AL_SOURCE_STATE, &source_state);
+	if(printError("Get source state") < 0)
+		return false;
+	if(source_state == AL_PLAYING){
+		if (forceRestart){
+			stopAudio(audioId);
+			if (printError("PlayAudio:: Could not stop already playing song") < 0){
+				return false;
+			}
+                        alSourcePlay(audioId);
+		}
+		return true;
+	}
+	alSourcePlay(audioId);
+	if(printError("PlayAudio:: Could not play") < 0)
+		return false;
+	return true;
+}
+
+bool SoundMgr::playAudio(ALuint audioId){
+	return playAudio(audioId, false);
+}
+
+bool SoundMgr::playAudioSourceIndex(int sid, bool forceRestart){
+	return playAudio(this->sourceInfo[sid].source, forceRestart);
+}
+
+bool SoundMgr::playAudioSourceIndex(int sid){
+	return playAudio(this->sourceInfo[sid].source, false);
+}
+
+bool SoundMgr::stopAudio(ALuint audioId){
+	if (alIsSource(audioId)){
+		alSourceStop(audioId);
+		if (printError("StopAudio::cannot stop source: " + audioId) < 0){
+			return false;
+		}
+	} else {
+		std::cerr << "StopAudio:: Is not a source: " << audioId << std::endl;
+		return false;
+	}
+	return true;
+}
+
+bool SoundMgr::stopAudioSourceIndex(int sid){
+        return this->stopAudio(this->sourceInfo[sid].source);
+}
+
+bool SoundMgr::isAudioPlaying(ALuint audioId){
+    	if (!alIsSource(audioId))
+		return false;
+
+	ALint source_state;
+	alGetSourcei(audioId, AL_SOURCE_STATE, &source_state);
+	if(printError("Get source state") < 0)
+		return false;
+	if(source_state == AL_PLAYING){
+		return true;
+	}
+        if(printError("PlayAudio:: Could not play") < 0)
+		return false;
+}
+
+bool SoundMgr::stopAllAudio( void ){
+	for(int i = 0; i < OgreSND::maxAudioSources; i++){
+		stopAudio(this->sourceInfo[i].source);
+	}
+	return true;
+}
+
+bool SoundMgr::pauseAudioSourceIndex(int sid){
+
+	pauseAudio(this->sourceInfo[sid].source);
+	return true;
+}
+bool SoundMgr::pauseAudio(ALuint audioId ){
+	if(!alIsSource(audioId))
+		return false;
+	alSourcePause(audioId);
+	if (printError("PauseAudio::Cannot pause: " + audioId) < 0){
+		return false;
+	}
+	return true;
+}
+
+bool SoundMgr::pauseAllAudio( void ){
+	for(int i = 0; i < OgreSND::maxAudioSources; i++){
+		pauseAudio(this->sourceInfo[i].source);
+	}
+	return true;
+}
+
+bool SoundMgr::resumeAudio(ALuint audioId){
+	return playAudio(audioId);
+}
+
+bool SoundMgr::resumeAllAudio( void ){
+	for(int i = 0; i < OgreSND::maxAudioSources; i++){
+		playAudio(this->sourceInfo[i].source);
+	}
+	return true;
+}
+
+bool SoundMgr::setSoundPosition(ALuint audioId, Ogre::Vector3 position ){
+
+	alSourcef(audioId, AL_GAIN, 1.0);
+	if(printError("Source Gain") < 0)
+		return false;
+
+
+	alSource3f(audioId, AL_POSITION, position.x, position.y, position.z);
+	if (printError("SetSoundPosition::Source position") < 0) return false;
+	return true;;
+}
+
+
+bool SoundMgr::setSoundDisposition( ALuint audioId, Ogre::Vector3 position, Ogre::Vector3 velocity, Ogre::Vector3 direction ){
+	alSource3f(audioId, AL_POSITION, position.x, position.y, position.z);
+	if (printError("SetSoundDisPosition::Source position") < 0) return false;
+
+	alSource3f(audioId, AL_VELOCITY, velocity.x, velocity.y, velocity.z);
+	if (printError("SetSoundDisPosition::Source velocity") < 0) return false;
+
+	return true;
+}
+
+
+bool SoundMgr::setSound( ALuint audioID, Ogre::Vector3 position,
     Ogre::Vector3 velocity, Ogre::Vector3 direction, float maxDistance,
-    bool playNow, bool forceRestart, float minGain )
- {
-   if ( audioID >= MAX_AUDIO_SOURCES || !mAudioSourceInUse[ audioID ] )
-        return false;
-
-   // Set the position
-   ALfloat pos[] = { position.x, position.y, position.z };
-
-   alSourcefv( mAudioSources[ audioID ], AL_POSITION, pos );
-
-   if ( checkALError( "setSound::alSourcefv:AL_POSITION" ) )
-       return false;
-
-   // Set the veclocity
-   ALfloat vel[] = { velocity.x, velocity.y, velocity.z };
-
-   alSourcefv( mAudioSources[ audioID ], AL_VELOCITY, vel );
-
-   if ( checkALError( "setSound::alSourcefv:AL_VELOCITY" ) )
-       return false;
-
-   // Set the direction
-   ALfloat dir[] = { velocity.x, velocity.y, velocity.z };
-
-   alSourcefv( mAudioSources[ audioID ], AL_DIRECTION, dir );
-
-   if ( checkALError( "setSound::alSourcefv:AL_DIRECTION" ) )
-       return false;
-
-   // Set the max audible distance
-   alSourcef( mAudioSources[ audioID ], AL_MAX_DISTANCE, maxDistance );
-
-   // Set the MIN_GAIN ( IMPORTANT - if not set, nothing audible! )
-   alSourcef( mAudioSources[ audioID ], AL_MIN_GAIN, minGain );
-
-   // Set the max gain
-   alSourcef( mAudioSources[ audioID ], AL_MAX_GAIN, 1.0f ); // TODO as parameter ? global ?
-
-   // Set the rollof factor
-   alSourcef( mAudioSources[ audioID ], AL_ROLLOFF_FACTOR, 1.0f ); // TODO as parameter ?
-
-   // Do we play the sound now ?
-   if ( playNow ) return playAudio( audioID, forceRestart ); // TODO bof... not in this fct
-
-   return true;
- }
-
- /****************************************************************************/
- bool SoundMgr::setSoundPosition( unsigned int audioID, Ogre::Vector3 position )
- {
-   if ( audioID >= MAX_AUDIO_SOURCES || !mAudioSourceInUse[ audioID ] )
-        return false;
-
-   // Set the position
-   ALfloat pos[] = { position.x, position.y, position.z };
-
-   alSourcefv( mAudioSources[ audioID ], AL_POSITION, pos );
-
-   if ( checkALError( "setSound::alSourcefv:AL_POSITION" ) )
-       return false;
-
-   return true;
- }
-
- /****************************************************************************/
- bool SoundMgr::setSoundPosition( unsigned int audioID, Ogre::Vector3 position,
-    Ogre::Vector3 velocity, Ogre::Vector3 direction )
- {
-   if ( audioID >= MAX_AUDIO_SOURCES || !mAudioSourceInUse[ audioID ] )
-        return false;
-
-   // Set the position
-   ALfloat pos[] = { position.x, position.y, position.z };
-
-   alSourcefv( mAudioSources[ audioID ], AL_POSITION, pos );
-
-   if ( checkALError( "setSound::alSourcefv:AL_POSITION" ) )
-       return false;
-
-   // Set the veclocity
-   ALfloat vel[] = { velocity.x, velocity.y, velocity.z };
-
-   alSourcefv( mAudioSources[ audioID ], AL_VELOCITY, vel );
-
-   if ( checkALError( "setSound::alSourcefv:AL_VELOCITY" ) )
-       return false;
-
-   // Set the direction
-   ALfloat dir[] = { velocity.x, velocity.y, velocity.z };
-
-   alSourcefv( mAudioSources[ audioID ], AL_DIRECTION, dir );
-
-   if ( checkALError( "setSound::alSourcefv:AL_DIRECTION" ) )
-       return false;
-
-   return true;
- }
-
- /****************************************************************************/
- bool SoundMgr::setListenerPosition( Ogre::Vector3 position, Ogre::Vector3 velocity,
-    Ogre::Quaternion orientation )
- {
-   Ogre::Vector3 axis;
-
-   // Set the position
-   ALfloat pos[] = { position.x, position.y, position.z };
-
-   alListenerfv( AL_POSITION, pos );
-
-   if ( checkALError( "setListenerPosition::alListenerfv:AL_POSITION" ) )
-       return false;
-
-   // Set the veclocity
-   ALfloat vel[] = { velocity.x, velocity.y, velocity.z };
-
-   alListenerfv( AL_VELOCITY, vel );
-
-   if ( checkALError( "setListenerPosition::alListenerfv:AL_VELOCITY" ) )
-       return false;
-
-   // Orientation of the listener : look at then look up
-   axis = Ogre::Vector3::ZERO;
-   axis.x = orientation.getYaw().valueRadians();
-   axis.y = orientation.getPitch().valueRadians();
-   axis.z = orientation.getRoll().valueRadians();
-
-   // Set the direction
-   ALfloat dir[] = { axis.x, axis.y, axis.z };
-
-   alListenerfv( AL_ORIENTATION, dir );
-
-   if ( checkALError( "setListenerPosition::alListenerfv:AL_DIRECTION" ) )
-       return false;
-
-   // TODO as parameters ?
-   alListenerf( AL_MAX_DISTANCE, 10000.0f );
-   alListenerf( AL_MIN_GAIN, 0.0f );
-   alListenerf( AL_MAX_GAIN, 1.0f );
-   alListenerf( AL_GAIN, 1.0f );
-
-   return true;
- }
-
- bool SoundMgr::loadOGG( std::string filename, ALuint pDestAudioBuffer )
-  {
-     OggVorbis_File oggfile;
-
-     std::cout << "loadOGG test 1" << std::endl;
-
-     if(ov_fopen(const_cast<char*>(filename.c_str()), &oggfile))
-     {
-         printf("SoundManager::loadOGG() : ov_fopen failed.\n");
-         return false;
-     }
-
-     std::cout << "loadOGG test 2" << std::endl;
-
-     vorbis_info* info = ov_info(&oggfile, -1);
-
-     ALenum format;
-     switch(info->channels)
-     {
-         case 1:
-             format = AL_FORMAT_MONO16; break;
-         case 2:
-             format = AL_FORMAT_STEREO16; break;
-         case 4:
-             format = alGetEnumValue("AL_FORMAT_QUAD16"); break;
-         case 6:
-             format = alGetEnumValue("AL_FORMAT_51CHN16"); break;
-         case 7:
-             format = alGetEnumValue("AL_FORMAT_61CHN16"); break;
-         case 8:
-             format = alGetEnumValue("AL_FORMAT_71CHN16"); break;
-         default:
-             format = 0; break;
-     }
-
-     std::vector<int> samples;
-     char tmpbuf[4096];
-     int section = 0;
-     bool firstrun = true;
-     while(1)
-     {
-         int result = ov_read(&oggfile, tmpbuf, 4096, 0, 2, 1, &section);
-         if(result > 0)
-         {
-             firstrun = false;
-             samples.insert(samples.end(), tmpbuf, tmpbuf + (result));
-         }
-         else
-         {
-             if(result < 0)
-             {
-                 printf("SoundManager::loadOGG() : Loading ogg sound data failed!");
-                 ov_clear(&oggfile);
-                 return false;
-             }
-             else
-             {
-                 if(firstrun)
-                     return false;
-                 break;
-             }
-         }
-     }
-
-     alBufferData(pDestAudioBuffer, format, &samples[0], ov_pcm_total(&oggfile, -1), info->rate);
-
-     std::cout << "loadOGG test 3" << std::endl;
-
-     return true;
-  }
+    bool playNow, bool forceRestart, float minGain ){
+	return false;
+}
 
 
+bool SoundMgr::setListenerDisposition( Ogre::Vector3 position, Ogre::Vector3 velocity, Ogre::Quaternion orientation ){
+	return false;
+}
 
-
-
-
-
+//void SoundMgr::copySoundState(){
+//	for(int i = 0; i < gim->nGFXNodes; i++){
+//                FastEcslent::UnitAI* ai = dynamic_cast<FastEcslent::UnitAI*>(gim->engine->entityMgr->ents[i]->getAspect(FastEcslent::UNITAI));
+//                for(std::deque<FastEcslent::Command*>::iterator it = ai->commands.begin(); it!= ai->commands.end();it++){
+//                   if((*it)->commandType == FastEcslent::MoveCommand){// || (*it)->commandType == FastEcslent::GatherCommand){
+//                        FastEcslent::EntityType et = gim->engine->entityMgr->ents[i]->entityType;
+//                        attachSelectedNodeToSoundIndex(&(gim->gfxNodes[i]), /*scvId, soundDictionary[et],*/ (*it)->commandType);
+//                    }
+//                }
+//	}
+//}

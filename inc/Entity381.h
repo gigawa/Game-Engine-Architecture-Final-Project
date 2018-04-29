@@ -40,6 +40,13 @@ public:
   std::vector<Aspect*> aspects;
   UnitAI * unitAI;
 
+
+	//sound stuff from sound demo
+	std::string soundFile;
+	bool playSound;
+	unsigned int auioId;
+	bool didSelectSoundPlay; //part of selection process
+
   virtual void Tick(float dt);
 
   void DestroyEntity();

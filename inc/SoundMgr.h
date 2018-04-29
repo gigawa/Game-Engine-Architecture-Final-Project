@@ -1,177 +1,171 @@
 /*
  * SoundMgr.h
  *
- *  Created on: Apr 24, 2018
- *      Author: gary
+ *  Created on: Oct 30, 2013
+ *      Author: sushil
  */
 
-/*
-****************************************************************************
- *  USAGE
- *
- * 1. Create the object from the class with createManager()
- *
- * 2. Call the init() function
- *
- * 3. Call the loadDefaultSounds() function to PRE-LOAD audio into the buffers.
- *    This is optional. Review the function to make changes that you need.
- *
- * 4. Set the Listener Location by calling setListenerPosition() function
- *    continually call this as your Listener (camera) position changes!
- *
- * 5. For each object that emits sound, call the loadSound() function.
- *    CAREFUL : The filename must be unique.
- *
- * 6. Optional : For each object you can set the all the parameters of the
- *    sound with setSound() or only the position, velocity and direction with
- *    setSoundPosition().
- *
- * 7. Call the playAudioSource() to play the sound at some event.
- *    This function will play the sound and then stop. It will NOT repeat playing.
- *    Use stopAudioSource() to stop a sound from playing if its still playing
- *
- * 8. Call pauseAudio() or pauseAllAudio() to pause one or all sound(s).
- *    Call resumeAudio() or resumeAllAudio() to resume one or all paused sound(s).
- *
- * 9. When your object is done emitting sounds (when out of range for example)
- *    call releaseAudioSource().
- *    It is important to release your source when you are no longer going to
- *    need it because you are limited in the number of sources you can have.
- *
- * 10. If your objects moves (other than the listener/camera) then
- *    continually update the objects position by calling setSourcePosition().
- *
- *****************************************************************************
-*/
+#ifndef SOUNDMANAGER_H_
+#define SOUNDMANAGER_H_
 
 
-#ifndef SRC_SOUNDMGR_H_
-#define SRC_SOUNDMGR_H_
-
-
-#ifdef _USEEAX
- #include "eax.h"
-#endif
-
-// OpenAl version 1.1
-#include <al.h>
-#include <alc.h>
-
-// Modify this as you need.
-#include "Mgr.h"
-#include "OgreVector3.h"
-#include "OgreQuaternion.h"
-#include <ogg.h>
-#include <vorbisfile.h>
+#include <iostream>
+#include <cstring>
 #include <vector>
 
-#define MAX_AUDIO_BUFFERS   64
-#define MAX_AUDIO_SOURCES   16
+#include <OgreVector3.h>
+#include <OgreQuaternion.h>
+#include <OgreFrameListener.h>
 
-// Used to store sound filenames
-#define MAX_FILENAME_LENGTH 40
+#include <wave.h>
+#include <al.h>
+#include <alc.h>
+#include <Mgr.h>
 
-class SoundMgr : public Mgr{
-private:
+class Entity381;
 
-	bool isEAXPresent;
-	#ifdef _USEEAX
-	// EAX 2.0 GUIDs
-	const GUID DSPROPSETID_EAX20_ListenerProperties
-	= { 0x306a6a8, 0xb224, 0x11d2, { 0x99, 0xe5, 0x0, 0x0, 0xe8, 0xd8, 0xc7, 0x22 } };
+namespace OgreSND {
+    const int soundPerEnt = 3;      // max different sounds to randomly choose per entity
+	const int maxAudioBuffers = 63; // + 1 for background music
+	const int maxAudioSources = 15; // + 1 for background music
+	const std::string backgroundMusicFilename = "data/watercraft/sounds/backgroundMusic.wav";
+	///home/sushil/workspace/fe1/
 
-	const GUID DSPROPSETID_EAX20_BufferProperties
-	= { 0x306a6a7, 0xb224, 0x11d2, {0x99, 0xe5, 0x0, 0x0, 0xe8, 0xd8, 0xc7, 0x22 } };
 
-	EAXSet eaxSet; // EAXSet function, retrieved if EAX Extension is supported
-	EAXGet eaxGet; // EAXGet function, retrieved if EAX Extension is supported
-	#endif // _USEEAX
+	typedef struct {
+		ALuint source;
+		bool   inUse;
+	} SourceInfo;
 
-	bool isInitialised;
-	ALCdevice* mSoundDevice;
-	ALCcontext* mSoundContext;
+	typedef struct {
+		ALuint buffer;
+		std::string bufferFilename;
+		WaveInfo *wave;
+	} BufferInfo;
 
-	std::string mAudioPath;
+	class SoundMgr : public Mgr , public Ogre::FrameListener {
+	private:
+		//OgreGFX::GraphicsInteractionManager *gim;
+		ALCdevice  *device;
+		ALCcontext *context;
+		ALfloat position[3];
+		ALfloat velocity[3];
+		ALfloat orientation[6];
 
-	bool isSoundOn;
+		//Buffers and Sources indices
 
-	ALfloat position[3];
-	ALfloat velocity[3];
-	ALfloat orientation[6];
+		SourceInfo sourceInfo[maxAudioSources];
+		BufferInfo  bufferInfo[maxAudioBuffers];
 
-	// Needed because of hardware limitation
-	// Audio sources
-	unsigned int mAudioSourcesInUseCount;
-	unsigned int mAudioSources[ MAX_AUDIO_SOURCES ];
-	bool         mAudioSourceInUse[ MAX_AUDIO_SOURCES ];
+		//Special treatment for background source and buffer
+		ALuint backgroundMusicBuffer, backgroundMusicSource;
+                ALuint battleSoundSource; //default battle sound source, not entity specific
+		WaveInfo *backgroundWaveInfo;
+		//unsigned int scvId;
+                //unsigned int soundDictionary[FastEcslent::NENTITYTYPES];
+                std::vector <std::string> sourceDictionary;
 
-	// Audio buffers
-	unsigned int mAudioBuffersInUseCount;
-	unsigned int mAudioBuffers[ MAX_AUDIO_BUFFERS ];
-	bool         mAudioBufferInUse[ MAX_AUDIO_BUFFERS ];
-	char         mAudioBufferFileName[ MAX_AUDIO_BUFFERS ][ MAX_FILENAME_LENGTH ];
+                //First dimension holds types and inner one holds different sounds for that type
+                //int creationSoundsDictionary[FastEcslent::NENTITYTYPES][soundPerEnt];
+                int selectionSoundsDictionary[6][soundPerEnt];
+                //int battleSoundsDictionary[FastEcslent::NENTITYTYPES][soundPerEnt];
 
-	// Function to check if the soundFile is already loaded into a buffer
-	int locateAudioBuffer( std::string filename );
-	int loadAudioInToSystem( std::string filename );
-	// TODO bool loadWAV( std::string filename, ALuint pDestAudioBuffer );
-	bool loadOGG( std::string filename, ALuint pDestAudioBuffer );
+		//other formats with time
+		std::string getFQFNFromFilename(std::string filename);
+		int getBufferId(std::string filename);
+		//int firstIndexNotInUse(bool inUse[], int size);
+		int getEmptySourceIndex();
+		bool resetSource(ALuint sid);
 
-public:
-	static SoundMgr* mSoundMgr;
-	unsigned int audioId;
+                bool isEnabled;
 
-	SoundMgr(Engine* engine);
-	virtual ~SoundMgr();
+	public:
+		SoundMgr(Engine* eng);
+		~SoundMgr();
+		//default methods
+		void initialize();
+		void crosslink();
+		void init();
+		void loadLevel();
+		void tick(double dtime);
+		void releaseLevel();
+		void cleanup ();
 
-	//static SoundMgr* createManager( void );
-	static SoundMgr* getSingletonPtr( void ) { return mSoundMgr; };
+                void enable();
+                void disable();
 
-	void Init();
-	void Stop();
-	void Tick(float dt);
-	void LoadLevel();
+	    virtual bool frameRenderingQueued(const Ogre::FrameEvent& evt);
+	    virtual bool frameStarted(const Ogre::FrameEvent& evt);
+	    virtual bool frameEnded(const Ogre::FrameEvent& evt);
 
-	bool init( void );
-	bool getIsSoundOn( void ) { return isSoundOn; };
-	void setAudioPath( char* path ) { mAudioPath = std::string( path ); };
 
-	bool checkALError( void );
-	bool checkALError( std::string pMsg );
+		void printAudioDevices(const ALCchar *devices);
+		int printError(const char *ermsg);
+		inline ALenum toALFormat(short channels, short samples);
+		void syncListenerToCamera();
+                void attachSelectedNodeToSoundIndex(Entity381* ent, unsigned int index);
+                //bool playEntityBornSound(FastEcslent::EntityType et, OgreGFX::GFXNode *gfxNode);
+                //bool playExplosionSound(FastEcslent::EntityType et, OgreGFX::GFXNode *gfxNode);
+                //bool playExplosionSound(OgreGFX::GFXNode *gfxNode);
+                bool playSelectionSound(Entity381 et);
 
-	/** See http://www.openal.org/windows_enumeration.html for installing other
-	*   devices. You should at least have "Generic Hardware".
-	*/
-	std::string listAvailableDevices( void );
+		//specific for sound managers everywhere
+		bool loadAudio(std::string filename, int sid);
+		//bool loadAndBindAudio(std::string filename, bool loop, ALuint &audioId); //return +ive audioId or -ive error code
+		bool loadStartBackground();
+		bool stopBackground();
+		bool pauseBackground();
+		bool resumeBackground();
 
-	// Aquire an Audio Source
-	// filename = pass in the sound file to play for this source (ex. "myfile.wav")
-	// audioId   = returns the AudioSource identifier you will need for the PlayAudioSource();
-	bool loadAudio( std::string filename, unsigned int *audioId, bool loop );
-	bool releaseAudio( unsigned int audioID );
+		//bool registerCreate(FastEcslent::EntityType et, std::string filename);
+                bool registerSelection(Entity381 et, std::string filename);
+                //bool registerBattleSound(FastEcslent::EntityType et, std::string filename);
+                //bool isEntityShip(FastEcslent::EntityType et);
+                bool initWatercraftSounds();
 
-	// Returns true if the audio is started from the beginning
-	// false if error or if already playing
-	bool playAudio( unsigned int audioId, bool forceRestart );
-	bool stopAudio( unsigned int audioID );
-	bool stopAllAudio( void );
+		bool reserveAudio(std::string filename, bool loop, unsigned int &alSourceInfoIndex);
+		bool releaseSource(ALuint audioId);
+		bool releaseSourceIndex(int sid);
 
-	bool pauseAudio( unsigned int audioID );
-	bool pauseAllAudio( void );
-	bool resumeAudio( unsigned int audioID );
-	bool resumeAllAudio( void );
+        // Returns true if the audio is started from the beginning
+        // false if error or if already playing and forceRestart is false
+        bool playAudio(ALuint audioId, bool forceRestart );
+        bool playAudio(ALuint audioId);
+        bool playAudioSourceIndex(int sid, bool forceRestart );
+        bool playAudioSourceIndex(int sid);
 
-	bool setSoundPosition( unsigned int audioID, Ogre::Vector3 position );
+        void copySoundState();
 
-	bool setSoundPosition( unsigned int audioID, Ogre::Vector3 position,
-			Ogre::Vector3 velocity, Ogre::Vector3 direction );
+        bool isAudioPlaying(ALuint audioId);
+        bool stopAudio(ALuint audioID );
+        bool stopAllAudio( void );
+        bool stopAudioSourceIndex(int sid);
 
-	bool setSound( unsigned int audioID, Ogre::Vector3 position,
-			Ogre::Vector3 velocity, Ogre::Vector3 direction, float maxDistance,
-		bool playNow, bool forceRestart, float minGain );
+        bool pauseAudio(ALuint audioID );
+        bool pauseAllAudio( void );
+        bool pauseAudioSourceIndex(int sid );
 
-	bool setListenerPosition( Ogre::Vector3 position, Ogre::Vector3 velocity,
-		Ogre::Quaternion orientation );
-};
+        bool resumeAudio(ALuint audioID );
+        bool resumeAllAudio( void );
+        bool resumeAudioSourceIndex(int sid);
 
-#endif /* SRC_SOUNDMGR_H_ */
+        bool setSoundPosition(ALuint audioID, Ogre::Vector3 position );
+
+        bool setSoundDisposition(ALuint audioID, Ogre::Vector3 position, Ogre::Vector3 velocity, Ogre::Vector3 direction );
+
+        bool setSound(ALuint audioID, Ogre::Vector3 position,
+            Ogre::Vector3 velocity, Ogre::Vector3 direction, float maxDistance,
+            bool playNow, bool forceRestart, float minGain );
+
+        bool setListenerDisposition( Ogre::Vector3 position, Ogre::Vector3 velocity, Ogre::Quaternion orientation );
+
+	};
+
+        //double volume;
+
+
+
+}
+
+
+#endif /* SOUNDMANAGER_H_ */

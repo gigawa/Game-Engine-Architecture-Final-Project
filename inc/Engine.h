@@ -13,7 +13,8 @@ class GameMgr;
 class GfxMgr;
 class InputMgr;
 class UIMgr;
-class SoundMgr;
+//class SoundMgr;
+#include <SoundMgr.h>
 
 class Engine {
 public:
@@ -25,7 +26,8 @@ public:
 	GfxMgr    *gfxMgr;
 	InputMgr  *inputMgr;
 	UIMgr	  *uiMgr;
-	SoundMgr *soundMgr;
+	OgreSND::SoundMgr*		soundMgr;
+	//SoundMgr *soundMgr;
 
 	void Init();
 	void Run();

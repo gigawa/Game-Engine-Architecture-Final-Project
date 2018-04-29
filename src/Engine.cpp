@@ -35,7 +35,9 @@ void Engine::Init(){
 	gfxMgr    = new GfxMgr(this);
 	inputMgr  = new InputMgr(this);
 	uiMgr 	  = new UIMgr(this);
-	soundMgr = new SoundMgr(this);
+
+	//soundMgr = new SoundMgr(this);
+	soundMgr = new OgreSND::SoundMgr(this);
 
 	//--------------------------------------------------------------
 	entityMgr->Init();

@@ -50,6 +50,13 @@ Entity381::Entity381(Engine *engine, std::string meshfname, Ogre::Vector3 pos, i
 	this->minSpeed = this->maxSpeed = 0;
 	this->health = 0;
 
+	//Sound initializations
+	this->soundFile = "Boat-Sound.wav";
+	this->playSound = false;
+	this->auioId = 0;
+	this->didSelectSoundPlay = false;
+
+
 }
 
 void Entity381::DestroyEntity() {
