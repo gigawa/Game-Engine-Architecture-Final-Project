@@ -19,6 +19,7 @@ UIMgr::UIMgr(Engine* eng): Mgr(eng){
 
 	mLabel = 0;
 	mTrayMgr = 0;
+	pbar = 0;
 
 	engine->gfxMgr->mSceneMgr->addRenderQueueListener(mOverlaySystem);
 

@@ -117,6 +117,13 @@ void InputMgr::UpdateVelocityAndSelection(float dt){
 
 	if((keyboardTimer < 0) && (mKeyboard->isKeyDown(OIS::KC_SPACE))) {
 
+		//If space is pressed, play shooting noise
+		std::cout << "...Playing shoot noise..." << std::endl;
+		//engine->soundMgr->playSelectionSound(engine->entityMgr->player);
+		engine->soundMgr->playAudioSourceIndex(2);
+		std::cout << "...Done playing shoot noise..." << std::endl;
+		//
+
 		keyboardTimer = keyTime;
 
 		Entity381 * player = engine->entityMgr->player;

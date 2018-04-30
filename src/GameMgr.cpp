@@ -10,6 +10,7 @@
 #include <EntityMgr.h>
 #include <GameMgr.h>
 #include <GfxMgr.h>
+#include <SoundMgr.h>
 
 #include <iostream>
 #include <Types381.h>
@@ -59,6 +60,19 @@ void GameMgr::MakePlayer() {
 	cameraPitchNode = cameraNode->createChildSceneNode();
 	cameraPitchNode->attachObject(engine->gfxMgr->mCamera);
 	engine->gfxMgr->mCamera->lookAt(Ogre::Vector3(0, 50, 0));
+
+	//Registering sounds for the player
+	std::cout << "--- BEGIN REGISTERING shoot.wav SOUND" << std::endl;
+
+	std::string filename = "data/watercraft/sounds/shoot.wav";
+	unsigned int shootId = 2;
+	engine->soundMgr->loadAudio(filename,shootId);
+	//engine->entityMgr->player->auioId = 1;
+	//engine->soundMgr->registerSelection(engine->entityMgr->player,filename);
+	engine->entityMgr->player->playSound = true;
+
+	std::cout << "--- DONE REGISTERING shoot.wav SOUND" << std::endl;
+
 }
 
 void GameMgr::MakeEntities(){

@@ -107,7 +107,7 @@ namespace OgreSND {
                 //bool playEntityBornSound(FastEcslent::EntityType et, OgreGFX::GFXNode *gfxNode);
                 //bool playExplosionSound(FastEcslent::EntityType et, OgreGFX::GFXNode *gfxNode);
                 //bool playExplosionSound(OgreGFX::GFXNode *gfxNode);
-                bool playSelectionSound(Entity381 et);
+                bool playSelectionSound(Entity381 *et);
 
 		//specific for sound managers everywhere
 		bool loadAudio(std::string filename, int sid);
@@ -118,7 +118,7 @@ namespace OgreSND {
 		bool resumeBackground();
 
 		//bool registerCreate(FastEcslent::EntityType et, std::string filename);
-                bool registerSelection(Entity381 et, std::string filename);
+                bool registerSelection(Entity381 *et, std::string filename);
                 //bool registerBattleSound(FastEcslent::EntityType et, std::string filename);
                 //bool isEntityShip(FastEcslent::EntityType et);
                 bool initWatercraftSounds();

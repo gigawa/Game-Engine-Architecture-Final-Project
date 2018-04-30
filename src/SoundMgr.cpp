@@ -139,17 +139,17 @@ bool SoundMgr::initWatercraftSounds(){
         //std::string createShipFilename = "data/watercraft/sounds/boatMoving.wav";
         //std::string createBuildingFilename = "data/watercraft/sounds/clong.wav";
 
-		// changed std::list<... to std::vector<... unsure if works
+		// changed std::list<... to std::vector<...
         //for(std::list<Entity381 *>::const_iterator et = engine->entityMgr->entities.begin(); et != engine->entityMgr->entities.end(); ++et)
         for(std::vector<Entity381 *>::const_iterator et = engine->entityMgr->entities.begin(); et != engine->entityMgr->entities.end(); ++et)
         	{
             //this->registerBattleSound(et, battleFilename);
             if (true){
                 if ((*et)->auioId == 1){
-                        this->registerSelection(**et, selection2Filename);
+                        this->registerSelection(*et, selection2Filename);
                 }
                 else{
-                        this->registerSelection(**et, selectionFilename);
+                        this->registerSelection(*et, selectionFilename);
                 }
                 //this->registerCreate(et, createShipFilename);
             }
@@ -271,7 +271,7 @@ void SoundMgr::tick(double dtime){
 		//for(std::list<Entity381 *>::const_iterator it = engine->entityMgr->entities.begin(); it != engine->entityMgr->entities.end(); ++it){
 		for(std::vector<Entity381 *>::const_iterator it = engine->entityMgr->entities.begin(); it != engine->entityMgr->entities.end(); ++it){
            if ((*it)->isSelected && !(*it)->didSelectSoundPlay){
-        	   playSelectionSound(*(*it));
+        	   playSelectionSound(*it);
         	   (*it)->didSelectSoundPlay = true;
            }
            else if (!(*it)->isSelected && (*it)->didSelectSoundPlay){
@@ -296,15 +296,15 @@ void SoundMgr::tick(double dtime){
 //	return;
 //}
 
-bool SoundMgr::playSelectionSound(Entity381 et){
-        Ogre::Vector3 pos = et.position;
+bool SoundMgr::playSelectionSound(Entity381 *et){
+        Ogre::Vector3 pos = et->position;
 
-        if (et.soundFile == ""){
+        if (et->soundFile == ""){
             std::cout << "There is no registered selection sounds for this entity type" << std::endl;
             return false; //there is no sound to play
         }
-        this->playAudioSourceIndex(et.auioId);
-        setSoundPosition(sourceInfo[et.auioId].source, pos);
+        this->playAudioSourceIndex(et->auioId);
+        setSoundPosition(sourceInfo[et->auioId].source, pos);
 
         return true;
 }
@@ -511,12 +511,12 @@ int SoundMgr::getEmptySourceIndex(){
 }
 
 */
-bool SoundMgr::registerSelection(Entity381 et, std::string filename){
+bool SoundMgr::registerSelection(Entity381 *et, std::string filename){
     unsigned int sid;
     if (this->reserveAudio(filename, false, sid)){
                 int lastIndex = -1;
                 for (int i = 0; i < soundPerEnt; i++){
-                    if (this->selectionSoundsDictionary[et.auioId][i] == -1){
+                    if (this->selectionSoundsDictionary[et->auioId][i] == -1){
                         lastIndex = i;
                         break;
                     }
@@ -525,12 +525,12 @@ bool SoundMgr::registerSelection(Entity381 et, std::string filename){
                     std::cout << "Could not register new sound, max allowed number per entity reached" << std::endl;
                     return false;
                 }
-                this->selectionSoundsDictionary[et.auioId][lastIndex] = sid;
+                this->selectionSoundsDictionary[et->auioId][lastIndex] = sid;
                 alSourcei(this->sourceInfo[sid].source, AL_REFERENCE_DISTANCE, 2000.0f);
                 alSourcei(this->sourceInfo[sid].source, AL_MAX_DISTANCE, 8000.0f);
 
                 sourceDictionary[sid] = filename;
-                et.soundFile = filename;
+                et->soundFile = filename;
                 return true;
     }
     else
