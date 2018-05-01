@@ -115,14 +115,30 @@ void InputMgr::UpdateVelocityAndSelection(float dt){
 		engine->entityMgr->player->desiredHeading += deltaHeading;
 	}
 
+	if((keyboardTimer < 0) && (mKeyboard->isKeyDown(OIS::KC_L))) {
+
+		std::cout << "* - * You pressed L * - *" << std::endl;
+		unsigned int playShoot3 = 7;
+		bool playSoundCheck = engine->soundMgr->playAudio(playShoot3,false);
+		std::cout << "playSoundCheck is: " << std::boolalpha << playSoundCheck << std::endl;
+		std::cout << "* - * Done pressing L * - *" << std::endl;
+
+	}
+
+
+
 	if((keyboardTimer < 0) && (mKeyboard->isKeyDown(OIS::KC_SPACE))) {
 
 		//If space is pressed, play shooting noise
-		std::cout << "...Playing shoot noise..." << std::endl;
+
+		//std::cout << "...Playing shoot noise..." << std::endl;
 		//engine->soundMgr->playSelectionSound(engine->entityMgr->player);
-		engine->soundMgr->playAudioSourceIndex(2);
-		std::cout << "...Done playing shoot noise..." << std::endl;
-		//
+		//engine->soundMgr->playAudioSourceIndex(2);
+		//std::string filename = "data/watercraft/sounds/shoot.wav";
+		//engine->soundMgr->getBufferId(filename);
+		//std::cout << "...Done playing shoot noise..." << std::endl;
+
+		// end sound stuff for space button
 
 		keyboardTimer = keyTime;
 

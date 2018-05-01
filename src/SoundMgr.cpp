@@ -118,7 +118,7 @@ void SoundMgr::initialize(void){
         }
 	std::cout << "background music loaded" << std::endl;
 
-        initWatercraftSounds();
+        //initWatercraftSounds();
 
         //filename = "data/watercraft/sounds/explosion.wav";
         //default explosion sound for all entities
@@ -525,12 +525,22 @@ bool SoundMgr::registerSelection(Entity381 *et, std::string filename){
                     std::cout << "Could not register new sound, max allowed number per entity reached" << std::endl;
                     return false;
                 }
+                std::cout << "   In registerSelection ---" << std::endl;
+                std::cout << "   |     et->auioId is: " << et->auioId << std::endl;
+                std::cout << "   |     lastIndex for this entity is: " << lastIndex << std::endl;
+                std::cout << "   |     sid is: " << sid << std::endl;
+
                 this->selectionSoundsDictionary[et->auioId][lastIndex] = sid;
                 alSourcei(this->sourceInfo[sid].source, AL_REFERENCE_DISTANCE, 2000.0f);
                 alSourcei(this->sourceInfo[sid].source, AL_MAX_DISTANCE, 8000.0f);
 
                 sourceDictionary[sid] = filename;
                 et->soundFile = filename;
+
+                std::cout << "   |     soundFile is: " << filename << std::endl;
+                std::cout << "   |     soundFile in sourceDictionary[sid] is: " << sourceDictionary[sid] << std::endl;
+                std::cout << "   Done registerSelection ---" << std::endl;
+
                 return true;
     }
     else
@@ -626,6 +636,25 @@ bool SoundMgr::reserveAudio(std::string filename, bool loop, unsigned int &sourc
 	if (printError("Error in binding source to buffer for ") < 0){
 		return false;
 	}
+
+	//NOTE: GARYS DEBUGGING CODE
+	std::cout << "Begin listing source usage" << std::endl;
+	for(int i = 0; i < maxAudioSources; i++){
+		std::cout << "At index " << i << ", in use:" << std::boolalpha << sourceInfo[i].inUse << std::endl;
+	}
+
+	std::cout << std::endl << std::endl;
+
+	std::cout << "Begin listing buffer file names" << std::endl;
+	for(int i = 0; i < maxAudioBuffers; i++){
+
+		std::cout << "At index: " << i << ", name: " << bufferInfo[i].bufferFilename;
+		std::cout << " at buffer # " << bufferInfo[i].buffer << std::endl;
+
+	}
+
+	//NOTE: END DEBUGGING CODE
+
 	return true; //return error code
 }
 
@@ -776,6 +805,8 @@ bool SoundMgr::loadAudio(std::string filename, int index){
 		return false;
 	}
 
+	std::cout << "\     In loadAudio. Buffer index: " << index << std::endl;
+	std::cout << "\     File name: " << filename << std::endl;
 	this->bufferInfo[index].bufferFilename = filename;
 
 	return true;

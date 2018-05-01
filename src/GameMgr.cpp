@@ -65,10 +65,25 @@ void GameMgr::MakePlayer() {
 	std::cout << "--- BEGIN REGISTERING shoot.wav SOUND" << std::endl;
 
 	std::string filename = "data/watercraft/sounds/shoot.wav";
-	unsigned int shootId = 2;
+	unsigned int shootId = 3;
+
 	engine->soundMgr->loadAudio(filename,shootId);
-	//engine->entityMgr->player->auioId = 1;
+	std::cout << "|     Loaded audio" << std::endl;
+
+	engine->entityMgr->player->auioId = 3;
+	engine->soundMgr->releaseSource(shootId);
+	std::cout << "|     Released source " << shootId << std::endl;
+
+
 	//engine->soundMgr->registerSelection(engine->entityMgr->player,filename);
+	std::cout << "|     Registered shoot.wav to player" << shootId << std::endl;
+
+	engine->soundMgr->reserveAudio(filename,false,shootId);
+	std::cout << "|     Reserved shoot.wav to sound ID " << shootId << std::endl;
+
+	engine->soundMgr->attachSelectedNodeToSoundIndex(engine->entityMgr->player, shootId);
+	std::cout << "|     Attached shoot.wav to player node" << std::endl;
+
 	engine->entityMgr->player->playSound = true;
 
 	std::cout << "--- DONE REGISTERING shoot.wav SOUND" << std::endl;

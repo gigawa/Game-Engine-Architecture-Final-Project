@@ -25,7 +25,8 @@
 class Entity381;
 
 namespace OgreSND {
-    const int soundPerEnt = 3;      // max different sounds to randomly choose per entity
+
+    const int soundPerEnt = 5;      // max different sounds to randomly choose per entity
 	const int maxAudioBuffers = 63; // + 1 for background music
 	const int maxAudioSources = 15; // + 1 for background music
 	const std::string backgroundMusicFilename = "data/watercraft/sounds/backgroundMusic.wav";
@@ -44,6 +45,7 @@ namespace OgreSND {
 	} BufferInfo;
 
 	class SoundMgr : public Mgr , public Ogre::FrameListener {
+
 	private:
 		//OgreGFX::GraphicsInteractionManager *gim;
 		ALCdevice  *device;
@@ -72,7 +74,10 @@ namespace OgreSND {
 
 		//other formats with time
 		std::string getFQFNFromFilename(std::string filename);
-		int getBufferId(std::string filename);
+
+		//NOTE:moved to public to mess with it
+		//int getBufferId(std::string filename);
+
 		//int firstIndexNotInUse(bool inUse[], int size);
 		int getEmptySourceIndex();
 		bool resetSource(ALuint sid);
@@ -82,6 +87,11 @@ namespace OgreSND {
 	public:
 		SoundMgr(Engine* eng);
 		~SoundMgr();
+
+		//NOTE:moved from private to mess with it
+		int getBufferId(std::string filename);
+
+
 		//default methods
 		void initialize();
 		void crosslink();
