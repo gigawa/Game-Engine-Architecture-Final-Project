@@ -66,31 +66,65 @@ void GameMgr::MakePlayer() {
 
 		//Shooting noise - shoot.wav
 	std::string filename = "data/watercraft/sounds/shoot.wav";
-	unsigned int shootId = 3;
+	unsigned int soundID = 3;
 
-	engine->soundMgr->loadAudio(filename,shootId);
+	engine->soundMgr->loadAudio(filename,soundID);
 	std::cout << "|     Loaded shoot.wav audio" << std::endl;
 
 	engine->entityMgr->player->auioId = 3;
 
-	engine->soundMgr->reserveAudio(filename,false,shootId);
-	std::cout << "|     Reserved shoot.wav to sound ID " << shootId << std::endl;
+	engine->soundMgr->reserveAudio(filename,false,soundID);
+	std::cout << "|     Reserved shoot.wav to sound ID " << soundID << std::endl;
+
+	engine->soundMgr->listSourceAndBuffer();
 
 		//Moving noise - moving.wav
-	std::string filename2 = "data/watercraft/sounds/moving.wav";
-	shootId++;
 
-	engine->soundMgr->loadAudio(filename2,shootId);
+	//TESTING RELEASE BUFFER
+	//std::cout << "[[[[[ RELEASING SOURCE..." << std::endl;
+	//engine->soundMgr->releaseSource(3);
+	//std::cout << "[[[[[ SOURCE RELEASED." << std::endl;
+
+	std::string filename2 = "data/watercraft/sounds/moving.wav";
+	soundID++;
+
+	engine->soundMgr->loadAudio(filename2,soundID);
 	std::cout << "|     Loaded moving.wav audio" << std::endl;
 
-	engine->soundMgr->reserveAudio(filename2,false,shootId);
-	std::cout << "|     Reserved moving.wav to sound ID " << shootId << std::endl;
+	engine->soundMgr->reserveAudio(filename2,false,soundID);
+	std::cout << "|     Reserved moving.wav to sound ID " << soundID << std::endl;
 
-		//On-hit noise - onhit.wav
+	engine->soundMgr->listSourceAndBuffer();
+
+		//On-hit noise for when player is hit - onhit.wav
+	std::string filename3 = "data/watercraft/sounds/player_onhit.wav";
+	soundID++;
+
+	engine->soundMgr->loadAudio(filename3,soundID);
+	std::cout << "|     Loaded player_onhit.wav audio" << std::endl;
+
+	engine->soundMgr->reserveAudio(filename3,false,soundID);
+	std::cout << "|     Reserved player_onhit.wav to sound ID " << soundID << std::endl;
+
+	engine->soundMgr->listSourceAndBuffer();
+
+	//std::cout << "[[[[[ DELETING ALL BUFFERS..." << std::endl;
+	//engine->soundMgr->deleteAllBuffers();
+	//std::cout << "[[[[[ FINISHED DELETING ALL BUFFERS..." << std::endl;
+	//engine->soundMgr->listSourceAndBuffer();
 
 
 		//Destruction noise - destroyed.wav
+	std::string filename4 = "data/watercraft/sounds/destroyed.wav";
+	soundID++;
 
+	engine->soundMgr->loadAudio(filename4,soundID);
+	std::cout << "|     Loaded destroyed.wav audio" << std::endl;
+
+	engine->soundMgr->reserveAudio(filename4,false,soundID);
+	std::cout << "|     Reserved destroyed.wav to sound ID " << soundID << std::endl;
+
+	engine->soundMgr->listSourceAndBuffer();
 
 		//NOTE: add a power-up collection noise, power-up execution and deletion
 

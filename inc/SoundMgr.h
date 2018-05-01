@@ -91,6 +91,9 @@ namespace OgreSND {
 		//NOTE:moved from private to mess with it
 		int getBufferId(std::string filename);
 
+		//NOTE: lists all source IDs and buffer IDs + names
+		void listSourceAndBuffer();
+		//void deleteAllBuffers();
 
 		//default methods
 		void initialize();

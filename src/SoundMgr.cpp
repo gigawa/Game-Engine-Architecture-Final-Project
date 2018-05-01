@@ -231,6 +231,39 @@ bool SoundMgr::frameEnded(const Ogre::FrameEvent& evt){
 	return true;
 }
 
+//NOTE: Lists all source and buffer information
+void SoundMgr::listSourceAndBuffer(void){
+
+	//NOTE: GARYS DEBUGGING CODE
+	std::cout << "Begin listing source usage" << std::endl;
+	for(int i = 0; i < maxAudioSources; i++){
+		std::cout << "At index " << i << ", in use:" << std::boolalpha << sourceInfo[i].inUse << std::endl;
+	}
+
+	std::cout << std::endl << std::endl;
+
+	std::cout << "Begin listing buffer file names" << std::endl;
+	for(int i = 0; i < maxAudioBuffers; i++){
+
+		std::cout << "At index: " << i << ", name: " << bufferInfo[i].bufferFilename;
+		std::cout << " at buffer # " << bufferInfo[i].buffer << std::endl;
+
+	}
+
+	//NOTE: END DEBUGGING CODE
+
+}
+
+/*
+void SoundMgr::deleteAllBuffers(){
+
+	ALsizei n = maxAudioBuffers;
+	//ALuint *deleteBuffer = &bufferInfo->buffer;
+	ALuint *deleteBuffer = &bufferInfo[9].buffer;
+
+	alDeleteBuffers(n,deleteBuffer);
+
+}*/
 
 
 void SoundMgr::crosslink(void){
@@ -636,24 +669,6 @@ bool SoundMgr::reserveAudio(std::string filename, bool loop, unsigned int &sourc
 	if (printError("Error in binding source to buffer for ") < 0){
 		return false;
 	}
-
-	//NOTE: GARYS DEBUGGING CODE
-	std::cout << "Begin listing source usage" << std::endl;
-	for(int i = 0; i < maxAudioSources; i++){
-		std::cout << "At index " << i << ", in use:" << std::boolalpha << sourceInfo[i].inUse << std::endl;
-	}
-
-	std::cout << std::endl << std::endl;
-
-	std::cout << "Begin listing buffer file names" << std::endl;
-	for(int i = 0; i < maxAudioBuffers; i++){
-
-		std::cout << "At index: " << i << ", name: " << bufferInfo[i].bufferFilename;
-		std::cout << " at buffer # " << bufferInfo[i].buffer << std::endl;
-
-	}
-
-	//NOTE: END DEBUGGING CODE
 
 	return true; //return error code
 }

@@ -42,6 +42,10 @@ void EntityMgr::DestroyEnemy(int index) {
 	count--;
 	enemy->DestroyEntity();
 
+	//NOTE: Added destruction noise
+	unsigned int playDestroyed13 = 13;
+	engine->soundMgr->playAudio(playDestroyed13);
+
 }
 
 void EntityMgr::CreateEntityOfTypeAtPosition(EntityTypes entType, Ogre::Vector3 pos){

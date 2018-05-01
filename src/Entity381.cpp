@@ -146,6 +146,11 @@ void EnemyTank::Shoot() {
 		//PrintVector(bulletRay.getPoint(result.second));
 		player->health -= 10;
 		std::cout << "Hit Health: " << player->health << std::endl;
+
+		//NOTE: Added sound of on-hit
+		unsigned int playPlayerOnHit11 = 11;
+		engine->soundMgr->playAudio(playPlayerOnHit11);
+
 	} else {
 		std::cout << "Not Hit" << std::endl;
 	}

@@ -51,11 +51,11 @@ void UIMgr::LoadLevel(){
 	Ogre::StringVector options;
 	options.push_back("Menu");
 	options.push_back("Create Enemy Tank");
-	options.push_back("Play Sound");
+	options.push_back("START!");
 	options.push_back("Selection 3");
 	mTrayMgr->createLongSelectMenu(OgreBites::TL_TOPRIGHT, "MyMenu", "Menu", 300, 4,options);
 
-	//mTrayMgr->showBackdrop("ECSLENT/UI");
+	mTrayMgr->showBackdrop("ECSLENT/UI");
 
 	mLabel = mTrayMgr->createLabel(OgreBites::TL_TOPRIGHT,"MyLabel","LABEL!!!",250);
 	mLabel->setCaption("MENU!!!");
@@ -136,9 +136,9 @@ void UIMgr::itemSelected(OgreBites::SelectMenu *m){
     	break;
     case 2:
     	//engine->entityMgr->CreateEntityOfTypeAtPosition(DDG51Type,pos);
-    	std::cout <<"Played sound! (Not really)" << std::endl;
-    	engine->soundMgr->playAudio((engine->entityMgr->player->auioId),true);
-    	mLabel->setCaption("You played sound (Not really)");
+    	std::cout <<"STARTED!" << std::endl;
+    	mTrayMgr->hideBackdrop();
+    	mLabel->setCaption("STARTED!!!");
     	m->selectItem(0,true);
     	break;
     case 3:
