@@ -61,6 +61,8 @@ void GameMgr::MakePlayer() {
 	cameraPitchNode->attachObject(engine->gfxMgr->mCamera);
 	engine->gfxMgr->mCamera->lookAt(Ogre::Vector3(0, 50, 0));
 
+
+
 	//Registering sounds for the player
 	std::cout << "--- BEGIN REGISTERING shoot.wav SOUND" << std::endl;
 
