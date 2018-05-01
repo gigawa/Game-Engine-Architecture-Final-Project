@@ -100,45 +100,55 @@ void InputMgr::UpdateVelocityAndSelection(float dt){
 	keyboardTimer -= dt;
 
 	if((mKeyboard->isKeyDown(OIS::KC_UP) || mKeyboard->isKeyDown(OIS::KC_W))){
+
+		//NOTE: If W/UP, S/DOWN, A/LEFT, or D/RIGHT is pressed, play moving noise
+
+		unsigned int playMoving9 = 9;
+		engine->soundMgr->playAudio(playMoving9,false);
+
+		// end sound stuff for moving
+
+
 		engine->entityMgr->player->desiredSpeed = engine->entityMgr->player->maxSpeed;
-	}else if((mKeyboard->isKeyDown(OIS::KC_DOWN) || mKeyboard->isKeyDown(OIS::KC_S))){
-		engine->entityMgr->player->desiredSpeed = -1 * engine->entityMgr->player->maxSpeed;
-	}else {
-		engine->entityMgr->player->desiredSpeed = 0;
 	}
+	else if((mKeyboard->isKeyDown(OIS::KC_DOWN) || mKeyboard->isKeyDown(OIS::KC_S))){
+		unsigned int playMoving9 = 9;
+		engine->soundMgr->playAudio(playMoving9,false);
+
+		engine->entityMgr->player->desiredSpeed = -1 * engine->entityMgr->player->maxSpeed;
+	}
+	else {
+		engine->entityMgr->player->desiredSpeed = 0;
+	}//end if
+
+
 
 	if(( mKeyboard->isKeyDown(OIS::KC_LEFT) || mKeyboard->isKeyDown(OIS::KC_A))){
+		unsigned int playMoving9 = 9;
+		engine->soundMgr->playAudio(playMoving9,false);
+
 		engine->entityMgr->player->desiredHeading -= deltaHeading;
 		//turn left is decreasing degrees, turn right is increasing degrees because increasing degrees gives us the +ive Z axis
-	}
+	}//end if
+
+
 	if((mKeyboard->isKeyDown(OIS::KC_RIGHT) || mKeyboard->isKeyDown(OIS::KC_D))){
+		unsigned int playMoving9 = 9;
+		engine->soundMgr->playAudio(playMoving9,false);
+
 		engine->entityMgr->player->desiredHeading += deltaHeading;
-	}
-
-	if((keyboardTimer < 0) && (mKeyboard->isKeyDown(OIS::KC_L))) {
-
-		std::cout << "* - * You pressed L * - *" << std::endl;
-		unsigned int playShoot3 = 7;
-		bool playSoundCheck = engine->soundMgr->playAudio(playShoot3,false);
-		std::cout << "playSoundCheck is: " << std::boolalpha << playSoundCheck << std::endl;
-		std::cout << "* - * Done pressing L * - *" << std::endl;
-
-	}
+	}//end if
 
 
 
 	if((keyboardTimer < 0) && (mKeyboard->isKeyDown(OIS::KC_SPACE))) {
 
-		//If space is pressed, play shooting noise
+		//NOTE: If space is pressed, play shooting noise
 
-		//std::cout << "...Playing shoot noise..." << std::endl;
-		//engine->soundMgr->playSelectionSound(engine->entityMgr->player);
-		//engine->soundMgr->playAudioSourceIndex(2);
-		//std::string filename = "data/watercraft/sounds/shoot.wav";
-		//engine->soundMgr->getBufferId(filename);
-		//std::cout << "...Done playing shoot noise..." << std::endl;
+		unsigned int playShoot7 = 7;
+		engine->soundMgr->playAudio(playShoot7,true);
 
-		// end sound stuff for space button
+		// end sound stuff for shooting
 
 		keyboardTimer = keyTime;
 
@@ -169,11 +179,19 @@ void InputMgr::UpdateVelocityAndSelection(float dt){
 					testEntity->health -= 10;
 					std::cout << "Hit Health: " << testEntity->health << std::endl;
 					hit = true;
-				} else {
-					std::cout << "Not Hit" << std::endl;
 				}
-			}
-		}
+				else {
+					std::cout << "Not Hit" << std::endl;
+				}//end if
+			}// end if
+		}//end for
+	}//end if
+
+	//If player is no longer moving, and moving.wav is still playing, stop moving.wav
+	//std::cout << "Desired speed is: " << engine->entityMgr->player->desiredSpeed << std::endl;
+	unsigned int playMoving9 = 9;
+	if(engine->entityMgr->player->desiredSpeed == 0 && engine->soundMgr->isAudioPlaying(playMoving9)){
+		engine->soundMgr->stopAudio(playMoving9);
 	}
 }
 
@@ -182,12 +200,24 @@ void InputMgr::LoadLevel(){
 }
 
 bool InputMgr::keyPressed(const OIS::KeyEvent& ke){
+
+	switch (ke.key){
+
+		case OIS::KC_O:
+			std::cout << "You pressed O" << std::endl;
+			break;
+
+		default:
+			break;
+	}
+
 	return true;
 }
 
 bool InputMgr::keyReleased(const OIS::KeyEvent& ke){
 	return true;
 }
+
 
 bool InputMgr::mouseMoved(const OIS::MouseEvent& me){
 

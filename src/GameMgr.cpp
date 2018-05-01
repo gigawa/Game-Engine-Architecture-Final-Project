@@ -64,29 +64,37 @@ void GameMgr::MakePlayer() {
 	//Registering sounds for the player
 	std::cout << "--- BEGIN REGISTERING shoot.wav SOUND" << std::endl;
 
+		//Shooting noise - shoot.wav
 	std::string filename = "data/watercraft/sounds/shoot.wav";
 	unsigned int shootId = 3;
 
 	engine->soundMgr->loadAudio(filename,shootId);
-	std::cout << "|     Loaded audio" << std::endl;
+	std::cout << "|     Loaded shoot.wav audio" << std::endl;
 
 	engine->entityMgr->player->auioId = 3;
-	engine->soundMgr->releaseSource(shootId);
-	std::cout << "|     Released source " << shootId << std::endl;
-
-
-	//engine->soundMgr->registerSelection(engine->entityMgr->player,filename);
-	std::cout << "|     Registered shoot.wav to player" << shootId << std::endl;
 
 	engine->soundMgr->reserveAudio(filename,false,shootId);
 	std::cout << "|     Reserved shoot.wav to sound ID " << shootId << std::endl;
 
-	engine->soundMgr->attachSelectedNodeToSoundIndex(engine->entityMgr->player, shootId);
-	std::cout << "|     Attached shoot.wav to player node" << std::endl;
+		//Moving noise - moving.wav
+	std::string filename2 = "data/watercraft/sounds/moving.wav";
+	shootId++;
 
-	engine->entityMgr->player->playSound = true;
+	engine->soundMgr->loadAudio(filename2,shootId);
+	std::cout << "|     Loaded moving.wav audio" << std::endl;
 
-	std::cout << "--- DONE REGISTERING shoot.wav SOUND" << std::endl;
+	engine->soundMgr->reserveAudio(filename2,false,shootId);
+	std::cout << "|     Reserved moving.wav to sound ID " << shootId << std::endl;
+
+		//On-hit noise - onhit.wav
+
+
+		//Destruction noise - destroyed.wav
+
+
+		//NOTE: add a power-up collection noise, power-up execution and deletion
+
+	std::cout << "--- DONE REGISTERING SOUND" << std::endl;
 
 }
 
