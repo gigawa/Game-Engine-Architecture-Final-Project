@@ -31,6 +31,21 @@ void UnitAI::Tick(float dt) {
 			commands.pop_front();
 		}
 	}
+
+	if(entity == entity->engine->entityMgr->player) {
+		for (int i = 0; i < (int)entity->engine->entityMgr->items.size(); i++) {
+			EntityItem * testEntity = entity->engine->entityMgr->items[i];
+
+			if (testEntity->destroyed == false) {
+				bool result = entity->sceneNode->_getWorldAABB().intersects(testEntity->sceneNode->_getWorldAABB());
+
+				if(result) {
+					//std::cout << "Hit Item" << std::endl;
+					entity->engine->entityMgr->ApplyItem(i);
+				}
+			}
+		}
+	}
 }
 
 void UnitAI::SetCommand(Command *c) {

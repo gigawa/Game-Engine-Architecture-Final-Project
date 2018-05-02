@@ -23,6 +23,7 @@
 GameMgr::GameMgr(Engine *engine): Mgr(engine) {
 	cameraNode = 0;
 	cameraPitchNode = 0;
+	itemsLeft = 0;
 }
 
 GameMgr::~GameMgr() {
@@ -45,6 +46,7 @@ void GameMgr::LoadLevel(){
 	  MakeGround();
 	  MakeSky();
 	  MakeEntities();
+	  MakeItems();
 }
 
 void GameMgr::MakePlayer() {
@@ -137,6 +139,18 @@ void GameMgr::MakePlayer() {
 void GameMgr::MakeEntities(){
 	Ogre::Vector3 pos = Ogre::Vector3(0, 0, 1000);
 	engine->entityMgr->CreateEntityOfTypeAtPosition(EnemyTankType, pos);
+}
+
+void GameMgr::MakeItems() {
+	Ogre::Vector3 pos = Ogre::Vector3(500, 1, 0);
+	int multiplier = 100;
+
+	for(int i = 0; i < 5; i++) {
+		pos.x += multiplier;
+		engine->entityMgr->CreateEntityOfTypeAtPosition(ItemType, pos);
+		itemsLeft++;
+		std::cout << "Items Left: " << itemsLeft << std::endl;
+	}
 }
 
 void GameMgr::MakeGround(){

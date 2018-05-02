@@ -22,10 +22,13 @@ public:
 	void MakeSky();
 	void MakeEntities();
 	void MakePlayer();
+	void MakeItems();
 
 	Ogre::SceneNode *cameraNode;
 	Ogre::SceneNode *cameraPitchNode;
 	Ogre::Plane groundPlane;
+
+	int itemsLeft;
 
 };
 

@@ -4,6 +4,7 @@
 #include <vector>
 #include <Mgr.h>
 #include <Entity381.h>
+#include <EntityItem.h>
 #include <Types381.h>
 
 class EntityMgr: public Mgr {
@@ -14,6 +15,7 @@ public:
   //Engine *engine;
 
   std::vector<Entity381*> entities;
+  std::vector<EntityItem*> items;
 
   Entity381 * player;
 
@@ -22,6 +24,7 @@ public:
 
   void CreateEntityOfTypeAtPosition(EntityTypes type, Ogre::Vector3 pos);
   void DestroyEnemy(int index);
+  void ApplyItem(int index);
 
   void Tick(float dt);
 

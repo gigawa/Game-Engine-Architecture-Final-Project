@@ -39,8 +39,9 @@ void EntityMgr::CreatePlayer(Ogre::Vector3 pos){
 
 void EntityMgr::CreateItem(Ogre::Vector3 pos) {
 	EntityItem *ent = new EntityItem(this->engine, "cube.mesh", pos, count);
-	count++;
-	entities.push_back((Entity381 *) ent);
+	std::cout << "Created in MGR" << std::endl;
+	items.push_back((EntityItem *) ent);
+	std::cout << "Pushed Back" << std::endl;
 }
 
 void EntityMgr::DestroyEnemy(int index) {
@@ -52,7 +53,11 @@ void EntityMgr::DestroyEnemy(int index) {
 	//NOTE: Added destruction noise
 	unsigned int playDestroyed13 = 13;
 	engine->soundMgr->playAudio(playDestroyed13);
+}
 
+void EntityMgr::ApplyItem(int index) {
+	EntityItem * item = items[index];
+	item->ApplyItem();
 }
 
 void EntityMgr::CreateEntityOfTypeAtPosition(EntityTypes entType, Ogre::Vector3 pos){
@@ -63,6 +68,9 @@ void EntityMgr::CreateEntityOfTypeAtPosition(EntityTypes entType, Ogre::Vector3 
 		break;
 	case EnemyTankType:
 		CreateEnemy(pos);
+		break;
+	case ItemType:
+		CreateItem(pos);
 		break;
 	default:
 		CreateEntity("robot.mesh", pos);

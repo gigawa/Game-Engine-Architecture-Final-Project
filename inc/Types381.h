@@ -4,6 +4,7 @@
 enum EntityTypes {
 	PlayerType,
 	EnemyTankType,
+	ItemType,
 };
 
 
