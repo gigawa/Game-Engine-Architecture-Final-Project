@@ -45,8 +45,8 @@ void EntityMgr::CreateItem(Ogre::Vector3 pos) {
 
 void EntityMgr::DestroyEnemy(int index) {
 	Entity381 * enemy = entities[index];
-	entities.erase(entities.begin() + index);
-	count--;
+	//entities.erase(entities.begin() + index);
+	//count--;
 	enemy->DestroyEntity();
 
 	//NOTE: Added destruction noise

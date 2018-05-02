@@ -21,7 +21,7 @@ UnitAI::~UnitAI() {
 void UnitAI::Tick(float dt) {
 
 	if(entity->health <= 0) {
-		std::cout << "No health" << std::endl;
+		//std::cout << "No health" << std::endl;
 		entity->engine->entityMgr->DestroyEnemy(entity->identity);
 	}
 
