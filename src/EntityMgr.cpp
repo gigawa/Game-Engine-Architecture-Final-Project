@@ -7,6 +7,7 @@
 
 #include <EntityMgr.h>
 #include <Engine.h>
+#include <EntityItem.h>
 
 EntityMgr::EntityMgr(Engine *eng): Mgr(eng){
 	count = 0;
@@ -36,10 +37,16 @@ void EntityMgr::CreatePlayer(Ogre::Vector3 pos){
 	entities.push_back((Entity381 *) ent);
 }
 
+void EntityMgr::CreateItem(Ogre::Vector3 pos) {
+	EntityItem *ent = new EntityItem(this->engine, "cube.mesh", pos, count);
+	count++;
+	entities.push_back((Entity381 *) ent);
+}
+
 void EntityMgr::DestroyEnemy(int index) {
 	Entity381 * enemy = entities[index];
-	entities.erase(entities.begin() + index);
-	count--;
+	//entities.erase(entities.begin() + index);
+	//count--;
 	enemy->DestroyEntity();
 
 	//NOTE: Added destruction noise
