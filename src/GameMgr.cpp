@@ -46,7 +46,7 @@ void GameMgr::LoadLevel(){
 	  MakeGround();
 	  MakeSky();
 	  MakeEntities();
-	  MakeItems();
+	  //MakeItems();
 }
 
 void GameMgr::MakePlayer() {
@@ -139,6 +139,11 @@ void GameMgr::MakePlayer() {
 void GameMgr::MakeEntities(){
 	Ogre::Vector3 pos = Ogre::Vector3(0, 0, 1000);
 	engine->entityMgr->CreateEntityOfTypeAtPosition(EnemyTankType, pos);
+}
+
+void GameMgr::MakeItem(Ogre::Vector3 pos) {
+	engine->entityMgr->CreateEntityOfTypeAtPosition(ItemType, pos);
+	itemsLeft++;
 }
 
 void GameMgr::MakeItems() {

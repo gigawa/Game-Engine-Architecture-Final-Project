@@ -24,6 +24,8 @@ public:
 	void MakePlayer();
 	void MakeItems();
 
+	void MakeItem(Ogre::Vector3 pos);
+
 	Ogre::SceneNode *cameraNode;
 	Ogre::SceneNode *cameraPitchNode;
 	Ogre::Plane groundPlane;

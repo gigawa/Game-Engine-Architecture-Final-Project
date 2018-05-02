@@ -8,6 +8,7 @@
 #include <UIMgr.h>
 #include <Engine.h>
 #include <GfxMgr.h>
+#include <GameMgr.h>
 #include <InputMgr.h>
 #include <EntityMgr.h>
 #include <Entity381.h>
@@ -181,8 +182,11 @@ void UIMgr::itemSelected(OgreBites::SelectMenu *m){
     	Ogre::Real zDemo = playerPos.z;
 
     	engine->entityMgr->CreateEntityOfTypeAtPosition(EnemyTankType,(Ogre::Vector3(xDemo+500,yDemo,zDemo-100)));
+    	engine->gameMgr->MakeItem(Ogre::Vector3(xDemo+500,yDemo,zDemo-100));
     	engine->entityMgr->CreateEntityOfTypeAtPosition(EnemyTankType,(Ogre::Vector3(xDemo+800,yDemo,zDemo+200)));
+    	engine->gameMgr->MakeItem(Ogre::Vector3(xDemo+800,yDemo,zDemo+200));
     	engine->entityMgr->CreateEntityOfTypeAtPosition(EnemyTankType,(Ogre::Vector3(xDemo+1000,yDemo,zDemo-150)));
+    	engine->gameMgr->MakeItem(Ogre::Vector3(xDemo+1000,yDemo,zDemo-150));
     	//engine->entityMgr->CreateEntityOfTypeAtPosition(EnemyTankType,(Ogre::Vector3(xDemo+1300,yDemo,zDemo-300)));
     	//engine->entityMgr->CreateEntityOfTypeAtPosition(EnemyTankType,(Ogre::Vector3(xDemo+1400,yDemo,zDemo+100)));
 
