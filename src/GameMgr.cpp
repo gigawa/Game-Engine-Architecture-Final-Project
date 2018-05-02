@@ -148,9 +148,10 @@ void GameMgr::MakeGround(){
 	    "ground",
 	    Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
 	    plane,
-	    15000, 15000, 20, 20,
+	    //15000, 15000, 20, 20,
+		10000, 10000, 20, 20,
 	    true,
-	    1, 5, 5,
+	    1, 50, 50,
 	    Ogre::Vector3::UNIT_Z);
 
 	  Ogre::Entity* groundEntity = engine->gfxMgr->mSceneMgr->createEntity("ground");
@@ -159,7 +160,7 @@ void GameMgr::MakeGround(){
 	  //groundEntity->setMaterialName("Ocean2_HLSL_GLSL");
 	  //groundEntity->setMaterialName("OceanHLSL_GLSL");
 	  groundEntity->setMaterialName("Ocean2_Cg");
-	  //groundEntity->setMaterialName("NavyCg");
+	  groundEntity->setMaterialName("Examples/Rockwall");
 }
 
 void GameMgr::MakeSky(){
