@@ -38,6 +38,8 @@ public:
 
   float health;
 
+  bool destroyed;
+
   std::vector<Aspect*> aspects;
   UnitAI * unitAI;
 

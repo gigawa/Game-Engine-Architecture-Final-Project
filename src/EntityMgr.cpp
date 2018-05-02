@@ -72,6 +72,8 @@ void EntityMgr::CreateEntityOfTypeAtPosition(EntityTypes entType, Ogre::Vector3 
 
 void EntityMgr::Tick(float dt){
 	for(int i = 0; i < count; i++){
-		entities[i]->Tick(dt);
+		if(entities[i]->destroyed == false) {
+			entities[i]->Tick(dt);
+		}
 	}
 }

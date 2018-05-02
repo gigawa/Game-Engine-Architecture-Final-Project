@@ -161,7 +161,7 @@ void InputMgr::UpdateVelocityAndSelection(float dt){
 		for (int i = 0; i < (int)engine->entityMgr->entities.size() && !hit; i++) {
 			Entity381 * testEntity = engine->entityMgr->entities[i];
 
-			if (testEntity != engine->entityMgr->player) {
+			if (testEntity != engine->entityMgr->player && testEntity->destroyed == false) {
 				std::pair<bool, Ogre::Real> result = bulletRay.intersects(testEntity->sceneNode->_getWorldAABB());
 
 				/*std::cout << "Player Direction: ";
