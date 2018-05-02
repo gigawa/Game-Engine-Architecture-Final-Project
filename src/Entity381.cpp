@@ -55,11 +55,13 @@ Entity381::Entity381(Engine *engine, std::string meshfname, Ogre::Vector3 pos, i
 	this->playSound = false;
 	this->auioId = 0;
 	this->didSelectSoundPlay = false;
+	destroyed = false;
 
 
 }
 
 void Entity381::DestroyEntity() {
+	destroyed = true;
 	sceneNode->setVisible(false);
 	/*sceneNode->detachAllObjects();
 	engine->gfxMgr->mSceneMgr->destroySceneNode(sceneNode);
