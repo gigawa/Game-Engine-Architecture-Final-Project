@@ -234,7 +234,7 @@ bool SoundMgr::frameEnded(const Ogre::FrameEvent& evt){
 //NOTE: Lists all source and buffer information
 void SoundMgr::listSourceAndBuffer(void){
 
-	//NOTE: GARYS DEBUGGING CODE
+	//NOTE: GARYS DEBUGGING CODE - shows audio sources & buffer list information
 	std::cout << "Begin listing source usage" << std::endl;
 	for(int i = 0; i < maxAudioSources; i++){
 		std::cout << "At index " << i << ", in use:" << std::boolalpha << sourceInfo[i].inUse << std::endl;
