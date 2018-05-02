@@ -23,6 +23,7 @@ public:
 	void MakeEntities();
 	void MakePlayer();
 	void MakeItems();
+	void MakeWalls();
 
 	void MakeItem(Ogre::Vector3 pos);
 

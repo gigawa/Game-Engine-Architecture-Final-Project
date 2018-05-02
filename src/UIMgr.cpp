@@ -74,7 +74,7 @@ void UIMgr::LoadLevel(){
 	//Text box displaying number of enemies left
 	//int textDisplay = engine->entityMgr->entities.size();
 	//Ogre::String test = "lol";
-	enemiesLeftLabel = mTrayMgr->createLabel(OgreBites::TL_TOP,"MyKillfeedLabel", "Left: ", 100);
+	enemiesLeftLabel = mTrayMgr->createLabel(OgreBites::TL_TOP,"MyKillfeedLabel", "Left: ", 300);
 
 }
 
@@ -94,7 +94,7 @@ void UIMgr::Tick(float dt){
 	}
 
 	Ogre::String stringEnemiesLeft = engine->entityMgr->player->IntToString(enemiesLeft - 1);
-	enemiesLeftLabel->setCaption("Left: " + stringEnemiesLeft);
+	enemiesLeftLabel->setCaption("Enemies Left: " + stringEnemiesLeft);
 
 }
 

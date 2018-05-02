@@ -16,6 +16,7 @@ public:
 
   std::vector<Entity381*> entities;
   std::vector<EntityItem*> items;
+  std::vector<Wall*> walls;
 
   Entity381 * player;
   int count;
@@ -27,6 +28,8 @@ public:
   void ApplyItem(int index);
 
   void Tick(float dt);
+
+  void CreateWall(Ogre::Vector3 pos, Ogre::Vector3 scale);
 
 protected:
 

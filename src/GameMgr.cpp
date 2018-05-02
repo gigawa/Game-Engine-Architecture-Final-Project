@@ -45,7 +45,8 @@ void GameMgr::LoadLevel(){
 
 	  MakeGround();
 	  MakeSky();
-	  MakeEntities();
+	  //MakeEntities();
+	  MakeWalls();
 	  //MakeItems();
 }
 
@@ -139,6 +140,20 @@ void GameMgr::MakePlayer() {
 void GameMgr::MakeEntities(){
 	Ogre::Vector3 pos = Ogre::Vector3(0, 0, 1000);
 	engine->entityMgr->CreateEntityOfTypeAtPosition(EnemyTankType, pos);
+}
+
+void GameMgr::MakeWalls(){
+	std::cout << "Make Walls" << std::endl;
+	Ogre::Vector3 scalex = Ogre::Vector3(100, 2, 1);
+	Ogre::Vector3 scalez = Ogre::Vector3(1, 2, 100);
+	Ogre::Vector3 pos = Ogre::Vector3(0, 1, 2000);
+	engine->entityMgr->CreateWall(pos, scalex);
+	pos = Ogre::Vector3(0, 1, -2000);
+	engine->entityMgr->CreateWall(pos, scalex);
+	pos = Ogre::Vector3(2000, 1, 0);
+	engine->entityMgr->CreateWall(pos, scalez);
+	pos = Ogre::Vector3(-2000, 1, 0);
+	engine->entityMgr->CreateWall(pos, scalez);
 }
 
 void GameMgr::MakeItem(Ogre::Vector3 pos) {

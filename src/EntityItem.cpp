@@ -50,3 +50,30 @@ void EntityItem::ApplyItem() {
 	std::cout << "Items Left: " << engine->gameMgr->itemsLeft << std::endl;
 }
 
+Wall::Wall(Engine *engine, std::string meshfname, Ogre::Vector3 pos, int ident, Ogre::Vector3 scale){
+
+	this->engine = engine;
+
+
+	meshfilename = meshfname;
+	position = pos;
+	identity = ident;
+
+	char tmp[10000];
+	sprintf(tmp, "%i", ident);
+	std::string identString = std::string(tmp);
+
+	name = meshfname;
+
+	ogreEntity = engine->gfxMgr->mSceneMgr->createEntity(meshfilename);
+	sceneNode = engine->gfxMgr->mSceneMgr->getRootSceneNode()->createChildSceneNode(pos);
+	sceneNode->attachObject(ogreEntity);
+	sceneNode->scale(scale);
+	//sceneNode->showBoundingBox(true);
+
+}
+
+Wall::~Wall() {
+	// TODO Auto-generated destructor stub
+}
+

@@ -44,6 +44,13 @@ void EntityMgr::CreateItem(Ogre::Vector3 pos) {
 	std::cout << "Pushed Back" << std::endl;
 }
 
+void EntityMgr::CreateWall(Ogre::Vector3 pos, Ogre::Vector3 scale) {
+	Wall *ent = new Wall(this->engine, "cube.mesh", pos, count, scale);
+	std::cout << "Created in MGR" << std::endl;
+	walls.push_back((Wall *) ent);
+	std::cout << "Pushed Back" << std::endl;
+}
+
 void EntityMgr::DestroyEnemy(int index) {
 	Entity381 * enemy = entities[index];
 	//entities.erase(entities.begin() + index);

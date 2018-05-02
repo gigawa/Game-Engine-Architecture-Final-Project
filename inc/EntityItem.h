@@ -37,4 +37,21 @@ public:
 	bool destroyed;
 };
 
+class Wall {
+public:
+	Wall(Engine *engine, std::string meshfilename, Ogre::Vector3 pos, int identity, Ogre::Vector3 scale);
+	virtual ~Wall();
+
+	Engine *engine;
+
+	int identity;
+	std::string name;
+	std::string meshfilename;
+	Ogre::SceneNode* sceneNode;
+	Ogre::Entity*    ogreEntity;
+
+	//dynamic data
+	Ogre::Vector3 position;
+};
+
 #endif /* INC_ENTITYITEM_H_ */
