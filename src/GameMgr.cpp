@@ -141,14 +141,14 @@ void GameMgr::MakeEntities(){
 
 void GameMgr::MakeGround(){
 
-	Ogre::Plane plane(Ogre::Vector3::UNIT_Y, 0);
+	Ogre::Plane plane(Ogre::Vector3::UNIT_Y, -10);
 	groundPlane = plane;
 
 	  Ogre::MeshManager::getSingleton().createPlane(
 	    "ground",
 	    Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
 	    plane,
-	    15000, 15000, 20, 20,
+		15000, 15000, 20, 20,
 	    true,
 	    1, 5, 5,
 	    Ogre::Vector3::UNIT_Z);
@@ -158,8 +158,9 @@ void GameMgr::MakeGround(){
 	  groundEntity->setCastShadows(false);
 	  //groundEntity->setMaterialName("Ocean2_HLSL_GLSL");
 	  //groundEntity->setMaterialName("OceanHLSL_GLSL");
-	  groundEntity->setMaterialName("Ocean2_Cg");
-	  //groundEntity->setMaterialName("NavyCg");
+	  //groundEntity->setMaterialName("Ocean2_Cg");
+	  //groundEntity->setMaterialName("Examples/Rockwall");
+	  groundEntity->setMaterialName("Tabletop");
 }
 
 void GameMgr::MakeSky(){
