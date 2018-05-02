@@ -18,7 +18,7 @@ public:
   std::vector<EntityItem*> items;
 
   Entity381 * player;
-
+  int count;
 
   //Ogre::SceneManager *sceneMgr;
 
@@ -35,7 +35,9 @@ private:
   void CreatePlayer(Ogre::Vector3 pos);
   void CreateEnemy(Ogre::Vector3 pos);
   void CreateItem(Ogre::Vector3 pos);
-  int count;
+
+  //NOTE: Moved count to public so UIMgr can see it
+  //int count;
 
 };
 

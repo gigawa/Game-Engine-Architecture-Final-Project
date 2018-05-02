@@ -16,6 +16,7 @@ class Entity381
 public:
   Entity381(Engine *engine, std::string meshfilename, Ogre::Vector3 pos, int identity);
   virtual ~Entity381();
+  std::string IntToString(int x);
 
   Engine *engine;
 

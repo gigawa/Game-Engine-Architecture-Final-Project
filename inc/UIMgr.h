@@ -47,7 +47,9 @@ public:
 	OgreBites::SdkTrayManager* mTrayMgr;
 	Ogre::OverlaySystem* mOverlaySystem;
 	OgreBites::Label *mLabel;
+	OgreBites::Label *enemiesLeftLabel;
 	OgreBites::ProgressBar * pbar;
+
 
 
 };
