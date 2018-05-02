@@ -141,7 +141,7 @@ void GameMgr::MakeEntities(){
 
 void GameMgr::MakeGround(){
 
-	Ogre::Plane plane(Ogre::Vector3::UNIT_Y, 0);
+	Ogre::Plane plane(Ogre::Vector3::UNIT_Y, -10);
 	groundPlane = plane;
 
 	  Ogre::MeshManager::getSingleton().createPlane(
