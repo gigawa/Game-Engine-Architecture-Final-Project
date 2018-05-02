@@ -7,6 +7,7 @@
 
 #include <EntityMgr.h>
 #include <Engine.h>
+#include <EntityItem.h>
 
 EntityMgr::EntityMgr(Engine *eng): Mgr(eng){
 	count = 0;
@@ -32,6 +33,12 @@ void EntityMgr::CreateEnemy(Ogre::Vector3 pos) {
 void EntityMgr::CreatePlayer(Ogre::Vector3 pos){
 	Tank *ent = new Tank(this->engine, "cube.mesh", pos, count);
 	player = (Entity381*)ent;
+	count++;
+	entities.push_back((Entity381 *) ent);
+}
+
+void EntityMgr::CreateItem(Ogre::Vector3 pos) {
+	EntityItem *ent = new EntityItem(this->engine, "cube.mesh", pos, count);
 	count++;
 	entities.push_back((Entity381 *) ent);
 }
