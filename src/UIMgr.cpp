@@ -82,9 +82,18 @@ void UIMgr::Tick(float dt){
 	pbar->setProgress(engine->entityMgr->player->health/100);
 
 	//Update enemies left label
-	Ogre::String enemiesLeft = engine->entityMgr->player->IntToString(engine->entityMgr->entities.size() - 1);
-	enemiesLeftLabel->setCaption("Left: " + enemiesLeft);
+	//Ogre::String enemiesLeft = engine->entityMgr->player->IntToString(engine->entityMgr->entities.size() - 1);
+	//enemiesLeftLabel->setCaption("Left: " + enemiesLeft);
 
+	int enemiesLeft = 0;
+	for(int i = 0; i < engine->entityMgr->count; i++){
+		if(!engine->entityMgr->entities[i]->destroyed){
+			enemiesLeft++;
+		}
+	}
+
+	Ogre::String stringEnemiesLeft = engine->entityMgr->player->IntToString(enemiesLeft - 1);
+	enemiesLeftLabel->setCaption("Left: " + stringEnemiesLeft);
 
 }
 
