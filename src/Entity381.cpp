@@ -12,12 +12,6 @@
 #include<UnitAI.h>
 #include<EntityMgr.h>
 
-std::string IntToString(int x){
-	char tmp[10000];
-	sprintf(tmp, "%i", x);
-	return std::string(tmp);
-}
-
 Entity381::Entity381(Engine *engine, std::string meshfname, Ogre::Vector3 pos, int ident){
 
 	this->engine = engine;
@@ -74,6 +68,12 @@ void Entity381::Tick(float dt){
 	for(unsigned int i = 0; i < aspects.size(); i++){
 		aspects[i]->Tick(dt);
 	}
+}
+
+std::string Entity381::IntToString(int x){
+	char tmp[10000];
+	sprintf(tmp, "%i", x);
+	return std::string(tmp);
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------

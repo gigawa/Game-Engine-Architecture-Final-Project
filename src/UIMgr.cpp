@@ -10,6 +10,7 @@
 #include <GfxMgr.h>
 #include <InputMgr.h>
 #include <EntityMgr.h>
+#include <Entity381.h>
 #include <Types381.h>
 #include <SoundMgr.h>
 
@@ -18,6 +19,7 @@ UIMgr::UIMgr(Engine* eng): Mgr(eng){
 	mOverlaySystem = new Ogre::OverlaySystem();
 
 	mLabel = 0;
+	enemiesLeftLabel = 0;
 	mTrayMgr = 0;
 	pbar = 0;
 
@@ -71,7 +73,7 @@ void UIMgr::LoadLevel(){
 	//Text box displaying number of enemies left
 	//int textDisplay = engine->entityMgr->entities.size();
 	//Ogre::String test = "lol";
-	mTrayMgr->createLabel(OgreBites::TL_TOP,"MyKillfeedLabel", "Left: ", 100);
+	enemiesLeftLabel = mTrayMgr->createLabel(OgreBites::TL_TOP,"MyKillfeedLabel", "Left: ", 100);
 
 }
 
@@ -80,7 +82,9 @@ void UIMgr::Tick(float dt){
 	pbar->setProgress(engine->entityMgr->player->health/100);
 
 	//Update enemies left label
-	//Ogre::String enimiesLeft = std::to_string(engine->entityMgr->entities.size());
+	Ogre::String enemiesLeft = engine->entityMgr->player->IntToString(engine->entityMgr->entities.size() - 1);
+	enemiesLeftLabel->setCaption("Left: " + enemiesLeft);
+
 
 }
 
