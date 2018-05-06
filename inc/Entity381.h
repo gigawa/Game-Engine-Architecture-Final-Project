@@ -36,6 +36,10 @@ public:
   float desiredHeading, desiredSpeed;
   float heading, speed;
 
+
+  int damageBoostCount; //Add 10 every time you pick up a damage boost, and -- it every fire
+					    //If 0, no damage boost is applied, greater than 0, double damage
+
   float health;
 
   bool destroyed;

@@ -28,6 +28,8 @@ public:
 
 	void MakeItem(Ogre::Vector3 pos);
 
+	void MakeDamageBoostItem(Ogre::Vector3 pos);
+
 	Ogre::SceneNode *cameraNode;
 	Ogre::SceneNode *cameraPitchNode;
 	Ogre::Plane groundPlane;

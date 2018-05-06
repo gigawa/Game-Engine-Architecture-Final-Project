@@ -50,40 +50,12 @@ void UIMgr::stop(){
 
 void UIMgr::LoadLevel(){
 
-	//Instead of loading all this stuff immediately, load it all AFTER you press the start button.
+	//Instead of loading all the stuff immediately, load it all AFTER you press the start button.
 
 	//startedYet = false;
 	mTrayMgr->createButton(OgreBites::TL_CENTER,"StartButton","START");
 	mTrayMgr->showBackdrop("ECSLENT/UI");
 
-/*
-	//Buttons for weapons/boosts
-	mTrayMgr->createButton(OgreBites::TL_BOTTOMLEFT, "WeaponButton", "Weapon");
-	mTrayMgr->createButton(OgreBites::TL_BOTTOMLEFT, "BoostButton", "Boost");
-
-	//Menu
-	Ogre::StringVector options;
-	options.push_back("Menu");
-	options.push_back("Create Enemy Tank");
-	options.push_back("START!");
-	options.push_back("Load Demo Level");
-	mTrayMgr->createLongSelectMenu(OgreBites::TL_TOPRIGHT, "MyMenu", "Menu", 300, 4,options);
-
-	//Splash screen
-	mTrayMgr->showBackdrop("ECSLENT/UI");
-
-	//Label
-	mLabel = mTrayMgr->createLabel(OgreBites::TL_TOPRIGHT,"MyLabel","LABEL!!!",250);
-	mLabel->setCaption("MENU!!!");
-
-	//Health bar (progress bar)
-	pbar = mTrayMgr->createProgressBar(OgreBites::TL_TOPLEFT,"HealthBar", "Health", 300, 100);
-	pbar->setProgress(engine->entityMgr->player->health/100);
-
-	//Text box displaying number of enemies left
-	//int textDisplay = engine->entityMgr->entities.size();
-	//Ogre::String test = "lol";
-	enemiesLeftLabel = mTrayMgr->createLabel(OgreBites::TL_TOP,"MyKillfeedLabel", "Left: ", 300);*/
 }
 
 void UIMgr::Tick(float dt){
@@ -95,7 +67,7 @@ void UIMgr::Tick(float dt){
 		pbar->setProgress(engine->entityMgr->player->health/100);
 	}
 
-	if(startedYet){ //enemies left updating
+	if(startedYet){ //enemies left & boost labels updating
 
 		int enemiesLeft = 0;
 
@@ -109,6 +81,9 @@ void UIMgr::Tick(float dt){
 
 		Ogre::String stringEnemiesLeft = engine->entityMgr->player->IntToString(enemiesLeft - 1);
 		enemiesLeftLabel->setCaption("Enemies Left: " + stringEnemiesLeft);
+
+		Ogre::String stringDamageBoostLeft = engine->entityMgr->player->IntToString(engine->entityMgr->player->damageBoostCount);
+		damageBoostLabel->setCaption("Double Damage Ammo: " + stringDamageBoostLeft);
 
 	}
 
@@ -158,14 +133,14 @@ void UIMgr::startUI(){
 
 
 	//Buttons for weapons/boosts
-	mTrayMgr->createButton(OgreBites::TL_BOTTOMLEFT, "WeaponButton", "Weapon");
-	mTrayMgr->createButton(OgreBites::TL_BOTTOMLEFT, "BoostButton", "Boost");
+	damageBoostLabel = mTrayMgr->createLabel(OgreBites::TL_BOTTOMLEFT,"DamageBoostLabel", "Double Damage Ammo: ", 300);
+	speedBoostLabel = mTrayMgr->createLabel(OgreBites::TL_BOTTOMLEFT, "SpeedBoostLabel", "Speed - Time Left: " , 300);
 
 	//Menu
 	Ogre::StringVector options;
 	options.push_back("Menu");
 	options.push_back("Create Enemy Tank");
-	options.push_back("NULL!");
+	options.push_back("Create Damage Boost!");
 	options.push_back("Load Demo Level");
 	mTrayMgr->createLongSelectMenu(OgreBites::TL_TOPRIGHT, "MyMenu", "Menu", 300, 4,options);
 
@@ -230,8 +205,12 @@ void UIMgr::itemSelected(OgreBites::SelectMenu *m){
 			break;
 			}
 		case 2:
+			{
+			Ogre::Vector3 spawnPos = engine->entityMgr->player->position;
+			engine->gameMgr->MakeDamageBoostItem(Ogre::Vector3(spawnPos.x + 300, 20, spawnPos.z));
 			m->selectItem(0,true);
 			break;
+		}
 		case 3:
 			{ //encapsulated to not initialize variables unless case is verified
 			std::cout <<"Loaded demo level!" << std::endl;

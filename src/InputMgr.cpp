@@ -150,6 +150,14 @@ void InputMgr::UpdateVelocityAndSelection(float dt){
 
 		// end sound stuff for shooting
 
+		//NOTE: Also decrease # of boosted bullets if you have more than 0
+
+		std::cout << "Damage boost ammo left: " << engine->entityMgr->player->damageBoostCount << std::endl;
+
+		if(engine->entityMgr->player->damageBoostCount > 0){
+			engine->entityMgr->player->damageBoostCount--;
+		}
+
 		keyboardTimer = keyTime;
 
 		Entity381 * player = engine->entityMgr->player;
@@ -176,9 +184,19 @@ void InputMgr::UpdateVelocityAndSelection(float dt){
 				if (result.first) {
 					//std::cout << "Hit Position: ";
 					//PrintVector(bulletRay.getPoint(result.second));
-					testEntity->health -= 10;
-					std::cout << "Hit Health: " << testEntity->health << std::endl;
-					hit = true;
+
+					// If damage boost ammo is on, then deal double damage, else deal normal damage
+					if(engine->entityMgr->player->damageBoostCount > 0){
+						testEntity->health -= 20;
+						std::cout << "(With Damage Boost) Hit Health: " << testEntity->health << std::endl;
+						//engine->entityMgr->player->damageBoostCount--;
+						hit = true;
+					}
+					else if (engine->entityMgr->player->damageBoostCount <= 0){
+						testEntity->health -= 10;
+						std::cout << "(Without Damage Boost) Hit Health: " << testEntity->health << std::endl;
+						hit = true;
+					}
 				}
 				else {
 					std::cout << "Not Hit" << std::endl;

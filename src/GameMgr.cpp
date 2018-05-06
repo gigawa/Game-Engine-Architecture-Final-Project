@@ -84,7 +84,7 @@ void GameMgr::MakePlayer() {
 	engine->soundMgr->reserveAudio(filename,false,soundID);
 	std::cout << "|     Reserved shoot.wav to sound ID " << soundID << std::endl;
 
-	engine->soundMgr->listSourceAndBuffer();
+	//engine->soundMgr->listSourceAndBuffer();
 
 		//Moving noise - moving.wav
 
@@ -102,7 +102,7 @@ void GameMgr::MakePlayer() {
 	engine->soundMgr->reserveAudio(filename2,false,soundID);
 	std::cout << "|     Reserved moving.wav to sound ID " << soundID << std::endl;
 
-	engine->soundMgr->listSourceAndBuffer();
+	//engine->soundMgr->listSourceAndBuffer();
 
 		//On-hit noise for when player is hit - onhit.wav
 	std::string filename3 = "data/watercraft/sounds/player_onhit.wav";
@@ -114,7 +114,7 @@ void GameMgr::MakePlayer() {
 	engine->soundMgr->reserveAudio(filename3,false,soundID);
 	std::cout << "|     Reserved player_onhit.wav to sound ID " << soundID << std::endl;
 
-	engine->soundMgr->listSourceAndBuffer();
+	//engine->soundMgr->listSourceAndBuffer();
 
 	//std::cout << "[[[[[ DELETING ALL BUFFERS..." << std::endl;
 	//engine->soundMgr->deleteAllBuffers();
@@ -132,7 +132,7 @@ void GameMgr::MakePlayer() {
 	engine->soundMgr->reserveAudio(filename4,false,soundID);
 	std::cout << "|     Reserved destroyed.wav to sound ID " << soundID << std::endl;
 
-	engine->soundMgr->listSourceAndBuffer();
+	//engine->soundMgr->listSourceAndBuffer();
 
 		//NOTE: add a power-up collection noise, power-up execution and deletion
 
@@ -158,7 +158,9 @@ void GameMgr::MakeRoom(Ogre::Vector3 pos) {
 	engine->entityMgr->CreateEntityOfTypeAtPosition(EnemyTankType,(Ogre::Vector3(pos.x + 175, 0, pos.z)));
 	engine->entityMgr->CreateEntityOfTypeAtPosition(EnemyTankType,(Ogre::Vector3(pos.x - 175, 0, pos.z)));
 	engine->entityMgr->CreateEntityOfTypeAtPosition(EnemyTankType,(Ogre::Vector3(pos.x, 0, pos.z + 175)));
-	engine->gameMgr->MakeItem(Ogre::Vector3(pos.x, 20, pos.z));
+
+	//Try making a damage boost item here
+	engine->gameMgr->MakeDamageBoostItem(Ogre::Vector3(pos.x, 20, pos.z));
 }
 
 void GameMgr::MakeEntities(){
@@ -186,6 +188,17 @@ void GameMgr::MakeItem(Ogre::Vector3 pos) {
 	engine->entityMgr->CreateEntityOfTypeAtPosition(ItemType, pos);
 	itemsLeft++;
 }
+
+void GameMgr::MakeDamageBoostItem(Ogre::Vector3 pos){
+	engine->entityMgr->CreateEntityOfTypeAtPosition(DamageBoostType, pos);
+	itemsLeft++;
+}
+
+/*
+void GameMgr::MakeSpeedBoostItem(Ogre::Vector3 pos){
+	engine->entityMgr->CreateEntityOfTypeAtPosition(DamageBoostType, pos);
+	itemsLeft++;
+}*/
 
 void GameMgr::MakeItems() {
 	Ogre::Vector3 pos = Ogre::Vector3(500, 1, 0);

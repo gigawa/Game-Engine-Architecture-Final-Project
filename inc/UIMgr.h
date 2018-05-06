@@ -50,6 +50,8 @@ public:
 	Ogre::OverlaySystem* mOverlaySystem;
 	OgreBites::Label *mLabel;
 	OgreBites::Label *enemiesLeftLabel;
+	OgreBites::Label *damageBoostLabel; //displays # of ammo left with double damage boost
+	OgreBites::Label *speedBoostLabel; //displays time left for speed boost
 	OgreBites::ProgressBar * pbar;
 	bool startedYet;
 

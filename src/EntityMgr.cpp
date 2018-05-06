@@ -44,6 +44,25 @@ void EntityMgr::CreateItem(Ogre::Vector3 pos) {
 	std::cout << "Pushed Back" << std::endl;
 }
 
+void EntityMgr::CreateDamageBoostItem(Ogre::Vector3 pos) {
+
+	EntityItem *ent = new EntityItem(this->engine, "cube.mesh", pos, count);
+	std::cout << "Created in MGR" << std::endl;
+	items.push_back((EntityItem *) ent);
+	std::cout << "Pushed Back" << std::endl;
+
+}
+
+/*
+void EntityMgr::CreateSpeedBoostItem(Ogre::Vector3 pos) {
+
+	EntityItem *ent = new EntityItem(this->engine, "sphere.mesh", pos, count);
+	std::cout << "Created in MGR" << std::endl;
+	items.push_back((EntityItem *) ent);
+	std::cout << "Pushed Back" << std::endl;
+
+}*/
+
 void EntityMgr::CreateWall(Ogre::Vector3 pos, Ogre::Vector3 scale) {
 	Wall *ent = new Wall(this->engine, "cube.mesh", pos, count, scale);
 	std::cout << "Created in MGR" << std::endl;
@@ -77,6 +96,9 @@ void EntityMgr::CreateEntityOfTypeAtPosition(EntityTypes entType, Ogre::Vector3 
 		CreateEnemy(pos);
 		break;
 	case ItemType:
+		CreateItem(pos);
+		break;
+	case DamageBoostType:
 		CreateItem(pos);
 		break;
 	default:
