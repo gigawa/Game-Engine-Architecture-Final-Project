@@ -46,7 +46,10 @@ void GameMgr::LoadLevel(){
 	  MakeGround();
 	  MakeSky();
 	  //MakeEntities();
-	  MakeWalls();
+	  MakeBoundary();
+
+	  Ogre::Vector3 roomPos = Ogre::Vector3(1000, 0, 1000);
+	  MakeRoom(roomPos);
 	  //MakeItems();
 }
 
@@ -137,22 +140,45 @@ void GameMgr::MakePlayer() {
 
 }
 
+void GameMgr::MakeRoom(Ogre::Vector3 pos) {
+	std::cout << "Make Walls" << std::endl;
+	float wallDistance = 750;
+	float scale = 10;
+	Ogre::Vector3 scalex = Ogre::Vector3(scale, 2, 1);
+	Ogre::Vector3 scalez = Ogre::Vector3(1, 2, scale);
+	Ogre::Vector3 nextPos = Ogre::Vector3(pos.x, 1, pos.z + wallDistance);
+	engine->entityMgr->CreateWall(nextPos, scalex);
+	nextPos = Ogre::Vector3(pos.x, 1, pos.z - wallDistance);
+	engine->entityMgr->CreateWall(nextPos, scalex);
+	nextPos = Ogre::Vector3(pos.x + wallDistance, 1, pos.z);
+	engine->entityMgr->CreateWall(nextPos, scalez);
+	nextPos = Ogre::Vector3(pos.x - wallDistance, 1, pos.z);
+	engine->entityMgr->CreateWall(nextPos, scalez);
+
+	engine->entityMgr->CreateEntityOfTypeAtPosition(EnemyTankType,(Ogre::Vector3(pos.x + 175, 0, pos.z)));
+	engine->entityMgr->CreateEntityOfTypeAtPosition(EnemyTankType,(Ogre::Vector3(pos.x - 175, 0, pos.z)));
+	engine->entityMgr->CreateEntityOfTypeAtPosition(EnemyTankType,(Ogre::Vector3(pos.x, 0, pos.z + 175)));
+	engine->gameMgr->MakeItem(Ogre::Vector3(pos.x, 20, pos.z));
+}
+
 void GameMgr::MakeEntities(){
 	Ogre::Vector3 pos = Ogre::Vector3(0, 0, 1000);
 	engine->entityMgr->CreateEntityOfTypeAtPosition(EnemyTankType, pos);
 }
 
-void GameMgr::MakeWalls(){
+void GameMgr::MakeBoundary(){
 	std::cout << "Make Walls" << std::endl;
-	Ogre::Vector3 scalex = Ogre::Vector3(100, 2, 1);
-	Ogre::Vector3 scalez = Ogre::Vector3(1, 2, 100);
-	Ogre::Vector3 pos = Ogre::Vector3(0, 1, 2000);
+	float scale = 100;
+	float wallDistance = 4000;
+	Ogre::Vector3 scalex = Ogre::Vector3(scale, 2, 1);
+	Ogre::Vector3 scalez = Ogre::Vector3(1, 2, scale);
+	Ogre::Vector3 pos = Ogre::Vector3(0, 1, wallDistance);
 	engine->entityMgr->CreateWall(pos, scalex);
-	pos = Ogre::Vector3(0, 1, -2000);
+	pos = Ogre::Vector3(0, 1, -wallDistance);
 	engine->entityMgr->CreateWall(pos, scalex);
-	pos = Ogre::Vector3(2000, 1, 0);
+	pos = Ogre::Vector3(wallDistance, 1, 0);
 	engine->entityMgr->CreateWall(pos, scalez);
-	pos = Ogre::Vector3(-2000, 1, 0);
+	pos = Ogre::Vector3(-wallDistance, 1, 0);
 	engine->entityMgr->CreateWall(pos, scalez);
 }
 

@@ -23,6 +23,7 @@ Physics2D::~Physics2D(){
 void Physics2D::Tick(float dt){
 
 	bool hitEntity = false;
+	bool hitWall = false;
 	Ogre::Vector3 hitDirection;
 
 	for (int i = 0; i < (int)entity->engine->entityMgr->entities.size() && hitEntity == false; i++) {
@@ -39,14 +40,13 @@ void Physics2D::Tick(float dt){
 		}
 	}
 
-	for (int i = 0; i < (int)entity->engine->entityMgr->walls.size() && hitEntity == false; i++) {
+	for (int i = 0; i < (int)entity->engine->entityMgr->walls.size() && hitWall == false; i++) {
 		Wall * testEntity = entity->engine->entityMgr->walls[i];
 		bool result = entity->sceneNode->_getWorldAABB().intersects(testEntity->sceneNode->_getWorldAABB());
 
 		if(result) {
 			//std::cout << "Hit Entity" << std::endl;
 			hitEntity = true;
-			hitDirection = entity->position - testEntity->position;
 		}
 	}
 
@@ -73,14 +73,14 @@ void Physics2D::Tick(float dt){
 	entity->heading = FixAngle(entity->heading);
 
 	//Now do the trig
-	if(!hitEntity) {
+	if(!hitEntity && !hitWall) {
 		entity->velocity.y = 0.0f; // just to be safe, we do not want ships in the air.
 		entity->velocity.x = Ogre::Math::Cos(Ogre::Degree(entity->heading)) * entity->speed; //adjacent/hyp
 		entity->velocity.z = Ogre::Math::Sin(Ogre::Degree(entity->heading)) * entity->speed; //opposite/hyp
 	}else {
 		entity->velocity.y = 0.0f; // just to be safe, we do not want ships in the air.
-		entity->velocity.x = Ogre::Math::Cos(Ogre::Degree(entity->heading)) * -0.1; //adjacent/hyp
-		entity->velocity.z = Ogre::Math::Sin(Ogre::Degree(entity->heading)) * -0.1; //opposite/hyp
+		entity->velocity.x = Ogre::Math::Cos(Ogre::Degree(entity->heading)) * -3; //adjacent/hyp
+		entity->velocity.z = Ogre::Math::Sin(Ogre::Degree(entity->heading)) * -3; //opposite/hyp
 	}
 
 	//This does not change!

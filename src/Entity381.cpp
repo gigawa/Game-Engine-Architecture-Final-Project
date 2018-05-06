@@ -102,8 +102,8 @@ EnemyTank::EnemyTank(Engine *engine, std::string meshfname, Ogre::Vector3 pos, i
 	this->health = 30;
 	this->startPosition = pos;
 	following = false;
-	followDistance = 500;
-	range = 500;
+	followDistance = 750;
+	range = 750;
 	shootTime = 1;
 	shotTimer = 1;
 	std::cout << "Created: " << this->name << std::endl;
