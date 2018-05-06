@@ -85,6 +85,14 @@ void UIMgr::Tick(float dt){
 		Ogre::String stringDamageBoostLeft = engine->entityMgr->player->IntToString(engine->entityMgr->player->damageBoostCount);
 		damageBoostLabel->setCaption("Double Damage Ammo: " + stringDamageBoostLeft);
 
+		if(engine->entityMgr->player->speedBoostCount > 0){
+		Ogre::String stringSpeedBoostLeft = engine->entityMgr->player->IntToString(engine->entityMgr->player->speedBoostCount);
+		speedBoostLabel->setCaption("Speed boost - Time Left: " + stringSpeedBoostLeft);
+		}
+		else if(engine->entityMgr->player->speedBoostCount <= 0){
+			speedBoostLabel->setCaption("Speed Boost Not On");
+		} //end if
+
 	}
 
 
@@ -134,14 +142,14 @@ void UIMgr::startUI(){
 
 	//Buttons for weapons/boosts
 	damageBoostLabel = mTrayMgr->createLabel(OgreBites::TL_BOTTOMLEFT,"DamageBoostLabel", "Double Damage Ammo: ", 300);
-	speedBoostLabel = mTrayMgr->createLabel(OgreBites::TL_BOTTOMLEFT, "SpeedBoostLabel", "Speed - Time Left: " , 300);
+	speedBoostLabel = mTrayMgr->createLabel(OgreBites::TL_BOTTOMLEFT, "SpeedBoostLabel", "Speed Boost Not On" , 300);
 
 	//Menu
 	Ogre::StringVector options;
 	options.push_back("Menu");
 	options.push_back("Create Enemy Tank");
-	options.push_back("Create Damage Boost!");
-	options.push_back("Load Demo Level");
+	options.push_back("Create Damage Boost");
+	options.push_back("Create Speed Boost");
 	mTrayMgr->createLongSelectMenu(OgreBites::TL_TOPRIGHT, "MyMenu", "Menu", 300, 4,options);
 
 	//Splash screen hidden now
@@ -213,9 +221,13 @@ void UIMgr::itemSelected(OgreBites::SelectMenu *m){
 		}
 		case 3:
 			{ //encapsulated to not initialize variables unless case is verified
-			std::cout <<"Loaded demo level!" << std::endl;
-			//mLabel->setCaption("LETS GOOO!!!");
 
+			Ogre::Vector3 spawnPos = engine->entityMgr->player->position;
+			engine->gameMgr->MakeSpeedBoostItem(Ogre::Vector3(spawnPos.x + 300, 20, spawnPos.z));
+			m->selectItem(0,true);
+
+				/* Old executed stuff
+			std::cout <<"Loaded demo level!" << std::endl;
 			//Spawn 5 enemy tanks & items at varying positions related to the player
 
 			Ogre::Vector3 playerPos = engine->entityMgr->player->position;
@@ -229,8 +241,7 @@ void UIMgr::itemSelected(OgreBites::SelectMenu *m){
 			engine->gameMgr->MakeItem(Ogre::Vector3(xDemo+800,yDemo,zDemo+200));
 			engine->entityMgr->CreateEntityOfTypeAtPosition(EnemyTankType,(Ogre::Vector3(xDemo+1000,yDemo,zDemo-150)));
 			engine->gameMgr->MakeItem(Ogre::Vector3(xDemo+1000,yDemo,zDemo-150));
-			//engine->entityMgr->CreateEntityOfTypeAtPosition(EnemyTankType,(Ogre::Vector3(xDemo+1300,yDemo,zDemo-300)));
-			//engine->entityMgr->CreateEntityOfTypeAtPosition(EnemyTankType,(Ogre::Vector3(xDemo+1400,yDemo,zDemo+100)));
+				*/
 
 			m->selectItem(0,true);
 			break;

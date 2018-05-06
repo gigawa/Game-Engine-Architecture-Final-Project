@@ -57,14 +57,17 @@ void EntityItem::ApplyItem() {
 		//engine->entityMgr->player->damageBoostCount = engine->entityMgr->player->damageBoostCount + 10;
 		engine->entityMgr->player->damageBoostCount = 10; //Sets to 10 instead of adding so players can't stack dmg boosts
 
-		std::cout << "items items items - - - You applied an item!" << std::endl;
+		std::cout << "items items items - - - You applied an item! (Damage boost)" << std::endl;
 		std::cout << "Items Left: " << engine->gameMgr->itemsLeft << std::endl;
 	}
 	else if(meshfilename == "sphere.mesh"){ //Speed boost portion
 		destroyed = true;
 		sceneNode->setVisible(false);
 		engine->gameMgr->itemsLeft--;
-		std::cout << "items items items - - - You applied an item!" << std::endl;
+
+		engine->entityMgr->player->speedBoostCount = 10.0;
+
+		std::cout << "items items items - - - You applied an item! (Speed boost)" << std::endl;
 		std::cout << "Items Left: " << engine->gameMgr->itemsLeft << std::endl;
 	}
 }

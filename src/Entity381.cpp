@@ -89,6 +89,10 @@ Tank::Tank(Engine *engine, std::string meshfname, Ogre::Vector3 pos, int ident):
 
 	this->damageBoostCount = 0;
 	std::cout << "Created: " << this->name << std::endl;
+
+	this->speedBoostCount = 0;
+	this->speedMultiplier = 1;
+
 }
 
 Tank::~Tank(){

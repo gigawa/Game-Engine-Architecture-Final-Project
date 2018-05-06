@@ -6,7 +6,7 @@ enum EntityTypes {
 	EnemyTankType,
 	ItemType,
 	DamageBoostType,
-	//SpeedBoostType,
+	SpeedBoostType,
 };
 
 

@@ -40,6 +40,9 @@ public:
   int damageBoostCount; //Add 10 every time you pick up a damage boost, and -- it every fire
 					    //If 0, no damage boost is applied, greater than 0, double damage
 
+  float speedBoostCount; //Set it to some arbritrary number, - dt from it in tick, and modify speedMultiplier based on this
+  int speedMultiplier; //Set to 1, is set to 2 instead if speedBoostCount is greater than 0
+
   float health;
 
   bool destroyed;

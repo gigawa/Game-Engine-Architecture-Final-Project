@@ -99,6 +99,22 @@ void InputMgr::Tick(float dt){
 void InputMgr::UpdateVelocityAndSelection(float dt){
 	keyboardTimer -= dt;
 
+
+	//Added speed boost functionality/checking here
+	if(engine->entityMgr->player->speedBoostCount > 0){
+		engine->entityMgr->player->speedMultiplier = 2;
+		engine->entityMgr->player->maxSpeed = 350.0f;
+		engine->entityMgr->player->turnRate = 8.0f;
+		engine->entityMgr->player->speedBoostCount -= dt;
+	}
+	else if(engine->entityMgr->player->speedBoostCount <= 0){
+		engine->entityMgr->player->speedMultiplier = 1;
+		engine->entityMgr->player->maxSpeed = 100.0f;
+		engine->entityMgr->player->turnRate = 2.0f;
+	}
+
+
+
 	if((mKeyboard->isKeyDown(OIS::KC_UP) || mKeyboard->isKeyDown(OIS::KC_W))){
 
 		//NOTE: If W/UP, S/DOWN, A/LEFT, or D/RIGHT is pressed, play moving noise

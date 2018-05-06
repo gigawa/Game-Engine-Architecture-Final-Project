@@ -159,8 +159,9 @@ void GameMgr::MakeRoom(Ogre::Vector3 pos) {
 	engine->entityMgr->CreateEntityOfTypeAtPosition(EnemyTankType,(Ogre::Vector3(pos.x - 175, 0, pos.z)));
 	engine->entityMgr->CreateEntityOfTypeAtPosition(EnemyTankType,(Ogre::Vector3(pos.x, 0, pos.z + 175)));
 
-	//Try making a damage boost item here
+	//Making a damage boost and speed boost item here
 	engine->gameMgr->MakeDamageBoostItem(Ogre::Vector3(pos.x, 20, pos.z));
+	engine->gameMgr->MakeSpeedBoostItem(Ogre::Vector3(pos.x-400, 20, pos.z-350));
 }
 
 void GameMgr::MakeEntities(){
@@ -194,11 +195,11 @@ void GameMgr::MakeDamageBoostItem(Ogre::Vector3 pos){
 	itemsLeft++;
 }
 
-/*
+
 void GameMgr::MakeSpeedBoostItem(Ogre::Vector3 pos){
-	engine->entityMgr->CreateEntityOfTypeAtPosition(DamageBoostType, pos);
+	engine->entityMgr->CreateEntityOfTypeAtPosition(SpeedBoostType, pos);
 	itemsLeft++;
-}*/
+}
 
 void GameMgr::MakeItems() {
 	Ogre::Vector3 pos = Ogre::Vector3(500, 1, 0);
