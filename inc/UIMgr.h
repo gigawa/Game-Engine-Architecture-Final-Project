@@ -34,6 +34,8 @@ protected:
     void buttonHit(OgreBites::Button *b);
     void itemSelected(OgreBites::SelectMenu *m);
 
+    void startUI();
+
 public:
 	UIMgr(Engine *engine);
 	~UIMgr();
@@ -49,6 +51,7 @@ public:
 	OgreBites::Label *mLabel;
 	OgreBites::Label *enemiesLeftLabel;
 	OgreBites::ProgressBar * pbar;
+	bool startedYet;
 
 
 
