@@ -88,6 +88,7 @@ Wall::Wall(Engine *engine, std::string meshfname, Ogre::Vector3 pos, int ident, 
 	name = meshfname;
 
 	ogreEntity = engine->gfxMgr->mSceneMgr->createEntity(meshfilename);
+	ogreEntity->setMaterialName("Tabletop");
 	sceneNode = engine->gfxMgr->mSceneMgr->getRootSceneNode()->createChildSceneNode(pos);
 	sceneNode->attachObject(ogreEntity);
 	sceneNode->scale(scale);

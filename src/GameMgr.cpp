@@ -36,21 +36,30 @@ void GameMgr::Init(){
 
 void GameMgr::LoadLevel(){
 
-	  engine->gfxMgr->mSceneMgr->setAmbientLight(Ogre::ColourValue(0.5, 0.5, 0.5));
+	engine->gfxMgr->mSceneMgr->setAmbientLight(Ogre::ColourValue(0.5, 0.5, 0.5));
 
-	  Ogre::Light* light = engine->gfxMgr->mSceneMgr->createLight("MainLight");
-	  light->setPosition(20.0, 80.0, 50.0);
+	Ogre::Light* light = engine->gfxMgr->mSceneMgr->createLight("MainLight");
+	light->setPosition(20.0, 80.0, 50.0);
 
-	  MakePlayer();
+	MakePlayer();
 
-	  MakeGround();
-	  MakeSky();
-	  //MakeEntities();
-	  MakeBoundary();
+	MakeGround();
+	MakeSky();
+	//MakeEntities();
+	MakeBoundary();
 
-	  Ogre::Vector3 roomPos = Ogre::Vector3(1000, 0, 1000);
-	  MakeRoom(roomPos);
-	  //MakeItems();
+	Ogre::Vector3 roomPos = Ogre::Vector3(1000, 0, 1000);
+	MakeRoom(roomPos);
+
+	roomPos = Ogre::Vector3(-1000, 0, 1000);
+	MakeRoom(roomPos);
+
+	roomPos = Ogre::Vector3(-1000, 0, -1000);
+	MakeRoom(roomPos);
+
+	roomPos = Ogre::Vector3(1000, 0, -1000);
+	MakeRoom(roomPos);
+	//MakeItems();
 }
 
 void GameMgr::MakePlayer() {
@@ -72,7 +81,7 @@ void GameMgr::MakePlayer() {
 	//Registering sounds for the player
 	std::cout << "--- BEGIN REGISTERING shoot.wav SOUND" << std::endl;
 
-		//Shooting noise - shoot.wav
+	//Shooting noise - shoot.wav
 	std::string filename = "data/watercraft/sounds/shoot.wav";
 	unsigned int soundID = 3;
 
@@ -86,7 +95,7 @@ void GameMgr::MakePlayer() {
 
 	//engine->soundMgr->listSourceAndBuffer();
 
-		//Moving noise - moving.wav
+	//Moving noise - moving.wav
 
 	//TESTING RELEASE BUFFER
 	//std::cout << "[[[[[ RELEASING SOURCE..." << std::endl;
@@ -104,7 +113,7 @@ void GameMgr::MakePlayer() {
 
 	//engine->soundMgr->listSourceAndBuffer();
 
-		//On-hit noise for when player is hit - onhit.wav
+	//On-hit noise for when player is hit - onhit.wav
 	std::string filename3 = "data/watercraft/sounds/player_onhit.wav";
 	soundID++;
 
@@ -122,7 +131,7 @@ void GameMgr::MakePlayer() {
 	//engine->soundMgr->listSourceAndBuffer();
 
 
-		//Destruction noise - destroyed.wav
+	//Destruction noise - destroyed.wav
 	std::string filename4 = "data/watercraft/sounds/destroyed.wav";
 	soundID++;
 
@@ -134,7 +143,7 @@ void GameMgr::MakePlayer() {
 
 	//engine->soundMgr->listSourceAndBuffer();
 
-		//NOTE: add a power-up collection noise, power-up execution and deletion
+	//NOTE: add a power-up collection noise, power-up execution and deletion
 
 	std::cout << "--- DONE REGISTERING SOUND" << std::endl;
 
@@ -171,8 +180,8 @@ void GameMgr::MakeEntities(){
 
 void GameMgr::MakeBoundary(){
 	std::cout << "Make Walls" << std::endl;
-	float scale = 100;
-	float wallDistance = 4000;
+	float scale = 75;
+	float wallDistance = 3000;
 	Ogre::Vector3 scalex = Ogre::Vector3(scale, 2, 1);
 	Ogre::Vector3 scalez = Ogre::Vector3(1, 2, scale);
 	Ogre::Vector3 pos = Ogre::Vector3(0, 1, wallDistance);
@@ -218,23 +227,23 @@ void GameMgr::MakeGround(){
 	Ogre::Plane plane(Ogre::Vector3::UNIT_Y, -10);
 	groundPlane = plane;
 
-	  Ogre::MeshManager::getSingleton().createPlane(
-	    "ground",
-	    Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
-	    plane,
-		15000, 15000, 20, 20,
-	    true,
-	    1, 5, 5,
-	    Ogre::Vector3::UNIT_Z);
+	Ogre::MeshManager::getSingleton().createPlane(
+			"ground",
+			Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
+			plane,
+			15000, 15000, 20, 20,
+			true,
+			1, 5, 5,
+			Ogre::Vector3::UNIT_Z);
 
-	  Ogre::Entity* groundEntity = engine->gfxMgr->mSceneMgr->createEntity("ground");
-	  engine->gfxMgr->mSceneMgr->getRootSceneNode()->createChildSceneNode()->attachObject(groundEntity);
-	  groundEntity->setCastShadows(false);
-	  //groundEntity->setMaterialName("Ocean2_HLSL_GLSL");
-	  //groundEntity->setMaterialName("OceanHLSL_GLSL");
-	  //groundEntity->setMaterialName("Ocean2_Cg");
-	  //groundEntity->setMaterialName("Examples/Rockwall");
-	  groundEntity->setMaterialName("Tabletop");
+	Ogre::Entity* groundEntity = engine->gfxMgr->mSceneMgr->createEntity("ground");
+	engine->gfxMgr->mSceneMgr->getRootSceneNode()->createChildSceneNode()->attachObject(groundEntity);
+	groundEntity->setCastShadows(false);
+	//groundEntity->setMaterialName("Ocean2_HLSL_GLSL");
+	//groundEntity->setMaterialName("OceanHLSL_GLSL");
+	//groundEntity->setMaterialName("Ocean2_Cg");
+	//groundEntity->setMaterialName("Examples/Rockwall");
+	groundEntity->setMaterialName("Tabletop");
 }
 
 void GameMgr::MakeSky(){

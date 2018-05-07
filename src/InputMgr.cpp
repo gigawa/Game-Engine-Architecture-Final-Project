@@ -103,14 +103,14 @@ void InputMgr::UpdateVelocityAndSelection(float dt){
 	//Added speed boost functionality/checking here
 	if(engine->entityMgr->player->speedBoostCount > 0){
 		engine->entityMgr->player->speedMultiplier = 2;
-		engine->entityMgr->player->maxSpeed = 350.0f;
-		engine->entityMgr->player->turnRate = 8.0f;
+		engine->entityMgr->player->maxSpeed = 450.0f;
+		engine->entityMgr->player->turnRate = 9.0f;
 		engine->entityMgr->player->speedBoostCount -= dt;
 	}
 	else if(engine->entityMgr->player->speedBoostCount <= 0){
 		engine->entityMgr->player->speedMultiplier = 1;
-		engine->entityMgr->player->maxSpeed = 100.0f;
-		engine->entityMgr->player->turnRate = 2.0f;
+		engine->entityMgr->player->maxSpeed = 200.0f;
+		engine->entityMgr->player->turnRate = 4.0f;
 	}
 
 

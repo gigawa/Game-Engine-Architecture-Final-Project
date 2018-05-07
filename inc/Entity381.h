@@ -70,6 +70,8 @@ class Tank: Entity381 {
 public:
 	Tank(Engine *engine, std::string meshfilename, Ogre::Vector3 pos, int identity);
 	virtual ~Tank();
+
+	Ogre::ParticleSystem * particleSystem;
 };
 
 class EnemyTank: Entity381 {

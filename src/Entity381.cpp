@@ -93,6 +93,15 @@ Tank::Tank(Engine *engine, std::string meshfname, Ogre::Vector3 pos, int ident):
 	this->speedBoostCount = 0;
 	this->speedMultiplier = 1;
 
+	particleSystem = 0;
+
+	/*// create a particle system named explosions using the explosionTemplate
+	particleSystem = engine->gfxMgr->mSceneMgr->createParticleSystem("explosions", "explosionTemplate");
+
+	Ogre::SceneNode * particleNode = sceneNode->createChildSceneNode("Explosion Node");
+
+	// attach the particle system to a scene node
+	particleNode->attachObject((Ogre::MovableObject*)particleSystem);*/
 }
 
 Tank::~Tank(){
