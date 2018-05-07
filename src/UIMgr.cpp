@@ -25,6 +25,9 @@ UIMgr::UIMgr(Engine* eng): Mgr(eng){
 	pbar = 0;
 	startedYet = false;
 
+	speedBoostLabel = 0;
+	damageBoostLabel = 0;
+
 	engine->gfxMgr->mSceneMgr->addRenderQueueListener(mOverlaySystem);
 
 }
@@ -54,6 +57,7 @@ void UIMgr::LoadLevel(){
 
 	//startedYet = false;
 	mTrayMgr->createButton(OgreBites::TL_CENTER,"StartButton","START");
+	mTrayMgr->createButton(OgreBites::TL_CENTER,"CreditsButton","About");
 	mTrayMgr->showBackdrop("ECSLENT/UI");
 
 }
@@ -181,8 +185,44 @@ void UIMgr::buttonHit(OgreBites::Button *b){
 
 	if(!startedYet && b->getName()=="StartButton"){
 		std::cout << "You started the game!" << std::endl;
+
+		mTrayMgr->removeWidgetFromTray("CreditsButton");
+
+		mTrayMgr->destroyWidget("CreditsButton");
+
 		startUI();
 		b->hide();
+	}
+
+	if(!startedYet && b->getName()=="CreditsButton"){
+		std::cout << "Credits displayed!" << std::endl;
+
+		mTrayMgr->getWidget("StartButton")->hide();
+		mTrayMgr->getWidget("CreditsButton")->hide();
+
+
+		mTrayMgr->createButton(OgreBites::TL_TOPLEFT,"CloseCreditsButton","Close", 100);
+		mTrayMgr->createLabel(OgreBites::TL_TOP,"CreditsLabel", "Tabletop Tanks by Grant Hooks and Gary Situ. WASD to move. Space to shoot. Eliminate all enemies to win.", 1000);
+
+		//b->hide();
+	}
+
+	if(!startedYet && b->getName()=="CloseCreditsButton"){
+		std::cout << "Closed the credits!" << std::endl;
+
+		mTrayMgr->removeWidgetFromTray("CloseCreditsButton");
+		mTrayMgr->removeWidgetFromTray("CreditsLabel");
+
+		mTrayMgr->getWidget("CloseCreditsButton")->hide();
+		mTrayMgr->getWidget("CreditsLabel")->hide();
+
+		mTrayMgr->destroyWidget("CloseCreditsButton");
+		mTrayMgr->destroyWidget("CreditsLabel");
+
+		mTrayMgr->getWidget("StartButton")->show();
+		mTrayMgr->getWidget("CreditsButton")->show();
+
+		//b->hide();
 	}
 
     if(startedYet && b->getName()=="WeaponButton") {
