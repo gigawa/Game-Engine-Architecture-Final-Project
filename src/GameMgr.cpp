@@ -24,6 +24,7 @@ GameMgr::GameMgr(Engine *engine): Mgr(engine) {
 	cameraNode = 0;
 	cameraPitchNode = 0;
 	itemsLeft = 0;
+	createdPlayer = false;
 }
 
 GameMgr::~GameMgr() {
@@ -34,6 +35,14 @@ void GameMgr::Init(){
 
 }
 
+void GameMgr::Tick(float dt) {
+	if(engine->entityMgr->player->health <= 0) {
+		engine->entityMgr->ClearEntities();
+		//MakeEntities();
+		//MakePlayer();
+	}
+}
+
 void GameMgr::LoadLevel(){
 
 	engine->gfxMgr->mSceneMgr->setAmbientLight(Ogre::ColourValue(0.5, 0.5, 0.5));
@@ -41,116 +50,108 @@ void GameMgr::LoadLevel(){
 	Ogre::Light* light = engine->gfxMgr->mSceneMgr->createLight("MainLight");
 	light->setPosition(20.0, 80.0, 50.0);
 
-	MakePlayer();
-
 	MakeGround();
 	MakeSky();
-	//MakeEntities();
-	MakeBoundary();
-
-	Ogre::Vector3 roomPos = Ogre::Vector3(1000, 0, 1000);
-	MakeRoom(roomPos);
-
-	roomPos = Ogre::Vector3(-1000, 0, 1000);
-	MakeRoom(roomPos);
-
-	roomPos = Ogre::Vector3(-1000, 0, -1000);
-	MakeRoom(roomPos);
-
-	roomPos = Ogre::Vector3(1000, 0, -1000);
-	MakeRoom(roomPos);
-	//MakeItems();
+	MakeEntities();
 }
 
 void GameMgr::MakePlayer() {
-	Ogre::Vector3 pos = Ogre::Vector3(0, 0, 0);
-	engine->entityMgr->CreateEntityOfTypeAtPosition(PlayerType, pos);
+	if(!createdPlayer) {
+		createdPlayer = true;
+		Ogre::Vector3 pos = Ogre::Vector3(0, 0, 0);
+		engine->entityMgr->CreateEntityOfTypeAtPosition(PlayerType, pos);
 
-	//A node to manipulate pitch for camera separate from yaw
-	//cameraPitchNode = cameraNode->createChildSceneNode();
-	cameraNode = engine->entityMgr->player->sceneNode->createChildSceneNode(Ogre::Vector3(-200, 80, -80));
+		//A node to manipulate pitch for camera separate from yaw
+		//cameraPitchNode = cameraNode->createChildSceneNode();
+		cameraNode = engine->entityMgr->player->sceneNode->createChildSceneNode(Ogre::Vector3(-200, 80, -80));
 
-	// A node to attach the camera to so we can move the camera node instead of the camera.
-	//cameraNode = engine->gfxMgr->mSceneMgr->getRootSceneNode()->createChildSceneNode();
-	cameraPitchNode = cameraNode->createChildSceneNode();
-	cameraPitchNode->attachObject(engine->gfxMgr->mCamera);
-	engine->gfxMgr->mCamera->lookAt(Ogre::Vector3(0, 50, 0));
-
-
-
-	//Registering sounds for the player
-	std::cout << "--- BEGIN REGISTERING shoot.wav SOUND" << std::endl;
-
-	//Shooting noise - shoot.wav
-	std::string filename = "data/watercraft/sounds/shoot.wav";
-	unsigned int soundID = 3;
-
-	engine->soundMgr->loadAudio(filename,soundID);
-	std::cout << "|     Loaded shoot.wav audio" << std::endl;
-
-	engine->entityMgr->player->auioId = 3;
-
-	engine->soundMgr->reserveAudio(filename,false,soundID);
-	std::cout << "|     Reserved shoot.wav to sound ID " << soundID << std::endl;
-
-	//engine->soundMgr->listSourceAndBuffer();
-
-	//Moving noise - moving.wav
-
-	//TESTING RELEASE BUFFER
-	//std::cout << "[[[[[ RELEASING SOURCE..." << std::endl;
-	//engine->soundMgr->releaseSource(3);
-	//std::cout << "[[[[[ SOURCE RELEASED." << std::endl;
-
-	std::string filename2 = "data/watercraft/sounds/moving.wav";
-	soundID++;
-
-	engine->soundMgr->loadAudio(filename2,soundID);
-	std::cout << "|     Loaded moving.wav audio" << std::endl;
-
-	engine->soundMgr->reserveAudio(filename2,false,soundID);
-	std::cout << "|     Reserved moving.wav to sound ID " << soundID << std::endl;
-
-	//engine->soundMgr->listSourceAndBuffer();
-
-	//On-hit noise for when player is hit - onhit.wav
-	std::string filename3 = "data/watercraft/sounds/player_onhit.wav";
-	soundID++;
-
-	engine->soundMgr->loadAudio(filename3,soundID);
-	std::cout << "|     Loaded player_onhit.wav audio" << std::endl;
-
-	engine->soundMgr->reserveAudio(filename3,false,soundID);
-	std::cout << "|     Reserved player_onhit.wav to sound ID " << soundID << std::endl;
-
-	//engine->soundMgr->listSourceAndBuffer();
-
-	//std::cout << "[[[[[ DELETING ALL BUFFERS..." << std::endl;
-	//engine->soundMgr->deleteAllBuffers();
-	//std::cout << "[[[[[ FINISHED DELETING ALL BUFFERS..." << std::endl;
-	//engine->soundMgr->listSourceAndBuffer();
+		// A node to attach the camera to so we can move the camera node instead of the camera.
+		//cameraNode = engine->gfxMgr->mSceneMgr->getRootSceneNode()->createChildSceneNode();
+		cameraPitchNode = cameraNode->createChildSceneNode();
+		cameraPitchNode->attachObject(engine->gfxMgr->mCamera);
+		engine->gfxMgr->mCamera->lookAt(Ogre::Vector3(0, 50, 0));
 
 
-	//Destruction noise - destroyed.wav
-	std::string filename4 = "data/watercraft/sounds/destroyed.wav";
-	soundID++;
 
-	engine->soundMgr->loadAudio(filename4,soundID);
-	std::cout << "|     Loaded destroyed.wav audio" << std::endl;
+		//Registering sounds for the player
+		std::cout << "--- BEGIN REGISTERING shoot.wav SOUND" << std::endl;
 
-	engine->soundMgr->reserveAudio(filename4,false,soundID);
-	std::cout << "|     Reserved destroyed.wav to sound ID " << soundID << std::endl;
+		//Shooting noise - shoot.wav
+		std::string filename = "data/watercraft/sounds/shoot.wav";
+		unsigned int soundID = 3;
 
-	//engine->soundMgr->listSourceAndBuffer();
+		engine->soundMgr->loadAudio(filename,soundID);
+		std::cout << "|     Loaded shoot.wav audio" << std::endl;
 
-	//NOTE: add a power-up collection noise, power-up execution and deletion
+		engine->entityMgr->player->auioId = 3;
 
-	std::cout << "--- DONE REGISTERING SOUND" << std::endl;
+		engine->soundMgr->reserveAudio(filename,false,soundID);
+		std::cout << "|     Reserved shoot.wav to sound ID " << soundID << std::endl;
+
+		//engine->soundMgr->listSourceAndBuffer();
+
+		//Moving noise - moving.wav
+
+		//TESTING RELEASE BUFFER
+		//std::cout << "[[[[[ RELEASING SOURCE..." << std::endl;
+		//engine->soundMgr->releaseSource(3);
+		//std::cout << "[[[[[ SOURCE RELEASED." << std::endl;
+
+		std::string filename2 = "data/watercraft/sounds/moving.wav";
+		soundID++;
+
+		engine->soundMgr->loadAudio(filename2,soundID);
+		std::cout << "|     Loaded moving.wav audio" << std::endl;
+
+		engine->soundMgr->reserveAudio(filename2,false,soundID);
+		std::cout << "|     Reserved moving.wav to sound ID " << soundID << std::endl;
+
+		//engine->soundMgr->listSourceAndBuffer();
+
+		//On-hit noise for when player is hit - onhit.wav
+		std::string filename3 = "data/watercraft/sounds/player_onhit.wav";
+		soundID++;
+
+		engine->soundMgr->loadAudio(filename3,soundID);
+		std::cout << "|     Loaded player_onhit.wav audio" << std::endl;
+
+		engine->soundMgr->reserveAudio(filename3,false,soundID);
+		std::cout << "|     Reserved player_onhit.wav to sound ID " << soundID << std::endl;
+
+		//engine->soundMgr->listSourceAndBuffer();
+
+		//std::cout << "[[[[[ DELETING ALL BUFFERS..." << std::endl;
+		//engine->soundMgr->deleteAllBuffers();
+		//std::cout << "[[[[[ FINISHED DELETING ALL BUFFERS..." << std::endl;
+		//engine->soundMgr->listSourceAndBuffer();
+
+
+		//Destruction noise - destroyed.wav
+		std::string filename4 = "data/watercraft/sounds/destroyed.wav";
+		soundID++;
+
+		engine->soundMgr->loadAudio(filename4,soundID);
+		std::cout << "|     Loaded destroyed.wav audio" << std::endl;
+
+		engine->soundMgr->reserveAudio(filename4,false,soundID);
+		std::cout << "|     Reserved destroyed.wav to sound ID " << soundID << std::endl;
+
+		//engine->soundMgr->listSourceAndBuffer();
+
+		//NOTE: add a power-up collection noise, power-up execution and deletion
+
+		std::cout << "--- DONE REGISTERING SOUND" << std::endl;
+	}else {
+		std::cout << "Player Exists" << std::endl;
+		Entity381 * player = engine->entityMgr->player;
+		player->health = 100;
+		player->position = Ogre::Vector3::ZERO;
+	}
 
 }
 
 void GameMgr::MakeRoom(Ogre::Vector3 pos) {
-	std::cout << "Make Walls" << std::endl;
+	//std::cout << "Make Walls" << std::endl;
 	float wallDistance = 750;
 	float scale = 10;
 	Ogre::Vector3 scalex = Ogre::Vector3(scale, 2, 1);
@@ -174,12 +175,24 @@ void GameMgr::MakeRoom(Ogre::Vector3 pos) {
 }
 
 void GameMgr::MakeEntities(){
-	Ogre::Vector3 pos = Ogre::Vector3(0, 0, 1000);
-	engine->entityMgr->CreateEntityOfTypeAtPosition(EnemyTankType, pos);
+	MakeBoundary();
+	MakePlayer();
+
+	Ogre::Vector3 roomPos = Ogre::Vector3(1000, 0, 1000);
+	MakeRoom(roomPos);
+
+	roomPos = Ogre::Vector3(-1000, 0, 1000);
+	MakeRoom(roomPos);
+
+	roomPos = Ogre::Vector3(-1000, 0, -1000);
+	MakeRoom(roomPos);
+
+	roomPos = Ogre::Vector3(1000, 0, -1000);
+	MakeRoom(roomPos);
 }
 
 void GameMgr::MakeBoundary(){
-	std::cout << "Make Walls" << std::endl;
+	//std::cout << "Make Walls" << std::endl;
 	float scale = 75;
 	float wallDistance = 3000;
 	Ogre::Vector3 scalex = Ogre::Vector3(scale, 2, 1);

@@ -30,6 +30,7 @@ public:
   float minSpeed, maxSpeed;
 
   //dynamic data
+  Ogre::Vector3 startPosition;
   Ogre::Vector3 position;
   Ogre::Vector3 velocity;
   bool isSelected;
@@ -60,6 +61,7 @@ public:
   virtual void Tick(float dt);
 
   void DestroyEntity();
+  void ResetEntity();
 
 protected:
 
@@ -88,7 +90,6 @@ public:
 	bool following;
 	int followDistance;
 	int range;
-	Ogre::Vector3 startPosition;
 };
 
 

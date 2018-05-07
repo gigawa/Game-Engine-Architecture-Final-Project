@@ -31,6 +31,8 @@ public:
 
   void CreateWall(Ogre::Vector3 pos, Ogre::Vector3 scale);
 
+  void ClearEntities();
+
 protected:
 
 private:

@@ -43,11 +43,14 @@ void Physics2D::Tick(float dt){
 
 	for (int i = 0; i < (int)entity->engine->entityMgr->walls.size() && hitWall == false; i++) {
 		Wall * testEntity = entity->engine->entityMgr->walls[i];
-		bool result = entity->sceneNode->_getWorldAABB().intersects(testEntity->sceneNode->_getWorldAABB());
 
-		if(result) {
-			//std::cout << "Hit Entity" << std::endl;
-			hitEntity = true;
+		if(!testEntity->destroyed) {
+			bool result = entity->sceneNode->_getWorldAABB().intersects(testEntity->sceneNode->_getWorldAABB());
+
+			if(result) {
+				//std::cout << "Hit Entity" << std::endl;
+				hitEntity = true;
+			}
 		}
 	}
 

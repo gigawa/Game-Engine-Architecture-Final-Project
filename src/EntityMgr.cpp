@@ -8,6 +8,7 @@
 #include <EntityMgr.h>
 #include <Engine.h>
 #include <EntityItem.h>
+#include <UnitAI.h>
 
 EntityMgr::EntityMgr(Engine *eng): Mgr(eng){
 	count = 0;
@@ -39,17 +40,17 @@ void EntityMgr::CreatePlayer(Ogre::Vector3 pos){
 
 void EntityMgr::CreateItem(Ogre::Vector3 pos) {
 	EntityItem *ent = new EntityItem(this->engine, "cube.mesh", pos, count);
-	std::cout << "Created in MGR" << std::endl;
+	//std::cout << "Created in MGR" << std::endl;
 	items.push_back((EntityItem *) ent);
-	std::cout << "Pushed Back" << std::endl;
+	//std::cout << "Pushed Back" << std::endl;
 }
 
 void EntityMgr::CreateDamageBoostItem(Ogre::Vector3 pos) {
 
 	EntityItem *ent = new EntityItem(this->engine, "cube.mesh", pos, count);
-	std::cout << "Created * *DAMAGE BOOST* * in MGR" << std::endl;
+	//std::cout << "Created * *DAMAGE BOOST* * in MGR" << std::endl;
 	items.push_back((EntityItem *) ent);
-	std::cout << "Pushed Back" << std::endl;
+	//std::cout << "Pushed Back" << std::endl;
 
 }
 
@@ -57,17 +58,17 @@ void EntityMgr::CreateDamageBoostItem(Ogre::Vector3 pos) {
 void EntityMgr::CreateSpeedBoostItem(Ogre::Vector3 pos) {
 
 	EntityItem *ent = new EntityItem(this->engine, "sphere.mesh", pos, count);
-	std::cout << "Created ~ ~SPEED BOOST~ ~ in MGR" << std::endl;
+	//std::cout << "Created ~ ~SPEED BOOST~ ~ in MGR" << std::endl;
 	items.push_back((EntityItem *) ent);
-	std::cout << "Pushed Back" << std::endl;
+	//std::cout << "Pushed Back" << std::endl;
 
 }
 
 void EntityMgr::CreateWall(Ogre::Vector3 pos, Ogre::Vector3 scale) {
 	Wall *ent = new Wall(this->engine, "cube.mesh", pos, count, scale);
-	std::cout << "Created in MGR" << std::endl;
+	//std::cout << "Created in MGR" << std::endl;
 	walls.push_back((Wall *) ent);
-	std::cout << "Pushed Back" << std::endl;
+	//std::cout << "Pushed Back" << std::endl;
 }
 
 void EntityMgr::DestroyEnemy(int index) {
@@ -116,4 +117,30 @@ void EntityMgr::Tick(float dt){
 			entities[i]->Tick(dt);
 		}
 	}
+}
+
+void EntityMgr::ClearEntities() {
+	for(int i = 0; i < (int)entities.size(); i++) {
+		if(entities[i] != player) {
+			EnemyTank * enemy = (EnemyTank*)entities[i];
+			entities[i]->health = 30;
+			entities[i]->destroyed = false;
+			entities[i]->sceneNode->setVisible(true);
+			entities[i]->position = entities[i]->startPosition;
+			entities[i]->unitAI->commands.clear();
+		}
+	}
+
+	for(int i = 0; i < (int)items.size(); i++) {
+		items[i]->destroyed = false;
+		items[i]->sceneNode->setVisible(true);
+	}
+
+	for(int i = 0; i < (int)walls.size(); i++) {
+		walls[i]->destroyed = false;
+		walls[i]->sceneNode->setVisible(true);
+	}
+
+	player->health = 100;
+	player->position = player->startPosition;
 }

@@ -72,6 +72,11 @@ void EntityItem::ApplyItem() {
 	}
 }
 
+void EntityItem::DestroyEntity() {
+	destroyed = true;
+	sceneNode->setVisible(false);
+}
+
 Wall::Wall(Engine *engine, std::string meshfname, Ogre::Vector3 pos, int ident, Ogre::Vector3 scale){
 
 	this->engine = engine;
@@ -92,11 +97,17 @@ Wall::Wall(Engine *engine, std::string meshfname, Ogre::Vector3 pos, int ident, 
 	sceneNode = engine->gfxMgr->mSceneMgr->getRootSceneNode()->createChildSceneNode(pos);
 	sceneNode->attachObject(ogreEntity);
 	sceneNode->scale(scale);
+	destroyed = false;
 	//sceneNode->showBoundingBox(true);
 
 }
 
 Wall::~Wall() {
 	// TODO Auto-generated destructor stub
+}
+
+void Wall::DestroyEntity() {
+	destroyed = true;
+	sceneNode->setVisible(false);
 }
 

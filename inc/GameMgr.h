@@ -31,9 +31,13 @@ public:
 	void MakeDamageBoostItem(Ogre::Vector3 pos);
 	void MakeSpeedBoostItem(Ogre::Vector3 pos);
 
+	void Tick(float dt);
+
 	Ogre::SceneNode *cameraNode;
 	Ogre::SceneNode *cameraPitchNode;
 	Ogre::Plane groundPlane;
+
+	bool createdPlayer;
 
 	int itemsLeft;
 

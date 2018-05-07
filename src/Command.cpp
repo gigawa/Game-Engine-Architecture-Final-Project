@@ -118,11 +118,11 @@ bool Follow::done(){
 
 	//std::cout << "Distance from Start: " << entity->position.squaredDistance(enemy->startPosition) << std::endl;
 
-	if(diff.length() < MOVE_DISTANCE_THRESHOLD || diff.squaredLength() > enemy->followDistance*enemy->followDistance || entity->position.squaredDistance(enemy->startPosition) > enemy->range*enemy->range) {
+	if(diff.length() < MOVE_DISTANCE_THRESHOLD || diff.squaredLength() > enemy->followDistance*enemy->followDistance || entity->position.squaredDistance(targetEntity->startPosition) > enemy->range*enemy->range) {
 		//std::cout << "Done Following" << std::endl;
 		enemy->following = false;
 		entity->desiredSpeed = 0;
-		MoveTo * move = new MoveTo(entity, enemy->startPosition);
+		MoveTo * move = new MoveTo(entity, targetEntity->startPosition);
 		entity->unitAI->AddCommand(move);
 		return true;
 	}else {

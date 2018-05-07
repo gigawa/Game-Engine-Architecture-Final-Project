@@ -35,6 +35,8 @@ public:
 	Ogre::Vector3 position;
 
 	bool destroyed;
+
+	void DestroyEntity();
 };
 
 class Wall {
@@ -52,6 +54,10 @@ public:
 
 	//dynamic data
 	Ogre::Vector3 position;
+
+	bool destroyed;
+
+	void DestroyEntity();
 };
 
 #endif /* INC_ENTITYITEM_H_ */

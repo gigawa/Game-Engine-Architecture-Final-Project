@@ -30,6 +30,8 @@ Entity381::Entity381(Engine *engine, std::string meshfname, Ogre::Vector3 pos, i
 	sceneNode->attachObject(ogreEntity);
 	//sceneNode->showBoundingBox(true);
 
+	this->startPosition = pos;
+
 	Physics2D* phx = new Physics2D(this);
 	aspects.push_back((Aspect*) phx);
 	Renderable * renderable = new Renderable(this);
@@ -88,7 +90,7 @@ Tank::Tank(Engine *engine, std::string meshfname, Ogre::Vector3 pos, int ident):
 	this->health = 100;
 
 	this->damageBoostCount = 0;
-	std::cout << "Created: " << this->name << std::endl;
+	//std::cout << "Created: " << this->name << std::endl;
 
 	this->speedBoostCount = 0;
 	this->speedMultiplier = 1;
@@ -115,7 +117,6 @@ EnemyTank::EnemyTank(Engine *engine, std::string meshfname, Ogre::Vector3 pos, i
 	this->acceleration = 50.0f; // fast
 	this->turnRate = 2.0f; //4 degrees per second
 	this->health = 30;
-	this->startPosition = pos;
 	following = false;
 	followDistance = 750;
 	range = 750;
@@ -132,7 +133,7 @@ void EnemyTank::Tick(float dt) {
 	int followSqrDistance = followDistance*followDistance;
 	Entity381 * player = engine->entityMgr->player;
 
-	if(position.squaredDistance(player->position) < followSqrDistance && position.squaredDistance(startPosition) < range*(range*0.75)) {
+	if(position.squaredDistance(player->position) < followSqrDistance && position.squaredDistance(startPosition) < range*(range*0.9)) {
 		shotTimer -= dt;
 
 		if(shotTimer <= 0) {
