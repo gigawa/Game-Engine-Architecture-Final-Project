@@ -48,6 +48,10 @@ public:
 
   bool destroyed;
 
+  float flashTimer;
+
+  Ogre::SceneNode * muzzleSceneNode;
+
   std::vector<Aspect*> aspects;
   UnitAI * unitAI;
 

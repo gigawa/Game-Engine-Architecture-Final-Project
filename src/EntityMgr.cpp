@@ -119,10 +119,9 @@ void EntityMgr::Tick(float dt){
 	}
 }
 
-void EntityMgr::ClearEntities() {
+void EntityMgr::ResetEntities() {
 	for(int i = 0; i < (int)entities.size(); i++) {
 		if(entities[i] != player) {
-			EnemyTank * enemy = (EnemyTank*)entities[i];
 			entities[i]->health = 30;
 			entities[i]->destroyed = false;
 			entities[i]->sceneNode->setVisible(true);
@@ -140,6 +139,31 @@ void EntityMgr::ClearEntities() {
 		walls[i]->destroyed = false;
 		walls[i]->sceneNode->setVisible(true);
 	}
+
+	player->health = 100;
+	player->position = player->startPosition;
+}
+
+void EntityMgr::ClearEntities() {
+	for(int i = 0; i < (int)entities.size(); i++) {
+		if(entities[i] != player) {
+			entities[i]->DestroyEntity();
+		}
+	}
+
+	for(int i = 0; i < (int)items.size(); i++) {
+		items[i]->DestroyEntity();
+	}
+
+	for(int i = 0; i < (int)walls.size(); i++) {
+		walls[i]->DestroyEntity();
+	}
+
+	entities.clear();
+	items.clear();
+	walls.clear();
+
+	entities.push_back(player);
 
 	player->health = 100;
 	player->position = player->startPosition;

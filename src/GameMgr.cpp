@@ -37,7 +37,7 @@ void GameMgr::Init(){
 
 void GameMgr::Tick(float dt) {
 	if(engine->entityMgr->player->health <= 0) {
-		engine->entityMgr->ClearEntities();
+		engine->entityMgr->ResetEntities();
 		//MakeEntities();
 		//MakePlayer();
 	}
@@ -52,7 +52,7 @@ void GameMgr::LoadLevel(){
 
 	MakeGround();
 	MakeSky();
-	MakeEntities();
+	MakeLVL1();
 }
 
 void GameMgr::MakePlayer() {
@@ -174,7 +174,7 @@ void GameMgr::MakeRoom(Ogre::Vector3 pos) {
 	engine->gameMgr->MakeSpeedBoostItem(Ogre::Vector3(pos.x-400, 20, pos.z-350));
 }
 
-void GameMgr::MakeEntities(){
+void GameMgr::MakeLVL1(){
 	MakeBoundary();
 	MakePlayer();
 

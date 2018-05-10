@@ -28,6 +28,13 @@ Entity381::Entity381(Engine *engine, std::string meshfname, Ogre::Vector3 pos, i
 	ogreEntity = engine->gfxMgr->mSceneMgr->createEntity(meshfilename);
 	sceneNode = engine->gfxMgr->mSceneMgr->getRootSceneNode()->createChildSceneNode(pos);
 	sceneNode->attachObject(ogreEntity);
+
+	Ogre::Entity * muzzleEntity = engine->gfxMgr->mSceneMgr->createEntity("cube.mesh");
+	muzzleEntity->setMaterialName("MuzzleFlash");
+	muzzleSceneNode = sceneNode->createChildSceneNode(Ogre::Vector3(50, 30, 0));
+	muzzleSceneNode->scale(Ogre::Vector3(0.001, 0.5, 0.5));
+	muzzleSceneNode->attachObject(muzzleEntity);
+	muzzleSceneNode->setVisible(false);
 	//sceneNode->showBoundingBox(true);
 
 	this->startPosition = pos;
@@ -45,6 +52,7 @@ Entity381::Entity381(Engine *engine, std::string meshfname, Ogre::Vector3 pos, i
 	this->desiredSpeed = this->speed = 0;
 	this->minSpeed = this->maxSpeed = 0;
 	this->health = 0;
+	this->flashTimer = 0;
 
 	//Sound initializations
 	this->soundFile = "Boat-Sound.wav";
@@ -71,6 +79,14 @@ Entity381::~Entity381(){
 void Entity381::Tick(float dt){
 	for(unsigned int i = 0; i < aspects.size(); i++){
 		aspects[i]->Tick(dt);
+	}
+
+	if(flashTimer > 0) {
+		flashTimer -= dt;
+		muzzleSceneNode->setVisible(true);
+	}else {
+		flashTimer = 0;
+		muzzleSceneNode->setVisible(false);
 	}
 }
 
@@ -149,9 +165,18 @@ void EnemyTank::Tick(float dt) {
 			unitAI->SetCommand(f);
 		}
 	}
+
+	if(flashTimer > 0) {
+		flashTimer -= dt;
+		muzzleSceneNode->setVisible(true);
+	}else {
+		flashTimer = 0;
+		muzzleSceneNode->setVisible(false);
+	}
 }
 
 void EnemyTank::Shoot() {
+	flashTimer = 0.05;
 	Ogre::Vector3 tankDirection = Ogre::Vector3(Ogre::Math::Cos(Ogre::Degree(heading)), 0, Ogre::Math::Sin(Ogre::Degree(heading)));
 
 	Ogre::Ray bulletRay = Ogre::Ray(position, tankDirection);

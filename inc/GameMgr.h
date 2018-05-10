@@ -20,7 +20,9 @@ public:
 
 	void MakeGround();
 	void MakeSky();
-	void MakeEntities();
+
+	void MakeLVL1();
+
 	void MakePlayer();
 	void MakeItems();
 	void MakeBoundary();

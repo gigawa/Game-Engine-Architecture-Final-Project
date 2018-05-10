@@ -155,6 +155,10 @@ void InputMgr::UpdateVelocityAndSelection(float dt){
 		engine->entityMgr->player->desiredHeading += deltaHeading;
 	}//end if
 
+	if(mKeyboard->isKeyDown(OIS::KC_N)) {
+		engine->entityMgr->ClearEntities();
+	}
+
 
 
 	if((keyboardTimer < 0) && (mKeyboard->isKeyDown(OIS::KC_SPACE))) {
@@ -178,6 +182,8 @@ void InputMgr::UpdateVelocityAndSelection(float dt){
 
 		Entity381 * player = engine->entityMgr->player;
 		Ogre::Vector3 playerDirection = Ogre::Vector3(Ogre::Math::Cos(Ogre::Degree(player->heading)), 0, Ogre::Math::Sin(Ogre::Degree(player->heading)));
+
+		player->flashTimer = 0.05;
 
 		bool hit = false;
 		Ogre::Ray bulletRay = Ogre::Ray(player->position, playerDirection);
