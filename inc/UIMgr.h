@@ -45,9 +45,11 @@ public:
 	virtual void LoadLevel();
 	virtual void stop();
 
+	OgreBites::Label *nextLvlLabel;
 	void createNextLevelLabel();
 	void hideNextLevelLabel();
 	void showNextLevelLabel();
+	void editNextLevelLabel(); //Changes the caption to a congratulations message for game won
 
 	OgreBites::InputContext mInputContext;
 	OgreBites::SdkTrayManager* mTrayMgr;
