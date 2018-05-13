@@ -113,7 +113,6 @@ void GameMgr::Tick(float dt) {
 
 		engine->uiMgr->editNextLevelLabel();
 		engine->uiMgr->showNextLevelLabel();
->>>>>>> 0158b35bcc64648f15520214a7c6c0420266c644
 	}
 
 
@@ -334,6 +333,8 @@ void GameMgr::MakeLVL2(){
 	currentLevel = 2; //set to first level out of 3, this reflects that
 	levelLoaded = true; //now we start accepting checks for when all entities are killed
 
+	engine->entityMgr->SetEnemyStats(40, 0.75, 15);
+
 	std::cout << "`` finished GameMgr::MakeLVL2" << std::endl;
 
 }
@@ -351,6 +352,8 @@ void GameMgr::MakeLVL3(){
 
 	currentLevel = 3; //set to first level out of 3, this reflects that
 	levelLoaded = true; //now we start accepting checks for when all entities are killed
+
+	engine->entityMgr->SetEnemyStats(50, 0.5, 15);
 
 	std::cout << "`` finished GameMgr::MakeLVL3" << std::endl;
 }

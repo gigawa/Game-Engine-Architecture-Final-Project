@@ -138,10 +138,11 @@ EnemyTank::EnemyTank(Engine *engine, std::string meshfname, Ogre::Vector3 pos, i
 	this->health = 30;
 	this->ogreEntity->setMaterialName("EnemyTank");
 	following = false;
-	followDistance = 750;
-	range = 750;
+	followDistance = 1000;
+	range = 1000;
 	shootTime = 1;
 	shotTimer = 1;
+	shotDamage = 10;
 	std::cout << "Created: " << this->name << std::endl;
 }
 
@@ -192,7 +193,7 @@ void EnemyTank::Shoot() {
 	if (result.first) {
 		//std::cout << "Hit Position: ";
 		//PrintVector(bulletRay.getPoint(result.second));
-		player->health -= 10;
+		player->health -= shotDamage;
 		std::cout << "Hit Health: " << player->health << std::endl;
 
 		//NOTE: Added sound of on-hit

@@ -159,6 +159,17 @@ void EntityMgr::ResetEntities() {
 	player->position = player->startPosition;
 }
 
+void EntityMgr::SetEnemyStats(int health, float shootTime, int shotDamage) {
+	for(int i = 0; i < (int)entities.size(); i++) {
+		if(entities[i] != player) {
+			EnemyTank * enemy = (EnemyTank*)entities[i];
+			entities[i]->health = health;
+			enemy->shootTime = shootTime;
+			enemy->shotDamage = shotDamage;
+		}
+	}
+}
+
 void EntityMgr::ClearEntities() {
 	for(int i = 0; i < (int)entities.size(); i++) {
 		if(entities[i] != player) {

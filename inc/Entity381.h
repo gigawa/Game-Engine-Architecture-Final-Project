@@ -88,6 +88,8 @@ public:
 	void Tick(float dt);
 	void Shoot();
 
+	int shotDamage;
+
 	float shootTime;
 	float shotTimer;
 

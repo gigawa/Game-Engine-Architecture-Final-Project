@@ -35,6 +35,8 @@ public:
 
   void ClearEntities();
 
+  void SetEnemyStats(int health, float shotTimer, int shotDamage);
+
 protected:
 
 private:

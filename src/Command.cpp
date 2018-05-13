@@ -41,7 +41,7 @@ bool Command::done(){
 
 MoveTo::MoveTo(Entity381* ent, Ogre::Vector3 location) : Command(ent, MoveToCommand){
 	targetLocation = location;
-	MOVE_DISTANCE_THRESHOLD = 5;
+	MOVE_DISTANCE_THRESHOLD = 10;
 	entity = ent;
 	//std::cout << "Move To Created" << std::endl;
 }
@@ -55,26 +55,25 @@ void MoveTo::init(){
 }
 
 void MoveTo::tick(float dt){
-	//std::cout << "Move To Tick";// << std::endl;
+	std::cout << "Move To Tick" << std::endl;
 	//PrintVector(targetLocation);
 	Ogre::Vector3 diff = targetLocation - entity->position;
 
 	entity->desiredHeading = FixAngle(atan2(diff.z,diff.x) * 180/3.1415);
 
-	float stopDistance = (entity->speed * entity->speed)/(2 * entity->acceleration) + 1;
-
-	if(diff.length() <= stopDistance) {
-		entity->desiredSpeed = entity->minSpeed;
+	if(diff.length() <= MOVE_DISTANCE_THRESHOLD) {
+		entity->desiredSpeed = 0;
 	}else {
 		entity->desiredSpeed = entity->maxSpeed;
 	}
 }
 
 bool MoveTo::done(){
-	//std::cout << "Move To Done" << std::endl;
+	std::cout << "Move To Done" << std::endl;
 	Ogre::Vector3 diff = targetLocation - entity->position;
 
 	if(diff.length() < MOVE_DISTANCE_THRESHOLD) {
+		entity->desiredSpeed = 0;
 		return true;
 	}else {
 		return false;
@@ -86,7 +85,7 @@ bool MoveTo::done(){
 
 Follow::Follow(Entity381* ent, Entity381 * targetEnt) : Command(ent, FollowCommand){
 	targetEntity = targetEnt;
-	MOVE_DISTANCE_THRESHOLD = 200;
+	MOVE_DISTANCE_THRESHOLD = 10;
 	entity = ent;
 }
 
@@ -99,30 +98,23 @@ void Follow::init(){
 }
 
 void Follow::tick(float dt){
+	std::cout << "Follow Tick" << std::endl;
 	Ogre::Vector3 diff = targetEntity->position - entity->position;
 
 	entity->desiredHeading = FixAngle(atan2(diff.z,diff.x) * 180/3.1415);
 
-	float stopDistance = (entity->speed * entity->speed)/(2 * entity->acceleration) + MOVE_DISTANCE_THRESHOLD-5;
-
-	if(diff.length() <= stopDistance) {
-		entity->desiredSpeed = entity->minSpeed;
-	}else {
-		entity->desiredSpeed = entity->maxSpeed;
-	}
+	entity->desiredSpeed = entity->maxSpeed;
 }
 
 bool Follow::done(){
 	Ogre::Vector3 diff = targetEntity->position - entity->position;
 	EnemyTank * enemy = (EnemyTank*)entity;
 
-	//std::cout << "Distance from Start: " << entity->position.squaredDistance(enemy->startPosition) << std::endl;
-
-	if(diff.length() < MOVE_DISTANCE_THRESHOLD || diff.squaredLength() > enemy->followDistance*enemy->followDistance || entity->position.squaredDistance(targetEntity->startPosition) > enemy->range*enemy->range) {
-		//std::cout << "Done Following" << std::endl;
+	if(diff.length() < MOVE_DISTANCE_THRESHOLD || diff.squaredLength() > enemy->followDistance*enemy->followDistance || entity->position.squaredDistance(entity->startPosition) > enemy->range*enemy->range) {
+		std::cout << "Done Following" << std::endl;
 		enemy->following = false;
 		entity->desiredSpeed = 0;
-		MoveTo * move = new MoveTo(entity, targetEntity->startPosition);
+		MoveTo * move = new MoveTo(entity, entity->startPosition);
 		entity->unitAI->AddCommand(move);
 		return true;
 	}else {
