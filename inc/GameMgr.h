@@ -32,6 +32,7 @@ public:
 
 	void MakeDamageBoostItem(Ogre::Vector3 pos);
 	void MakeSpeedBoostItem(Ogre::Vector3 pos);
+	void MakeHealthPackItem(Ogre::Vector3 pos);
 
 	void Tick(float dt);
 

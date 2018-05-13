@@ -172,6 +172,7 @@ void GameMgr::MakeRoom(Ogre::Vector3 pos) {
 	//Making a damage boost and speed boost item here
 	engine->gameMgr->MakeDamageBoostItem(Ogre::Vector3(pos.x, 20, pos.z));
 	engine->gameMgr->MakeSpeedBoostItem(Ogre::Vector3(pos.x-400, 20, pos.z-350));
+	engine->gameMgr->MakeHealthPackItem(Ogre::Vector3(pos.x-100, 20, pos.z+150));
 }
 
 void GameMgr::MakeLVL1(){
@@ -220,6 +221,11 @@ void GameMgr::MakeDamageBoostItem(Ogre::Vector3 pos){
 
 void GameMgr::MakeSpeedBoostItem(Ogre::Vector3 pos){
 	engine->entityMgr->CreateEntityOfTypeAtPosition(SpeedBoostType, pos);
+	itemsLeft++;
+}
+
+void GameMgr::MakeHealthPackItem(Ogre::Vector3 pos){
+	engine->entityMgr->CreateEntityOfTypeAtPosition(HealthPackType, pos);
 	itemsLeft++;
 }
 

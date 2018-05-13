@@ -45,6 +45,7 @@ private:
 
   void CreateDamageBoostItem(Ogre::Vector3 pos);
   void CreateSpeedBoostItem(Ogre::Vector3 pos);
+  void CreateHealthPackItem(Ogre::Vector3 pos);
 
   //NOTE: Moved count to public so UIMgr can see it
   //int count;

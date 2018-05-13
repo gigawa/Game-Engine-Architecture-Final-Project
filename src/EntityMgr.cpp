@@ -64,6 +64,15 @@ void EntityMgr::CreateSpeedBoostItem(Ogre::Vector3 pos) {
 
 }
 
+void EntityMgr::CreateHealthPackItem(Ogre::Vector3 pos) {
+
+	EntityItem *ent = new EntityItem(this->engine, "penguin.mesh", pos, count);
+	//std::cout << "Created + +HEALTH PACK+ + in MGR" << std::endl;
+	items.push_back((EntityItem *) ent);
+	//std::cout << "Pushed Back" << std::endl;
+
+}
+
 void EntityMgr::CreateWall(Ogre::Vector3 pos, Ogre::Vector3 scale) {
 	Wall *ent = new Wall(this->engine, "cube.mesh", pos, count, scale);
 	//std::cout << "Created in MGR" << std::endl;
@@ -104,6 +113,9 @@ void EntityMgr::CreateEntityOfTypeAtPosition(EntityTypes entType, Ogre::Vector3 
 		break;
 	case SpeedBoostType:
 		CreateSpeedBoostItem(pos);
+		break;
+	case HealthPackType:
+		CreateHealthPackItem(pos);
 		break;
 	default:
 		CreateEntity("robot.mesh", pos);

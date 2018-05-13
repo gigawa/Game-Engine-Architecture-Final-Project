@@ -7,6 +7,7 @@ enum EntityTypes {
 	ItemType,
 	DamageBoostType,
 	SpeedBoostType,
+	HealthPackType,
 };
 
 

@@ -70,6 +70,25 @@ void EntityItem::ApplyItem() {
 		std::cout << "items items items - - - You applied an item! (Speed boost)" << std::endl;
 		std::cout << "Items Left: " << engine->gameMgr->itemsLeft << std::endl;
 	}
+	else if(meshfilename == "penguin.mesh"){
+		destroyed = true;
+		sceneNode->setVisible(false);
+		engine->gameMgr->itemsLeft--;
+
+		//Raise player health by 25
+
+		int limiter = 100; //don't want the player to be able to go above 100 health
+
+		if(engine->entityMgr->player->health + 25 > 100){
+			engine->entityMgr->player->health = 100;
+		}
+		else{
+			engine->entityMgr->player->health += 25;
+		}
+
+		std::cout << "items items items - - - You applied an item! (Health pack)" << std::endl;
+		std::cout << "Items Left: " << engine->gameMgr->itemsLeft << std::endl;
+	}
 }
 
 void EntityItem::DestroyEntity() {
