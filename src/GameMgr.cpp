@@ -30,6 +30,7 @@ GameMgr::GameMgr(Engine *engine): Mgr(engine) {
 	interim = false;
 	createdPlayer = false;
 	continueCheck = false;
+
 }
 
 GameMgr::~GameMgr() {
@@ -64,7 +65,8 @@ void GameMgr::Tick(float dt) {
 	// and the next portion will execute:
 	// set the continue checker to false so it only execute once, set interim back to false
 	// since we're playing again, hide the label, and then make the next level
-	if(currentLevel == 1 && levelLoaded == true && enemiesLeft == 1){
+
+	if(currentLevel == 1 && levelLoaded == true && enemiesLeft == 1 && interim == false){
 		std::cout << "You have completed level one!" << std::endl;
 		if(interim == false){
 			engine->uiMgr->createNextLevelLabel();
@@ -79,8 +81,41 @@ void GameMgr::Tick(float dt) {
 		engine->uiMgr->hideNextLevelLabel();
 
 		//engine->entityMgr->ClearEntities();
-		MakeLVL2();
+		MakeLVL2(); //sets currentLevel to 2
+		enemiesLeft = -1;
+		std::cout << "Made level 2" << std::endl;
 	}
+
+
+	//Checkers in level 2
+	if(currentLevel == 2 && levelLoaded == true && enemiesLeft == 1 && interim == false){
+		std::cout << "You have completed level two!" << std::endl;
+		if(interim == false){
+			engine->uiMgr->showNextLevelLabel();
+			std::cout << "In checker for lvl2, interim set to true" << std::endl;
+			interim = true;
+		}
+	}
+
+	if(continueCheck == true && currentLevel == 2){
+		continueCheck = false;
+		interim = false;
+
+		engine->uiMgr->hideNextLevelLabel();
+
+		//engine->entityMgr->ClearEntities();
+		MakeLVL3(); //sets currentLevel to 2
+		enemiesLeft = -1;
+		std::cout << "Made level 3" << std::endl;
+	}
+
+	if(currentLevel == 3 && levelLoaded == true && enemiesLeft == 1 && interim == false){
+		std::cout << "You have completed level three! You've won!" << std::endl;
+
+		engine->uiMgr->editNextLevelLabel();
+		engine->uiMgr->showNextLevelLabel();
+	}
+
 
 }
 
@@ -245,7 +280,7 @@ void GameMgr::MakeRoom2(Ogre::Vector3 pos) {
 
 void GameMgr::MakeRoom3(Ogre::Vector3 pos) {
 	//std::cout << "Make Walls" << std::endl;
-	float wallDistance = 750;
+	float wallDistance = 1000;
 	float scale = 10;
 	Ogre::Vector3 scalex = Ogre::Vector3(scale, 2, 1);
 	Ogre::Vector3 scalez = Ogre::Vector3(1, 2, scale);
@@ -258,14 +293,20 @@ void GameMgr::MakeRoom3(Ogre::Vector3 pos) {
 	nextPos = Ogre::Vector3(pos.x - wallDistance, 1, pos.z);
 	engine->entityMgr->CreateWall(nextPos, scalez);
 
-	engine->entityMgr->CreateEntityOfTypeAtPosition(EnemyTankType,(Ogre::Vector3(pos.x + 175, 0, pos.z)));
-	engine->entityMgr->CreateEntityOfTypeAtPosition(EnemyTankType,(Ogre::Vector3(pos.x - 175, 0, pos.z)));
-	engine->entityMgr->CreateEntityOfTypeAtPosition(EnemyTankType,(Ogre::Vector3(pos.x, 0, pos.z + 175)));
+	engine->entityMgr->CreateEntityOfTypeAtPosition(EnemyTankType,(Ogre::Vector3(pos.x + 275, 0, pos.z - 300)));
+	engine->entityMgr->CreateEntityOfTypeAtPosition(EnemyTankType,(Ogre::Vector3(pos.x + 575, 0, pos.z + 100)));
+	engine->entityMgr->CreateEntityOfTypeAtPosition(EnemyTankType,(Ogre::Vector3(pos.x - 400, 0, pos.z + 275)));
+	engine->entityMgr->CreateEntityOfTypeAtPosition(EnemyTankType,(Ogre::Vector3(pos.x - 375, 0, pos.z)));
+	engine->entityMgr->CreateEntityOfTypeAtPosition(EnemyTankType,(Ogre::Vector3(pos.x + 875, 0, pos.z + 400)));
+	engine->entityMgr->CreateEntityOfTypeAtPosition(EnemyTankType,(Ogre::Vector3(pos.x - 700, 0, pos.z + 575)));
+
 
 	//Making a damage boost and speed boost item here
-	engine->gameMgr->MakeDamageBoostItem(Ogre::Vector3(pos.x, 20, pos.z));
-	engine->gameMgr->MakeSpeedBoostItem(Ogre::Vector3(pos.x-400, 20, pos.z-350));
-	engine->gameMgr->MakeHealthPackItem(Ogre::Vector3(pos.x-100, 20, pos.z+150));
+	engine->gameMgr->MakeDamageBoostItem(Ogre::Vector3(pos.x + 200, 20, pos.z));
+	engine->gameMgr->MakeSpeedBoostItem(Ogre::Vector3(pos.x-300, 20, pos.z-250));
+	engine->gameMgr->MakeSpeedBoostItem(Ogre::Vector3(pos.x-700, 20, pos.z+150));
+	engine->gameMgr->MakeHealthPackItem(Ogre::Vector3(pos.x-600, 20, pos.z+650));
+	engine->gameMgr->MakeHealthPackItem(Ogre::Vector3(pos.x+100, 20, pos.z-450));
 }
 
 void GameMgr::MakeLVL1(){
@@ -277,6 +318,7 @@ void GameMgr::MakeLVL1(){
 
 	currentLevel = 1; //set to first level out of 3, this reflects that
 	levelLoaded = true; //now we start accepting checks for when all entities are killed
+
 }
 
 void GameMgr::MakeLVL2(){
@@ -298,6 +340,9 @@ void GameMgr::MakeLVL2(){
 
 
 void GameMgr::MakeLVL3(){
+
+	std::cout << "`` In GameMgr::MakeLVL3" << std::endl;
+
 	MakeBoundary();
 	MakePlayer();
 
@@ -306,6 +351,8 @@ void GameMgr::MakeLVL3(){
 
 	currentLevel = 3; //set to first level out of 3, this reflects that
 	levelLoaded = true; //now we start accepting checks for when all entities are killed
+
+	std::cout << "`` finished GameMgr::MakeLVL3" << std::endl;
 }
 
 

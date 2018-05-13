@@ -28,6 +28,8 @@ UIMgr::UIMgr(Engine* eng): Mgr(eng){
 	speedBoostLabel = 0;
 	damageBoostLabel = 0;
 
+	nextLvlLabel = 0;
+
 	engine->gfxMgr->mSceneMgr->addRenderQueueListener(mOverlaySystem);
 
 }
@@ -104,7 +106,7 @@ void UIMgr::Tick(float dt){
 
 void UIMgr::createNextLevelLabel(){
 
-	mTrayMgr->createLabel(OgreBites::TL_CENTER,"nextLevelLabel","Congratulations! Proceed by pressing N.",500);
+	nextLvlLabel = mTrayMgr->createLabel(OgreBites::TL_CENTER,"nextLevelLabel","Congratulations! Proceed by pressing N.",500);
 
 }
 
@@ -120,6 +122,13 @@ void UIMgr::showNextLevelLabel(){
 	mTrayMgr->moveWidgetToTray("nextLevelLabel",OgreBites::TL_CENTER);
 
 }
+
+void UIMgr::editNextLevelLabel(){
+
+	nextLvlLabel->setCaption("CONGRATULATIONS! You won! (Press ESC to quit)");
+
+}
+
 
 void UIMgr::windowResized(Ogre::RenderWindow* rw){
 	unsigned int width, height, depth;
