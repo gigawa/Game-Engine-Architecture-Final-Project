@@ -47,7 +47,7 @@ void EntityMgr::CreateItem(Ogre::Vector3 pos) {
 
 void EntityMgr::CreateDamageBoostItem(Ogre::Vector3 pos) {
 
-	EntityItem *ent = new EntityItem(this->engine, "cube.mesh", pos, count);
+	EntityItem *ent = new EntityItem(this->engine, "Bullet.mesh", pos, count);
 	//std::cout << "Created * *DAMAGE BOOST* * in MGR" << std::endl;
 	items.push_back((EntityItem *) ent);
 	//std::cout << "Pushed Back" << std::endl;
@@ -57,8 +57,9 @@ void EntityMgr::CreateDamageBoostItem(Ogre::Vector3 pos) {
 
 void EntityMgr::CreateSpeedBoostItem(Ogre::Vector3 pos) {
 
-	EntityItem *ent = new EntityItem(this->engine, "sphere.mesh", pos, count);
+	EntityItem *ent = new EntityItem(this->engine, "Speed.mesh", pos, count);
 	//std::cout << "Created ~ ~SPEED BOOST~ ~ in MGR" << std::endl;
+	ent->ogreEntity->setMaterialName("speed");
 	items.push_back((EntityItem *) ent);
 	//std::cout << "Pushed Back" << std::endl;
 

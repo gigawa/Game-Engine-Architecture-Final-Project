@@ -49,7 +49,7 @@ void EntityItem::ApplyItem() {
 	//else if its type is "speed" then apply speed boost. Use meshfilename
 	//to discern between the two.
 
-	if(meshfilename == "cube.mesh"){ //Damage boost portion
+	if(meshfilename == "Bullet.mesh"){ //Damage boost portion
 		destroyed = true;
 		sceneNode->setVisible(false);
 		engine->gameMgr->itemsLeft--;
@@ -60,7 +60,7 @@ void EntityItem::ApplyItem() {
 		std::cout << "items items items - - - You applied an item! (Damage boost)" << std::endl;
 		std::cout << "Items Left: " << engine->gameMgr->itemsLeft << std::endl;
 	}
-	else if(meshfilename == "sphere.mesh"){ //Speed boost portion
+	else if(meshfilename == "Speed.mesh"){ //Speed boost portion
 		destroyed = true;
 		sceneNode->setVisible(false);
 		engine->gameMgr->itemsLeft--;
