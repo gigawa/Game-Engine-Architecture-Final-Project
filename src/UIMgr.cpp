@@ -177,19 +177,17 @@ void UIMgr::startUI(){
 	speedBoostLabel = mTrayMgr->createLabel(OgreBites::TL_BOTTOMLEFT, "SpeedBoostLabel", "Speed Boost Not On" , 300);
 
 	//Menu
+	/*
 	Ogre::StringVector options;
 	options.push_back("Menu");
 	options.push_back("Create Enemy Tank");
 	options.push_back("Create Damage Boost");
 	options.push_back("Create Speed Boost");
 	mTrayMgr->createLongSelectMenu(OgreBites::TL_TOPRIGHT, "MyMenu", "Menu", 300, 4,options);
+	 */
 
 	//Splash screen hidden now
 	mTrayMgr->hideBackdrop();
-
-	//Label
-	//mLabel = mTrayMgr->createLabel(OgreBites::TL_TOPRIGHT,"MyLabel","LABEL!!!",250);
-	//mLabel->setCaption("MENU!!!");
 
 	//Health bar (progress bar)
 	pbar = mTrayMgr->createProgressBar(OgreBites::TL_TOPLEFT,"HealthBar", "Health", 300, 100);
@@ -264,6 +262,7 @@ void UIMgr::buttonHit(OgreBites::Button *b){
 
 void UIMgr::itemSelected(OgreBites::SelectMenu *m){
 
+	/*
 	if(startedYet){
 		switch(m->getSelectionIndex()){
 		case 0:
@@ -294,23 +293,6 @@ void UIMgr::itemSelected(OgreBites::SelectMenu *m){
 			engine->gameMgr->MakeSpeedBoostItem(Ogre::Vector3(spawnPos.x + 300, 20, spawnPos.z));
 			m->selectItem(0,true);
 
-				/* Old executed stuff
-			std::cout <<"Loaded demo level!" << std::endl;
-			//Spawn 5 enemy tanks & items at varying positions related to the player
-
-			Ogre::Vector3 playerPos = engine->entityMgr->player->position;
-			Ogre::Real xDemo = playerPos.x;
-			Ogre::Real yDemo = playerPos.y; //unchanging Y coordinate
-			Ogre::Real zDemo = playerPos.z;
-
-			engine->entityMgr->CreateEntityOfTypeAtPosition(EnemyTankType,(Ogre::Vector3(xDemo+500,yDemo,zDemo-100)));
-			engine->gameMgr->MakeItem(Ogre::Vector3(xDemo+500,yDemo,zDemo-100));
-			engine->entityMgr->CreateEntityOfTypeAtPosition(EnemyTankType,(Ogre::Vector3(xDemo+800,yDemo,zDemo+200)));
-			engine->gameMgr->MakeItem(Ogre::Vector3(xDemo+800,yDemo,zDemo+200));
-			engine->entityMgr->CreateEntityOfTypeAtPosition(EnemyTankType,(Ogre::Vector3(xDemo+1000,yDemo,zDemo-150)));
-			engine->gameMgr->MakeItem(Ogre::Vector3(xDemo+1000,yDemo,zDemo-150));
-				*/
-
 			m->selectItem(0,true);
 			break;
 			}
@@ -318,7 +300,7 @@ void UIMgr::itemSelected(OgreBites::SelectMenu *m){
 			break;
 		}
 	}
-
+*/
 
 }
 
