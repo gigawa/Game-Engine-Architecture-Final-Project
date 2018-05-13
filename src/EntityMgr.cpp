@@ -66,8 +66,9 @@ void EntityMgr::CreateSpeedBoostItem(Ogre::Vector3 pos) {
 
 void EntityMgr::CreateHealthPackItem(Ogre::Vector3 pos) {
 
-	EntityItem *ent = new EntityItem(this->engine, "penguin.mesh", pos, count);
+	EntityItem *ent = new EntityItem(this->engine, "Health.mesh", pos, count);
 	//std::cout << "Created + +HEALTH PACK+ + in MGR" << std::endl;
+	ent->ogreEntity->setMaterialName("health");
 	items.push_back((EntityItem *) ent);
 	//std::cout << "Pushed Back" << std::endl;
 

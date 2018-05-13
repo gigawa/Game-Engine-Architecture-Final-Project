@@ -70,7 +70,7 @@ void EntityItem::ApplyItem() {
 		std::cout << "items items items - - - You applied an item! (Speed boost)" << std::endl;
 		std::cout << "Items Left: " << engine->gameMgr->itemsLeft << std::endl;
 	}
-	else if(meshfilename == "penguin.mesh"){
+	else if(meshfilename == "Health.mesh"){
 		destroyed = true;
 		sceneNode->setVisible(false);
 		engine->gameMgr->itemsLeft--;
