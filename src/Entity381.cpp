@@ -111,6 +111,8 @@ Tank::Tank(Engine *engine, std::string meshfname, Ogre::Vector3 pos, int ident):
 	this->speedBoostCount = 0;
 	this->speedMultiplier = 1;
 
+	this->ogreEntity->setMaterialName("PlayerTank");
+
 	particleSystem = 0;
 
 	/*// create a particle system named explosions using the explosionTemplate
@@ -133,6 +135,7 @@ EnemyTank::EnemyTank(Engine *engine, std::string meshfname, Ogre::Vector3 pos, i
 	this->acceleration = 50.0f; // fast
 	this->turnRate = 2.0f; //4 degrees per second
 	this->health = 30;
+	this->ogreEntity->setMaterialName("EnemyTank");
 	following = false;
 	followDistance = 750;
 	range = 750;

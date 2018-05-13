@@ -49,7 +49,7 @@ void EntityItem::ApplyItem() {
 	//else if its type is "speed" then apply speed boost. Use meshfilename
 	//to discern between the two.
 
-	if(meshfilename == "cube.mesh"){ //Damage boost portion
+	if(meshfilename == "Bullet.mesh"){ //Damage boost portion
 		destroyed = true;
 		sceneNode->setVisible(false);
 		engine->gameMgr->itemsLeft--;
@@ -60,7 +60,7 @@ void EntityItem::ApplyItem() {
 		std::cout << "items items items - - - You applied an item! (Damage boost)" << std::endl;
 		std::cout << "Items Left: " << engine->gameMgr->itemsLeft << std::endl;
 	}
-	else if(meshfilename == "sphere.mesh"){ //Speed boost portion
+	else if(meshfilename == "Speed.mesh"){ //Speed boost portion
 		destroyed = true;
 		sceneNode->setVisible(false);
 		engine->gameMgr->itemsLeft--;
@@ -68,6 +68,25 @@ void EntityItem::ApplyItem() {
 		engine->entityMgr->player->speedBoostCount = 10.0;
 
 		std::cout << "items items items - - - You applied an item! (Speed boost)" << std::endl;
+		std::cout << "Items Left: " << engine->gameMgr->itemsLeft << std::endl;
+	}
+	else if(meshfilename == "Health.mesh"){
+		destroyed = true;
+		sceneNode->setVisible(false);
+		engine->gameMgr->itemsLeft--;
+
+		//Raise player health by 25
+
+		int limiter = 100; //don't want the player to be able to go above 100 health
+
+		if(engine->entityMgr->player->health + 25 > 100){
+			engine->entityMgr->player->health = 100;
+		}
+		else{
+			engine->entityMgr->player->health += 25;
+		}
+
+		std::cout << "items items items - - - You applied an item! (Health pack)" << std::endl;
 		std::cout << "Items Left: " << engine->gameMgr->itemsLeft << std::endl;
 	}
 }

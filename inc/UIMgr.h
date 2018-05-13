@@ -45,6 +45,10 @@ public:
 	virtual void LoadLevel();
 	virtual void stop();
 
+	void createNextLevelLabel();
+	void hideNextLevelLabel();
+	void showNextLevelLabel();
+
 	OgreBites::InputContext mInputContext;
 	OgreBites::SdkTrayManager* mTrayMgr;
 	Ogre::OverlaySystem* mOverlaySystem;

@@ -155,11 +155,9 @@ void InputMgr::UpdateVelocityAndSelection(float dt){
 		engine->entityMgr->player->desiredHeading += deltaHeading;
 	}//end if
 
-	if(mKeyboard->isKeyDown(OIS::KC_N)) {
-		engine->entityMgr->ClearEntities();
+	if(mKeyboard->isKeyDown(OIS::KC_N) && engine->gameMgr->interim == true) {
+		engine->gameMgr->continueCheck = true;
 	}
-
-
 
 	if((keyboardTimer < 0) && (mKeyboard->isKeyDown(OIS::KC_SPACE))) {
 

@@ -102,6 +102,25 @@ void UIMgr::Tick(float dt){
 
 }
 
+void UIMgr::createNextLevelLabel(){
+
+	mTrayMgr->createLabel(OgreBites::TL_CENTER,"nextLevelLabel","Congratulations! Proceed by pressing N.",500);
+
+}
+
+void UIMgr::hideNextLevelLabel(){
+
+	mTrayMgr->getWidget("nextLevelLabel")->hide();
+	mTrayMgr->removeWidgetFromTray("nextLevelLabel");
+}
+
+void UIMgr::showNextLevelLabel(){
+
+	mTrayMgr->getWidget("nextLevelLabel")->show();
+	mTrayMgr->moveWidgetToTray("nextLevelLabel",OgreBites::TL_CENTER);
+
+}
+
 void UIMgr::windowResized(Ogre::RenderWindow* rw){
 	unsigned int width, height, depth;
 	int left, top;

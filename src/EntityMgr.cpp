@@ -27,6 +27,7 @@ void EntityMgr::CreateEntity(std::string meshfilename, Ogre::Vector3 pos){
 
 void EntityMgr::CreateEnemy(Ogre::Vector3 pos) {
 	EnemyTank *ent = new EnemyTank(this->engine, "EnemyTank.mesh", pos, count);
+	//ent->ogreEntity->setMaterialName("EnemyTank");
 	count++;
 	entities.push_back((Entity381 *) ent);
 }
@@ -47,7 +48,7 @@ void EntityMgr::CreateItem(Ogre::Vector3 pos) {
 
 void EntityMgr::CreateDamageBoostItem(Ogre::Vector3 pos) {
 
-	EntityItem *ent = new EntityItem(this->engine, "cube.mesh", pos, count);
+	EntityItem *ent = new EntityItem(this->engine, "Bullet.mesh", pos, count);
 	//std::cout << "Created * *DAMAGE BOOST* * in MGR" << std::endl;
 	items.push_back((EntityItem *) ent);
 	//std::cout << "Pushed Back" << std::endl;
@@ -57,8 +58,19 @@ void EntityMgr::CreateDamageBoostItem(Ogre::Vector3 pos) {
 
 void EntityMgr::CreateSpeedBoostItem(Ogre::Vector3 pos) {
 
-	EntityItem *ent = new EntityItem(this->engine, "sphere.mesh", pos, count);
+	EntityItem *ent = new EntityItem(this->engine, "Speed.mesh", pos, count);
 	//std::cout << "Created ~ ~SPEED BOOST~ ~ in MGR" << std::endl;
+	ent->ogreEntity->setMaterialName("speed");
+	items.push_back((EntityItem *) ent);
+	//std::cout << "Pushed Back" << std::endl;
+
+}
+
+void EntityMgr::CreateHealthPackItem(Ogre::Vector3 pos) {
+
+	EntityItem *ent = new EntityItem(this->engine, "Health.mesh", pos, count);
+	//std::cout << "Created + +HEALTH PACK+ + in MGR" << std::endl;
+	ent->ogreEntity->setMaterialName("health");
 	items.push_back((EntityItem *) ent);
 	//std::cout << "Pushed Back" << std::endl;
 
@@ -104,6 +116,9 @@ void EntityMgr::CreateEntityOfTypeAtPosition(EntityTypes entType, Ogre::Vector3 
 		break;
 	case SpeedBoostType:
 		CreateSpeedBoostItem(pos);
+		break;
+	case HealthPackType:
+		CreateHealthPackItem(pos);
 		break;
 	default:
 		CreateEntity("robot.mesh", pos);
