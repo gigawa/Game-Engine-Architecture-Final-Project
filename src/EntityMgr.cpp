@@ -27,6 +27,7 @@ void EntityMgr::CreateEntity(std::string meshfilename, Ogre::Vector3 pos){
 
 void EntityMgr::CreateEnemy(Ogre::Vector3 pos) {
 	EnemyTank *ent = new EnemyTank(this->engine, "EnemyTank.mesh", pos, count);
+	//ent->ogreEntity->setMaterialName("EnemyTank");
 	count++;
 	entities.push_back((Entity381 *) ent);
 }

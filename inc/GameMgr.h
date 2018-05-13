@@ -22,11 +22,15 @@ public:
 	void MakeSky();
 
 	void MakeLVL1();
+	void MakeLVL2();
+	void MakeLVL3();
 
 	void MakePlayer();
 	void MakeItems();
 	void MakeBoundary();
-	void MakeRoom(Ogre::Vector3 pos);
+	void MakeRoom1(Ogre::Vector3 pos);
+	void MakeRoom2(Ogre::Vector3 pos);
+	void MakeRoom3(Ogre::Vector3 pos);
 
 	void MakeItem(Ogre::Vector3 pos);
 
@@ -43,6 +47,12 @@ public:
 	bool createdPlayer;
 
 	int itemsLeft;
+
+	int currentLevel; //stores current level, if at level 3 (last level) and no enemies left, player won
+	bool levelLoaded; //set to true after making the first level, then is used in the tick to figure out
+					  //when the player can move on/when to display the move on label
+	bool interim; //in between levels, we don't want the checking for new level to always run
+	bool continueCheck;
 
 };
 
