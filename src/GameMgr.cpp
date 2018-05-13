@@ -78,7 +78,7 @@ void GameMgr::Tick(float dt) {
 
 		engine->uiMgr->hideNextLevelLabel();
 
-		//engine->entityMgr->ClearEntities();
+		engine->entityMgr->ClearEntities();
 		MakeLVL2();
 	}
 

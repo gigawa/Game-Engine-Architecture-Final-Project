@@ -174,11 +174,11 @@ void EntityMgr::ClearEntities() {
 		walls[i]->DestroyEntity();
 	}
 
-	entities.clear();
-	items.clear();
-	walls.clear();
+	//entities.clear();
+	//items.clear();
+	//walls.clear();
 
-	entities.push_back(player);
+	//entities.push_back(player);
 
 	player->health = 100;
 	player->position = player->startPosition;

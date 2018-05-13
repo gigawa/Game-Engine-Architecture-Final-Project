@@ -67,6 +67,7 @@ Entity381::Entity381(Engine *engine, std::string meshfname, Ogre::Vector3 pos, i
 void Entity381::DestroyEntity() {
 	destroyed = true;
 	sceneNode->setVisible(false);
+	muzzleSceneNode->setVisible(false);
 	/*sceneNode->detachAllObjects();
 	engine->gfxMgr->mSceneMgr->destroySceneNode(sceneNode);
 	engine->gfxMgr->mSceneMgr->destroyEntity(ogreEntity);*/
